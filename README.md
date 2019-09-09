@@ -1,1 +1,1 @@
-# -ComputerGraphics
+# ComputerGraphics
