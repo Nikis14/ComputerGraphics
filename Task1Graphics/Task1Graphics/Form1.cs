@@ -50,10 +50,37 @@ namespace Task1Graphics
                     res.SetPixel(i, i1,Color.FromArgb(br,br,br));
                 }
             }
-            images[1] = res;
             return res;
         }
 
+        private Bitmap GenGreyMult(Bitmap source)
+        {
+            Bitmap res = new Bitmap(source.Width, source.Height);
+            for (int i = 0; i < source.Width; i++)
+            {
+                for (int i1 = 0; i1 < source.Height; i1++)
+                {
+                    Color c = source.GetPixel(i, i1);
+                    int br = (int)Math.Ceiling(0.299 * c.R + 0.587 * c.G + 0.114 * c.B);
+                    res.SetPixel(i, i1, Color.FromArgb(br, br, br));
+                }
+            }
+            return res;
+        }
+
+        private Bitmap GenDiff(Bitmap source1,Bitmap source2)
+        {
+            Bitmap res = new Bitmap(source1.Width, source1.Height);
+            for (int i = 0; i < source1.Width; i++)
+            {
+                for (int i1 = 0; i1 < source1.Height; i1++)
+                {                   
+                    int diff = Math.Abs(source1.GetPixel(i, i1).R - source2.GetPixel(i, i1).R);
+                    res.SetPixel(i, i1, Color.FromArgb(diff, diff, diff));
+                }
+            }
+            return res;
+        }
 
 
         private void button1_Click(object sender, EventArgs e)
@@ -61,8 +88,9 @@ namespace Task1Graphics
             radioButton1.Checked = true;
             images[0] = new Bitmap(ExecuteFileDialog());
             pictureBox1.Image = images[0];
-            GenGreyNoMult(images[0]);
-            
+            images[1]=GenGreyNoMult(images[0]);
+            images[2]=GenGreyMult(images[0]);
+            images[3]=GenDiff(images[1],images[2]);
         }
 
         private void radioButton_checkedChanged(object sender,EventArgs e)
@@ -75,6 +103,14 @@ namespace Task1Graphics
             if (radioButton2.Checked == true)
             {
                 pictureBox1.Image = images[1];
+            }
+            if (radioButton3.Checked == true)
+            {
+                pictureBox1.Image = images[2];
+            }
+            if (radioButton4.Checked == true)
+            {
+                pictureBox1.Image = images[3];
             }
         }
     }
