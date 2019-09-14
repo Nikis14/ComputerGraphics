@@ -74,6 +74,7 @@
             this.radioButton1.TabStop = true;
             this.radioButton1.Text = "SourceImage";
             this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton_checkedChanged);
             // 
             // radioButton2
             // 
@@ -85,6 +86,7 @@
             this.radioButton2.TabStop = true;
             this.radioButton2.Text = "Greyed no mult";
             this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton_checkedChanged);
             // 
             // radioButton3
             // 
@@ -96,6 +98,7 @@
             this.radioButton3.TabStop = true;
             this.radioButton3.Text = "Greyed mult";
             this.radioButton3.UseVisualStyleBackColor = true;
+            this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton_checkedChanged);
             // 
             // radioButton4
             // 
@@ -107,6 +110,7 @@
             this.radioButton4.TabStop = true;
             this.radioButton4.Text = "Difference";
             this.radioButton4.UseVisualStyleBackColor = true;
+            this.radioButton4.CheckedChanged += new System.EventHandler(this.radioButton_checkedChanged);
             // 
             // radioButton5
             // 
@@ -118,6 +122,7 @@
             this.radioButton5.TabStop = true;
             this.radioButton5.Text = "Histogram";
             this.radioButton5.UseVisualStyleBackColor = true;
+            this.radioButton5.CheckedChanged += new System.EventHandler(this.radioButton_checkedChanged);
             // 
             // pictureBox1
             // 
