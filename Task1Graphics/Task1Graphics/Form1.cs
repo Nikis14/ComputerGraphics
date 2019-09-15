@@ -19,6 +19,7 @@ namespace Task1Graphics
         public Form1()
         {
             InitializeComponent();
+            this.Size = new Size(1200, 900);
         }
 
         private string ExecuteFileDialog()
@@ -82,6 +83,43 @@ namespace Task1Graphics
             return res;
         }
 
+        private void drawHistRectangle(int x,int value,Bitmap source)
+        {
+            for (int i = 601; i > 600 - value; i--)
+            {
+                source.SetPixel(x, i,Color.Red);
+                source.SetPixel(x+1, i, Color.Red);
+                source.SetPixel(x + 2, i, Color.Red);
+                source.SetPixel(x + 3, i, Color.Red);
+            }
+        }
+
+        private Bitmap GenHistogram(Bitmap source1)
+        {
+            
+            Dictionary<int, int> pixelintensities = new Dictionary<int, int>();
+            for (int i = 0; i < 256; i++)
+            {
+                pixelintensities.Add(i, 0);
+            }
+            Bitmap res = new Bitmap(1024,605);
+            for (int i = 0; i < source1.Width; i++)
+            {
+                for (int i1 = 0; i1 < source1.Height; i1++)
+                {
+                    int x = source1.GetPixel(i, i1).B;
+                    pixelintensities[x] += 1;
+                }
+            }
+            double modifier = 600.0 / pixelintensities.Values.Max();
+            for (int i = 0; i < 256; i++)
+            {
+                double tmp = pixelintensities[i] * modifier;
+                drawHistRectangle(i*4, (int)Math.Floor(pixelintensities[i] * modifier), res);
+            }
+            return res;
+        }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -92,7 +130,7 @@ namespace Task1Graphics
             images[1] = GenGreyNoMult(images[0]);
             images[2] = GenGreyMult(images[0]);
             images[3] = GenDiff(images[1], images[2]);
-            // images[4] = GenHistogram(images[1]);
+            images[4] = GenHistogram(images[3]);
         }
             
 
@@ -114,6 +152,10 @@ namespace Task1Graphics
             if (radioButton4.Checked == true)
             {
                 pictureBox1.Image = images[3];
+            }
+            if (radioButton5.Checked == true)
+            {
+                pictureBox1.Image = images[4];
             }
         }
     }
