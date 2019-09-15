@@ -37,9 +37,12 @@
             this.openfilebutton = new System.Windows.Forms.Button();
             this.savefilebutton = new System.Windows.Forms.Button();
             this.ResetButton = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.redrawbutton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.valuebar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.huebar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.saturationbar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // valuebar
@@ -47,10 +50,10 @@
             this.valuebar.LargeChange = 1;
             this.valuebar.Location = new System.Drawing.Point(1140, 57);
             this.valuebar.Maximum = 100;
+            this.valuebar.Minimum = -100;
             this.valuebar.Name = "valuebar";
             this.valuebar.Size = new System.Drawing.Size(217, 56);
             this.valuebar.TabIndex = 200;
-            this.valuebar.Value = 50;
             this.valuebar.Scroll += new System.EventHandler(this.valuebar_Scroll);
             // 
             // label1
@@ -79,10 +82,10 @@
             this.saturationbar.LargeChange = 1;
             this.saturationbar.Location = new System.Drawing.Point(917, 57);
             this.saturationbar.Maximum = 100;
+            this.saturationbar.Minimum = -100;
             this.saturationbar.Name = "saturationbar";
             this.saturationbar.Size = new System.Drawing.Size(217, 56);
             this.saturationbar.TabIndex = 3;
-            this.saturationbar.Value = 50;
             this.saturationbar.Scroll += new System.EventHandler(this.saturationbar_Scroll);
             // 
             // label2
@@ -127,17 +130,37 @@
             // 
             this.ResetButton.Location = new System.Drawing.Point(424, 12);
             this.ResetButton.Name = "ResetButton";
-            this.ResetButton.Size = new System.Drawing.Size(119, 66);
+            this.ResetButton.Size = new System.Drawing.Size(119, 67);
             this.ResetButton.TabIndex = 201;
             this.ResetButton.Text = "Reset picture!";
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(12, 107);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(1356, 512);
+            this.pictureBox1.TabIndex = 202;
+            this.pictureBox1.TabStop = false;
+            // 
+            // redrawbutton
+            // 
+            this.redrawbutton.Location = new System.Drawing.Point(337, 12);
+            this.redrawbutton.Name = "redrawbutton";
+            this.redrawbutton.Size = new System.Drawing.Size(81, 67);
+            this.redrawbutton.TabIndex = 203;
+            this.redrawbutton.Text = "Redraw";
+            this.redrawbutton.UseVisualStyleBackColor = true;
+            this.redrawbutton.Click += new System.EventHandler(this.redrawbutton_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1369, 631);
+            this.Controls.Add(this.redrawbutton);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.ResetButton);
             this.Controls.Add(this.savefilebutton);
             this.Controls.Add(this.openfilebutton);
@@ -153,6 +176,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.valuebar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.huebar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.saturationbar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -169,6 +193,8 @@
         private System.Windows.Forms.Button openfilebutton;
         private System.Windows.Forms.Button savefilebutton;
         private System.Windows.Forms.Button ResetButton;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button redrawbutton;
     }
 }
 
