@@ -94,13 +94,13 @@ namespace Task1Graphics
         {
             
             System.Windows.Forms.DataVisualization.Charting.Series ser1 = 
-                new System.Windows.Forms.DataVisualization.Charting.Series("My Series", 256);
+                new System.Windows.Forms.DataVisualization.Charting.Series("Difference", 256);
             chart2.Series.Add(ser1);
-            chart2.Series["My Series"].Points.DataBindXY(dict.Keys, dict.Values);
+            chart2.Series["Difference"].Points.DataBindXY(dict.Keys, dict.Values);
            
         }
 
-        private Bitmap GenHistogram(Bitmap source1)
+        private void GenHistogram(Bitmap source1)
         {
             chart2.Hide();
             Dictionary<int, int> pixelintensities = new Dictionary<int, int>();
@@ -108,7 +108,6 @@ namespace Task1Graphics
             {
                 pixelintensities.Add(i, 0);
             }
-            Bitmap res = new Bitmap(1024,605);
             for (int i = 0; i < source1.Width; i++)
             {
                 for (int i1 = 0; i1 < source1.Height; i1++)
@@ -118,7 +117,7 @@ namespace Task1Graphics
                 }
             }
             drawHistRectangle(pixelintensities);
-            return res;
+            
         }
 
 
@@ -131,7 +130,7 @@ namespace Task1Graphics
             images[1] = GenGreyNoMult(images[0]);
             images[2] = GenGreyMult(images[0]);
             images[3] = GenDiff(images[1], images[2]);
-            images[4] = GenHistogram(images[3]);
+            GenHistogram(images[3]);
         }
             
 
