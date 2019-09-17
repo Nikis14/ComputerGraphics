@@ -19,6 +19,7 @@ namespace Task1Graphics
         public Form1()
         {
             InitializeComponent();
+            chart2.Hide();
             this.Size = new Size(1200, 900);
         }
 
@@ -41,13 +42,15 @@ namespace Task1Graphics
 
         private Bitmap GenGreyNoMult(Bitmap source)
         {
+            chart2.Hide();
+            pictureBox1.BringToFront();
             Bitmap res = new Bitmap(source.Width,source.Height);
             for (int i = 0; i < source.Width; i++)
             {
                 for (int i1 = 0; i1 < source.Height; i1++)
                 {
                     Color c = source.GetPixel(i, i1);
-                    int br = (int)Math.Ceiling(0.33 * c.R + 0.33 * c.G + 0.33 * c.B);
+                    int br = (int)Math.Ceiling(0.3 * c.R + 0.5 * c.G + 0.11 * c.B);
                     res.SetPixel(i, i1,Color.FromArgb(br,br,br));
                 }
             }
@@ -56,13 +59,15 @@ namespace Task1Graphics
 
         private Bitmap GenGreyMult(Bitmap source)
         {
+            chart2.Hide(); 
+            pictureBox1.BringToFront();
             Bitmap res = new Bitmap(source.Width, source.Height);
             for (int i = 0; i < source.Width; i++)
             {
                 for (int i1 = 0; i1 < source.Height; i1++)
                 {
                     Color c = source.GetPixel(i, i1);
-                    int br = (int)Math.Ceiling(0.299 * c.R + 0.587 * c.G + 0.114 * c.B);
+                    int br = (int)Math.Ceiling(0.21 * c.R + 0.72 * c.G + 0.07 * c.B);
                     res.SetPixel(i, i1, Color.FromArgb(br, br, br));
                 }
             }
@@ -71,6 +76,8 @@ namespace Task1Graphics
 
         private Bitmap GenDiff(Bitmap source1,Bitmap source2)
         {
+            chart2.Hide();
+            pictureBox1.BringToFront();
             Bitmap res = new Bitmap(source1.Width, source1.Height);
             for (int i = 0; i < source1.Width; i++)
             {
@@ -83,26 +90,24 @@ namespace Task1Graphics
             return res;
         }
 
-        private void drawHistRectangle(int x,int value,Bitmap source)
-        {
-            for (int i = 601; i > 600 - value; i--)
-            {
-                source.SetPixel(x, i,Color.Red);
-                source.SetPixel(x+1, i, Color.Red);
-                source.SetPixel(x + 2, i, Color.Red);
-                source.SetPixel(x + 3, i, Color.Red);
-            }
-        }
-
-        private Bitmap GenHistogram(Bitmap source1)
+        private void drawHistRectangle(Dictionary<int,int> dict)
         {
             
+            System.Windows.Forms.DataVisualization.Charting.Series ser1 = 
+                new System.Windows.Forms.DataVisualization.Charting.Series("Difference", 256);
+            chart2.Series.Add(ser1);
+            chart2.Series["Difference"].Points.DataBindXY(dict.Keys, dict.Values);
+           
+        }
+
+        private void GenHistogram(Bitmap source1)
+        {
+            chart2.Hide();
             Dictionary<int, int> pixelintensities = new Dictionary<int, int>();
             for (int i = 0; i < 256; i++)
             {
                 pixelintensities.Add(i, 0);
             }
-            Bitmap res = new Bitmap(1024,605);
             for (int i = 0; i < source1.Width; i++)
             {
                 for (int i1 = 0; i1 < source1.Height; i1++)
@@ -111,13 +116,8 @@ namespace Task1Graphics
                     pixelintensities[x] += 1;
                 }
             }
-            double modifier = 600.0 / pixelintensities.Values.Max();
-            for (int i = 0; i < 256; i++)
-            {
-                double tmp = pixelintensities[i] * modifier;
-                drawHistRectangle(i*4, (int)Math.Floor(pixelintensities[i] * modifier), res);
-            }
-            return res;
+            drawHistRectangle(pixelintensities);
+            
         }
 
 
@@ -130,12 +130,13 @@ namespace Task1Graphics
             images[1] = GenGreyNoMult(images[0]);
             images[2] = GenGreyMult(images[0]);
             images[3] = GenDiff(images[1], images[2]);
-            images[4] = GenHistogram(images[3]);
+            GenHistogram(images[3]);
         }
             
 
         private void radioButton_checkedChanged(object sender,EventArgs e)
         {
+            chart2.Hide();
             pictureBox1.Image = null;
             if (radioButton1.Checked == true)
             {
@@ -155,7 +156,8 @@ namespace Task1Graphics
             }
             if (radioButton5.Checked == true)
             {
-                pictureBox1.Image = images[4];
+                chart2.Show();
+                chart2.BringToFront();
             }
         }
     }
