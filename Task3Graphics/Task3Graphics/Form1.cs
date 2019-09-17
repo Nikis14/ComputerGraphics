@@ -23,7 +23,7 @@ namespace Task3Graphics
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
+           
             // Color c = Color.fromHS
         }
 
@@ -143,6 +143,7 @@ namespace Task3Graphics
                 }
             }
             pictureBox1.Image = res;
+            
         }
 
         private void openfilebutton_Click(object sender, EventArgs e)

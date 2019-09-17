@@ -39,16 +39,18 @@
             this.ResetButton = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.redrawbutton = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.valuebar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.huebar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.saturationbar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // valuebar
             // 
             this.valuebar.LargeChange = 1;
-            this.valuebar.Location = new System.Drawing.Point(1140, 57);
+            this.valuebar.Location = new System.Drawing.Point(861, 56);
             this.valuebar.Maximum = 100;
             this.valuebar.Minimum = -100;
             this.valuebar.Name = "valuebar";
@@ -59,7 +61,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(1149, 37);
+            this.label1.Location = new System.Drawing.Point(946, 19);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(44, 17);
             this.label1.TabIndex = 1;
@@ -69,7 +71,7 @@
             // huebar
             // 
             this.huebar.LargeChange = 1;
-            this.huebar.Location = new System.Drawing.Point(706, 57);
+            this.huebar.Location = new System.Drawing.Point(421, 59);
             this.huebar.Maximum = 360;
             this.huebar.Minimum = -360;
             this.huebar.Name = "huebar";
@@ -80,7 +82,7 @@
             // saturationbar
             // 
             this.saturationbar.LargeChange = 1;
-            this.saturationbar.Location = new System.Drawing.Point(917, 57);
+            this.saturationbar.Location = new System.Drawing.Point(644, 59);
             this.saturationbar.Maximum = 100;
             this.saturationbar.Minimum = -100;
             this.saturationbar.Name = "saturationbar";
@@ -91,7 +93,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(917, 37);
+            this.label2.Location = new System.Drawing.Point(706, 19);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(73, 17);
             this.label2.TabIndex = 4;
@@ -100,7 +102,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(706, 34);
+            this.label3.Location = new System.Drawing.Point(500, 19);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(34, 17);
             this.label3.TabIndex = 5;
@@ -108,7 +110,7 @@
             // 
             // openfilebutton
             // 
-            this.openfilebutton.Location = new System.Drawing.Point(12, 12);
+            this.openfilebutton.Location = new System.Drawing.Point(7, 31);
             this.openfilebutton.Name = "openfilebutton";
             this.openfilebutton.Size = new System.Drawing.Size(70, 66);
             this.openfilebutton.TabIndex = 6;
@@ -118,7 +120,7 @@
             // 
             // savefilebutton
             // 
-            this.savefilebutton.Location = new System.Drawing.Point(88, 11);
+            this.savefilebutton.Location = new System.Drawing.Point(83, 30);
             this.savefilebutton.Name = "savefilebutton";
             this.savefilebutton.Size = new System.Drawing.Size(65, 68);
             this.savefilebutton.TabIndex = 7;
@@ -128,7 +130,7 @@
             // 
             // ResetButton
             // 
-            this.ResetButton.Location = new System.Drawing.Point(424, 12);
+            this.ResetButton.Location = new System.Drawing.Point(272, 30);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Size = new System.Drawing.Size(119, 67);
             this.ResetButton.TabIndex = 201;
@@ -138,15 +140,17 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(12, 107);
+            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1356, 512);
+            this.pictureBox1.Size = new System.Drawing.Size(1572, 815);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 202;
             this.pictureBox1.TabStop = false;
             // 
             // redrawbutton
             // 
-            this.redrawbutton.Location = new System.Drawing.Point(337, 12);
+            this.redrawbutton.Location = new System.Drawing.Point(167, 31);
             this.redrawbutton.Name = "redrawbutton";
             this.redrawbutton.Size = new System.Drawing.Size(81, 67);
             this.redrawbutton.TabIndex = 203;
@@ -154,22 +158,34 @@
             this.redrawbutton.UseVisualStyleBackColor = true;
             this.redrawbutton.Click += new System.EventHandler(this.redrawbutton_Click);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.valuebar);
+            this.groupBox1.Controls.Add(this.redrawbutton);
+            this.groupBox1.Controls.Add(this.saturationbar);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.ResetButton);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.openfilebutton);
+            this.groupBox1.Controls.Add(this.huebar);
+            this.groupBox1.Controls.Add(this.savefilebutton);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox1.Location = new System.Drawing.Point(0, 0);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(1572, 115);
+            this.groupBox1.TabIndex = 204;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "groupBox1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1369, 631);
-            this.Controls.Add(this.redrawbutton);
+            this.AutoScroll = true;
+            this.ClientSize = new System.Drawing.Size(1572, 815);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.ResetButton);
-            this.Controls.Add(this.savefilebutton);
-            this.Controls.Add(this.openfilebutton);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.saturationbar);
-            this.Controls.Add(this.huebar);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.valuebar);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -177,8 +193,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.huebar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.saturationbar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -195,6 +212,7 @@
         private System.Windows.Forms.Button ResetButton;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button redrawbutton;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }
 
