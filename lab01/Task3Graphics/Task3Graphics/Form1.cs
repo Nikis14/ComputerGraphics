@@ -23,14 +23,9 @@ namespace Task3Graphics
 
         private void Form1_Load(object sender, EventArgs e)
         {
-           
-            // Color c = Color.fromHS
+            
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void valuebar_Scroll(object sender, EventArgs e)
         {
@@ -65,37 +60,30 @@ namespace Task3Graphics
             double divisor = max - min;
             //Hue
             if (max == min)
-            {
                 h = 0;
-            }
-            else if (max == redfloat && greenfloat >= bluefloat)
-            {
-                h = ((60 * (greenfloat - bluefloat) / divisor));
-            }
-            else if (max == redfloat && greenfloat < bluefloat)
-            {
-                h = ((60 * (greenfloat - bluefloat) / divisor)+360);
-            }
-            else if (max == greenfloat)
-            {
-                h = ((60 * (bluefloat-redfloat) / divisor) + 120);
-            }
-            else if (max == bluefloat)
-            {
-                h = ((60 * (redfloat - greenfloat) / divisor) + 240);
-            }
+            else 
+                if (max == redfloat && greenfloat >= bluefloat)
+                    h = ((60 * (greenfloat - bluefloat) / divisor));
+            else 
+                if (max == redfloat && greenfloat < bluefloat)
+                    h = ((60 * (greenfloat - bluefloat) / divisor)+360);
+            else 
+                if (max == greenfloat)
+                    h = ((60 * (bluefloat-redfloat) / divisor) + 120);
+            else 
+                if (max == bluefloat)
+                    h = ((60 * (redfloat - greenfloat) / divisor) + 240);
             //Saturation
             if (max == 0)
-            {
                 s = 0;
-            }
             else
-            {
                 s = 1 - (min / max);
-            }
             //Value
             v = max;
-            return new Tuple<double, double, double>(Math.Abs((h + hue_addition)%360), Math.Abs(s + ((sat_addition / 100.0) % 1.0)),Math.Abs( v + (val_addition / 100.0)%1.0));
+            double hnew = Math.Abs((h + hue_addition) % 360);
+            double satnew = Math.Min(Math.Max(s + (sat_addition / 100.0), 0),1.0);
+            double valnew = Math.Min(Math.Max(v + (val_addition / 100.0), 0), 1.0);
+            return new Tuple<double, double, double>(hnew,satnew,valnew);
         }
 
         private Tuple<int,int,int> torgb(Tuple<double, double, double> hsw)
