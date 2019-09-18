@@ -20,7 +20,12 @@ namespace Task1Graphics
         {
             InitializeComponent();
             chart2.Hide();
-            this.Size = new Size(1200, 900);
+            chart2.Series.RemoveAt(0);
+            this.Size = new Size(1200, 700);
+            System.Windows.Forms.DataVisualization.Charting.Series ser1 =
+                new System.Windows.Forms.DataVisualization.Charting.Series("Difference",256);
+            chart2.Series.Add(ser1);
+            
         }
 
         private string ExecuteFileDialog()
@@ -49,6 +54,7 @@ namespace Task1Graphics
             {
                 for (int i1 = 0; i1 < source.Height; i1++)
                 {
+                    progressBar1.Value +=1;
                     Color c = source.GetPixel(i, i1);
                     int br = (int)Math.Ceiling(0.3 * c.R + 0.5 * c.G + 0.11 * c.B);
                     res.SetPixel(i, i1,Color.FromArgb(br,br,br));
@@ -66,6 +72,7 @@ namespace Task1Graphics
             {
                 for (int i1 = 0; i1 < source.Height; i1++)
                 {
+                    progressBar1.Value += 1;
                     Color c = source.GetPixel(i, i1);
                     int br = (int)Math.Ceiling(0.21 * c.R + 0.72 * c.G + 0.07 * c.B);
                     res.SetPixel(i, i1, Color.FromArgb(br, br, br));
@@ -82,7 +89,8 @@ namespace Task1Graphics
             for (int i = 0; i < source1.Width; i++)
             {
                 for (int i1 = 0; i1 < source1.Height; i1++)
-                {                   
+                {
+                    progressBar1.Value += 1;
                     int diff = Math.Abs(source1.GetPixel(i, i1).R - source2.GetPixel(i, i1).R);
                     res.SetPixel(i, i1, Color.FromArgb(diff, diff, diff));
                 }
@@ -90,13 +98,15 @@ namespace Task1Graphics
             return res;
         }
 
-        private void drawHistRectangle(Dictionary<int,int> dict)
+        private void drawChart(Dictionary<int,int> dict)
         {
-            
-            System.Windows.Forms.DataVisualization.Charting.Series ser1 = 
-                new System.Windows.Forms.DataVisualization.Charting.Series("Difference", 256);
-            chart2.Series.Add(ser1);
-            chart2.Series["Difference"].Points.DataBindXY(dict.Keys, dict.Values);
+
+            List<int> c = new List<int>();//A workaround for a chart
+            for (int i = 1; i <257; i++)
+            {
+                c.Add(i);
+            }
+            chart2.Series["Difference"].Points.DataBindXY(c, dict.Values);
            
         }
 
@@ -112,21 +122,25 @@ namespace Task1Graphics
             {
                 for (int i1 = 0; i1 < source1.Height; i1++)
                 {
+                    progressBar1.Value += 1;
                     int x = source1.GetPixel(i, i1).B;
                     pixelintensities[x] += 1;
                 }
             }
-            drawHistRectangle(pixelintensities);
+            drawChart(pixelintensities);
             
         }
 
 
         private void button1_Click(object sender, EventArgs e)
         {
+            
             radioButton1.Checked = true;
             images[0] = new Bitmap(ExecuteFileDialog());
+            progressBar1.Minimum = 0;
+            progressBar1.Value = 0;
+            progressBar1.Maximum = images[0].Width * images[0].Height * 4;
             pictureBox1.Image = images[0];
-            pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
             images[1] = GenGreyNoMult(images[0]);
             images[2] = GenGreyMult(images[0]);
             images[3] = GenDiff(images[1], images[2]);
