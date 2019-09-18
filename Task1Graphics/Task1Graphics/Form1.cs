@@ -54,6 +54,7 @@ namespace Task1Graphics
             {
                 for (int i1 = 0; i1 < source.Height; i1++)
                 {
+                    progressBar1.Value +=1;
                     Color c = source.GetPixel(i, i1);
                     int br = (int)Math.Ceiling(0.3 * c.R + 0.5 * c.G + 0.11 * c.B);
                     res.SetPixel(i, i1,Color.FromArgb(br,br,br));
@@ -71,6 +72,7 @@ namespace Task1Graphics
             {
                 for (int i1 = 0; i1 < source.Height; i1++)
                 {
+                    progressBar1.Value += 1;
                     Color c = source.GetPixel(i, i1);
                     int br = (int)Math.Ceiling(0.21 * c.R + 0.72 * c.G + 0.07 * c.B);
                     res.SetPixel(i, i1, Color.FromArgb(br, br, br));
@@ -87,7 +89,8 @@ namespace Task1Graphics
             for (int i = 0; i < source1.Width; i++)
             {
                 for (int i1 = 0; i1 < source1.Height; i1++)
-                {                   
+                {
+                    progressBar1.Value += 1;
                     int diff = Math.Abs(source1.GetPixel(i, i1).R - source2.GetPixel(i, i1).R);
                     res.SetPixel(i, i1, Color.FromArgb(diff, diff, diff));
                 }
@@ -119,6 +122,7 @@ namespace Task1Graphics
             {
                 for (int i1 = 0; i1 < source1.Height; i1++)
                 {
+                    progressBar1.Value += 1;
                     int x = source1.GetPixel(i, i1).B;
                     pixelintensities[x] += 1;
                 }
@@ -130,8 +134,12 @@ namespace Task1Graphics
 
         private void button1_Click(object sender, EventArgs e)
         {
+            
             radioButton1.Checked = true;
             images[0] = new Bitmap(ExecuteFileDialog());
+            progressBar1.Minimum = 0;
+            progressBar1.Value = 0;
+            progressBar1.Maximum = images[0].Width * images[0].Height * 4;
             pictureBox1.Image = images[0];
             images[1] = GenGreyNoMult(images[0]);
             images[2] = GenGreyMult(images[0]);
