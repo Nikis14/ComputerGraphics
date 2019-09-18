@@ -23,7 +23,7 @@ namespace Task3Graphics
 
         private void Form1_Load(object sender, EventArgs e)
         {
-           
+            
             // Color c = Color.fromHS
         }
 
