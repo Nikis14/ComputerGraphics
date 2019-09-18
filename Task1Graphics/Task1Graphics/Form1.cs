@@ -133,7 +133,6 @@ namespace Task1Graphics
             radioButton1.Checked = true;
             images[0] = new Bitmap(ExecuteFileDialog());
             pictureBox1.Image = images[0];
-            pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
             images[1] = GenGreyNoMult(images[0]);
             images[2] = GenGreyMult(images[0]);
             images[3] = GenDiff(images[1], images[2]);
