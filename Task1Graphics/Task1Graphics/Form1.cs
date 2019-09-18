@@ -20,7 +20,12 @@ namespace Task1Graphics
         {
             InitializeComponent();
             chart2.Hide();
-            this.Size = new Size(1200, 900);
+            chart2.Series.RemoveAt(0);
+            this.Size = new Size(1200, 700);
+            System.Windows.Forms.DataVisualization.Charting.Series ser1 =
+                new System.Windows.Forms.DataVisualization.Charting.Series("Difference",256);
+            chart2.Series.Add(ser1);
+            
         }
 
         private string ExecuteFileDialog()
@@ -90,13 +95,15 @@ namespace Task1Graphics
             return res;
         }
 
-        private void drawHistRectangle(Dictionary<int,int> dict)
+        private void drawChart(Dictionary<int,int> dict)
         {
-            
-            System.Windows.Forms.DataVisualization.Charting.Series ser1 = 
-                new System.Windows.Forms.DataVisualization.Charting.Series("Difference", 256);
-            chart2.Series.Add(ser1);
-            chart2.Series["Difference"].Points.DataBindXY(dict.Keys, dict.Values);
+
+            List<int> c = new List<int>();//A workaround for a chart
+            for (int i = 1; i <257; i++)
+            {
+                c.Add(i);
+            }
+            chart2.Series["Difference"].Points.DataBindXY(c, dict.Values);
            
         }
 
@@ -116,7 +123,7 @@ namespace Task1Graphics
                     pixelintensities[x] += 1;
                 }
             }
-            drawHistRectangle(pixelintensities);
+            drawChart(pixelintensities);
             
         }
 
