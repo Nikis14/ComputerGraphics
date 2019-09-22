@@ -24,8 +24,19 @@ namespace Task32
             image = new Bitmap(ExecuteFileDialog());
             this.allow_click = true;
             pictureBox1.Image = image;
+            pictureBox1.MouseClick += Picturebox_Mouse_Click;
+            pictureBox1.MouseMove += Picturebox_Mouse_Hover;
         }
 
+        private void Picturebox_Mouse_Hover(object sender, MouseEventArgs e)
+        {
+            this.textBoxX.Text = e.X.ToString();
+            this.textBoxY.Text = e.Y.ToString();
+            this.textBoxR.Text = image.GetPixel(e.X, e.Y).R.ToString();
+            this.textBoxG.Text = image.GetPixel(e.X, e.Y).G.ToString();
+            this.textBoxB.Text = image.GetPixel(e.X, e.Y).B.ToString();
+
+        }
 
         private string ExecuteFileDialog()
         {
@@ -72,40 +83,44 @@ namespace Task32
         //012
         //7x3
         //654
-        private List<string> find_border(int x,int y)
+        private List<Tuple<int,int>> find_border(int x,int y)
         {
-           
-            List<String> points=new List<string>();
+            Queue<Tuple<int,int>> points_to_visit = new Queue<Tuple<int,int>>();
+            List<Tuple<int,int>> points=new List<Tuple<int,int>>();
             HashSet<string> points_visited= new HashSet<string>();
             bool first_time = true;
             Color c = image.GetPixel(x, y);
             int direction = 5;
-            int curr_x = x;
-            int curr_y = y;
-            points_visited.Add(x.ToString() + "," + y.ToString());
-            while (true)
+            int curr_x = 0;
+            int curr_y = 0;
+            points.Add(Tuple.Create(x, y));
+            points_to_visit.Enqueue(Tuple.Create(x,y));
+            points_visited.Add(x.ToString() + "," + y.ToString());  
+            while (points_to_visit.Count !=0 )
             {
+                curr_x = points_to_visit.Peek().Item1;
+                curr_y = points_to_visit.Peek().Item2;
+                points_to_visit.Dequeue();
+                
                 pictureBox1.Image = image;
                 if(first_time)
                 {
                     first_time = false;
                     for (int i = 0; i < 8; i++)
                     {
-                        Tuple<int, int> point = get_pixel_near(curr_x, curr_y, Math.Abs((direction-i) % 8));
+                        Tuple<int, int> point = get_pixel_near(curr_x, curr_y, (direction-i+8) % 8);
                         String str = point.Item1.ToString() + "," + point.Item2.ToString();
                         if (image.GetPixel(point.Item1,point.Item2) == c)
                         {
                             if (!points_visited.Contains(str))
                             {
-                                direction = i;
-                                curr_x = point.Item1;
-                                curr_y = point.Item2;
-                                image.SetPixel(curr_x, curr_y, Color.Red);
+                                direction = (i + 4) % 8;
+                                points_to_visit.Enqueue(Tuple.Create(point.Item1, point.Item2));
                                 points_visited.Add(str);
-                                points.Add(str);
-                                break;
+                                points.Add(Tuple.Create(point.Item1,point.Item2));
+                                
                             }
-                            else return points;
+                           // else return points;
                         }
                     }
                 }
@@ -113,31 +128,35 @@ namespace Task32
                 {
                     for (int i = 0; i < 8; i++)
                     {
-                        Tuple<int, int> point = get_pixel_near(curr_x, curr_y, Math.Abs((direction + i) % 8));
+                        Tuple<int, int> point = get_pixel_near(curr_x, curr_y, (direction + i + 2) % 8);
                         String str = point.Item1.ToString() + "," + point.Item2.ToString();
                         if (image.GetPixel(point.Item1, point.Item2) == c)
                         {
                             if (!points_visited.Contains(str))
                             {
-                                direction = i;
-                                curr_x = point.Item1;
-                                curr_y = point.Item2;
+                                direction = (i+4)%8;
+                                points_to_visit.Enqueue(Tuple.Create(point.Item1, point.Item2));
                                 image.SetPixel(curr_x, curr_y, Color.Red);
                                 points_visited.Add(str);
-                                points.Add(str);
-                                break;
+                                points.Add(Tuple.Create(point.Item1, point.Item2));
+                                
                             }
-                            else return points;
+                           
                         }
                     }
                 }
 
             }
+            return points;
         }
 
         private void Picturebox_Mouse_Click(object sender,MouseEventArgs e)
         {
-            List<string> t = find_border(448, 42);
+            List<Tuple<int,int>> t = find_border(e.X,e.Y);
+            foreach (var point in t)
+            {
+                image.SetPixel(point.Item1, point.Item2, Color.Red);
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -148,7 +167,7 @@ namespace Task32
         private void button2_Click(object sender, EventArgs e)
         {
             HashSet<string> border = new HashSet<string>();
-            List<string> t = find_border(447, 41);
+            //List<string> t = find_border(447, 41);
         }
     }
 }
