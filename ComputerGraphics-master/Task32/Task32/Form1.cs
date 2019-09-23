@@ -128,7 +128,7 @@ namespace Task32
                                 points_to_visit.Enqueue(Tuple.Create(point.Item1, point.Item2));
                                 points_visited.Add(str);
                                 points.Add(Tuple.Create(point.Item1,point.Item2));
-                                break;
+                               // break;
                             }
                           
                         }
@@ -148,7 +148,7 @@ namespace Task32
                                 points_to_visit.Enqueue(Tuple.Create(point.Item1, point.Item2));
                                 points_visited.Add(str);
                                 points.Add(Tuple.Create(point.Item1, point.Item2));
-                                break;
+                                //break;
                             }
                            
                         }
