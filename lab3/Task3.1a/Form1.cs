@@ -8,7 +8,9 @@ namespace Lab3
 {
     public partial class Form1 : Form
     {
+
         private Graphics g;
+        public bool[,] pixelFill; 
         public Form1()
         {
             InitializeComponent();
@@ -16,6 +18,7 @@ namespace Lab3
             colorDialog1.Color = Color.Black;
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height); 
             g = Graphics.FromImage(pictureBox1.Image);
+            pixelFill = new bool[pictureBox1.Width, pictureBox1.Height];
         }
         private bool isPressed = false;
         private Point Curr, Prev;
@@ -76,7 +79,13 @@ namespace Lab3
             if (this.Cursor == Cursors.Hand)
             {
                 borderColor = GetColor(e.X, e.Y);
+
                 fill(e.X, e.Y);
+                for(int i = 0; i<pictureBox1.Width; i++)
+                    for(int j = 0; j < pictureBox1.Height; j++)
+                    {
+                        pixelFill[i, j] = false; 
+                    }
             }
         }
 
@@ -88,35 +97,33 @@ namespace Lab3
         
         private Color borderColor;
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void fill (int x, int y)
         {
+            if (pixelFill[x, y])
+                return;
+
             if (GetColor(x, y) == borderColor)
             {
                 int xl = x, xr = x;
-                while (--xl >= 0 && GetColor(xl, y) == borderColor)
-                    /* empty*/
-                    ;
-                while (++xr < pictureBox1.Width && GetColor(xr, y) == borderColor)
-                    /* empty*/
-                    ;
+
+                while (--xl >= 0 && GetColor(xl, y) == borderColor);
+
+                while (++xr < pictureBox1.Width && GetColor(xr, y) == borderColor);
+
                 Pen p = new Pen(colorDialog2.Color);
                 if (xl + 1 == xr - 1)
                 {
                     (pictureBox1.Image as Bitmap).SetPixel(xl + 1, y, colorDialog2.Color);
+                    pixelFill[xl + 1, y] = true;
                 }
                 else
                 {
                     g.DrawLine(p, new Point(xl + 1, y), new Point(xr - 1, y));
+                    for ( int i = xl + 1; i <= xr - 1; i++)
+                    {
+                        pixelFill[i, y] = true;
+                    }
                 }
 
                 pictureBox1.Invalidate();
@@ -132,7 +139,7 @@ namespace Lab3
                         fill(i, y + 1);
                 }
                     
-            }
+           }
         }
 
     }

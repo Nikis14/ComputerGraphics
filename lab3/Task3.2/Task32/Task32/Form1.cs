@@ -124,11 +124,11 @@ namespace Task32
                         {
                             if (!points_visited.Contains(str))
                             {
-                                direction = (direction + i)%8;
+                                direction = (direction + i+2)%8;
                                 points_to_visit.Enqueue(Tuple.Create(point.Item1, point.Item2));
                                 points_visited.Add(str);
                                 points.Add(Tuple.Create(point.Item1,point.Item2));
-                                break;
+                                //break;
                             }
                           
                         }
@@ -138,17 +138,17 @@ namespace Task32
                 {
                     for (int i = 0; i < 8; i++)
                     {
-                        Tuple<int, int> point = get_pixel_near(curr_x, curr_y, (direction - i + 10) % 8);
+                        Tuple<int, int> point = get_pixel_near(curr_x, curr_y, ((direction - i)+ 8)%8);
                         String str = point.Item1.ToString() + "," + point.Item2.ToString();
                         if (image.GetPixel(point.Item1, point.Item2) == c)
                         {
                             if (!points_visited.Contains(str))
                             {
-                                direction = (direction+i)%8;
+                                direction = (direction+i+2)%8;
                                 points_to_visit.Enqueue(Tuple.Create(point.Item1, point.Item2));
                                 points_visited.Add(str);
                                 points.Add(Tuple.Create(point.Item1, point.Item2));
-                                break;
+                                //break;
                             }
                            
                         }
