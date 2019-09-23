@@ -160,7 +160,23 @@ namespace Task32
 
         private void Picturebox_Mouse_Click(object sender,MouseEventArgs e)
         {
-            List<Tuple<int,int>> t = find_border(e.X,e.Y);
+            int c_x = e.X;
+            Color c = image.GetPixel(c_x, e.Y);
+            while (image.GetPixel(c_x,e.Y).R == Color.White.R 
+                && image.GetPixel(c_x, e.Y).G == Color.White.G 
+                && image.GetPixel(c_x, e.Y).B == Color.White.B && c_x > 0)
+            {
+                c = image.GetPixel(c_x, e.Y);
+                c_x -= 1;
+            }
+            if (image.GetPixel(c_x, e.Y).R == Color.White.R
+                && image.GetPixel(c_x, e.Y).G == Color.White.G
+                && image.GetPixel(c_x, e.Y).B == Color.White.B && c_x == 0)
+            {
+                MessageBox.Show("Did you click in the right place?");
+                return;
+            }
+            List<Tuple<int,int>> t = find_border(c_x,e.Y);
             foreach (var point in t)
             {
                 image.SetPixel(point.Item1, point.Item2, Color.Red);
