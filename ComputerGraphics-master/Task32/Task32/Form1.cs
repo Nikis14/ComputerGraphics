@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+//SOVIET ART PROGRAM
 
 namespace Task32
 {
@@ -97,7 +98,7 @@ namespace Task32
             List<Tuple<int,int>> points=new List<Tuple<int,int>>();
             HashSet<string> points_visited= new HashSet<string>();
             bool first_time = true;
-            //bool two_points_on_walk = true;
+            
             Color c = image.GetPixel(x, y);
             int direction = 5;
             int curr_x = 0;
@@ -110,7 +111,7 @@ namespace Task32
                 curr_x = points_to_visit.Peek().Item1;
                 curr_y = points_to_visit.Peek().Item2;
                 points_to_visit.Dequeue();
-                //two_points_on_walk = true;
+                
                 pictureBox1.Image = image;
                 if(first_time)
                 {
@@ -137,7 +138,7 @@ namespace Task32
                 {
                     for (int i = 0; i < 8; i++)
                     {
-                        Tuple<int, int> point = get_pixel_near(curr_x, curr_y, (direction + i + 2) % 8);
+                        Tuple<int, int> point = get_pixel_near(curr_x, curr_y, (direction - i + 10) % 8);
                         String str = point.Item1.ToString() + "," + point.Item2.ToString();
                         if (image.GetPixel(point.Item1, point.Item2) == c)
                         {
@@ -147,11 +148,6 @@ namespace Task32
                                 points_to_visit.Enqueue(Tuple.Create(point.Item1, point.Item2));
                                 points_visited.Add(str);
                                 points.Add(Tuple.Create(point.Item1, point.Item2));
-                                /*if (two_points_on_walk)
-                                {
-                                    two_points_on_walk = false;
-                                }
-                                else break;*/
                                 break;
                             }
                            
