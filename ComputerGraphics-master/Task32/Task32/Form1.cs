@@ -55,40 +55,49 @@ namespace Task32
 
         }
 
+        private int Border(int border,int x)
+        {
+            return Math.Max(0, Math.Min(border-1, x));
+        }
+
         private Tuple<int,int> get_pixel_near(int xsource,int ysource,int direction)
         {
+            
             switch (direction)
             {
                 case 0:
-                    return Tuple.Create(xsource - 1, ysource - 1);
+                    return Tuple.Create(Border(1200,xsource-1),Border(600,ysource - 1));
                 case 1:
-                    return Tuple.Create(xsource, ysource - 1);
+                    return Tuple.Create(Border(1200,xsource), Border(600,ysource - 1));
                 case 2:
-                    return Tuple.Create(xsource+1, ysource - 1);
+                    return Tuple.Create(Border(1200,xsource+1), Border(600,ysource - 1));
                 case 3:
-                    return Tuple.Create(xsource+1, ysource);
+                    return Tuple.Create(Border(1200, xsource +1), Border(600, ysource));
                 case 4:
-                    return Tuple.Create(xsource+1, ysource + 1);
+                    return Tuple.Create(Border(1200, xsource +1), Border(600, ysource + 1));
                 case 5:
-                    return Tuple.Create(xsource, ysource + 1);
+                    return Tuple.Create(Border(1200, xsource), Border(600, ysource + 1));
                 case 6:
-                    return Tuple.Create(xsource-1, ysource + 1);
+                    return Tuple.Create(Border(1200, xsource -1), Border(600, ysource + 1));
                 case 7:
-                    return Tuple.Create(xsource-1, ysource);
+                    return Tuple.Create(Border(1200, xsource -1), Border(600, ysource));
                 default:
-                    return Tuple.Create(xsource, ysource - 1);
+                    return Tuple.Create(Border(1200, xsource), Border(600, ysource - 1));
             }
         }
 
         //012
         //7x3
         //654
+        
+
         private List<Tuple<int,int>> find_border(int x,int y)
         {
             Queue<Tuple<int,int>> points_to_visit = new Queue<Tuple<int,int>>();
             List<Tuple<int,int>> points=new List<Tuple<int,int>>();
             HashSet<string> points_visited= new HashSet<string>();
             bool first_time = true;
+            //bool two_points_on_walk = true;
             Color c = image.GetPixel(x, y);
             int direction = 5;
             int curr_x = 0;
@@ -101,7 +110,7 @@ namespace Task32
                 curr_x = points_to_visit.Peek().Item1;
                 curr_y = points_to_visit.Peek().Item2;
                 points_to_visit.Dequeue();
-                
+                //two_points_on_walk = true;
                 pictureBox1.Image = image;
                 if(first_time)
                 {
@@ -114,13 +123,13 @@ namespace Task32
                         {
                             if (!points_visited.Contains(str))
                             {
-                                direction = (i + 4) % 8;
+                                direction = (direction + i)%8;
                                 points_to_visit.Enqueue(Tuple.Create(point.Item1, point.Item2));
                                 points_visited.Add(str);
                                 points.Add(Tuple.Create(point.Item1,point.Item2));
-                                //break;               
+                                break;
                             }
-                           // else return points;
+                          
                         }
                     }
                 }
@@ -134,12 +143,16 @@ namespace Task32
                         {
                             if (!points_visited.Contains(str))
                             {
-                                direction = (i+4)%8;
+                                direction = (direction+i)%8;
                                 points_to_visit.Enqueue(Tuple.Create(point.Item1, point.Item2));
-                                image.SetPixel(curr_x, curr_y, Color.Red);
                                 points_visited.Add(str);
                                 points.Add(Tuple.Create(point.Item1, point.Item2));
-                               // break;
+                                /*if (two_points_on_walk)
+                                {
+                                    two_points_on_walk = false;
+                                }
+                                else break;*/
+                                break;
                             }
                            
                         }
