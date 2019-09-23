@@ -13,7 +13,7 @@ namespace Task32
     public partial class Form1 : Form
     {
         Bitmap image;
-        bool allow_click=false;
+        
         public Form1()
         {
             InitializeComponent();
@@ -22,7 +22,7 @@ namespace Task32
         private void button1_Click(object sender, EventArgs e)
         {
             image = new Bitmap(ExecuteFileDialog());
-            this.allow_click = true;
+           
             pictureBox1.Image = image;
             pictureBox1.MouseClick += Picturebox_Mouse_Click;
             pictureBox1.MouseMove += Picturebox_Mouse_Hover;
@@ -118,7 +118,7 @@ namespace Task32
                                 points_to_visit.Enqueue(Tuple.Create(point.Item1, point.Item2));
                                 points_visited.Add(str);
                                 points.Add(Tuple.Create(point.Item1,point.Item2));
-                                
+                                //break;               
                             }
                            // else return points;
                         }
@@ -139,13 +139,12 @@ namespace Task32
                                 image.SetPixel(curr_x, curr_y, Color.Red);
                                 points_visited.Add(str);
                                 points.Add(Tuple.Create(point.Item1, point.Item2));
-                                
+                               // break;
                             }
                            
                         }
                     }
                 }
-
             }
             return points;
         }
@@ -157,11 +156,6 @@ namespace Task32
             {
                 image.SetPixel(point.Item1, point.Item2, Color.Red);
             }
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
         }
 
         private void button2_Click(object sender, EventArgs e)
