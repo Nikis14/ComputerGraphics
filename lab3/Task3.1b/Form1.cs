@@ -22,6 +22,18 @@ namespace Lab_3
         bool[,] filled;
         Bitmap img2;
 
+        private class Pair<T, K>
+        {
+            public T First { get; set; }
+            public K Second { get; set; }
+
+            public Pair(T v1, K v2)
+            {
+                First = v1;
+                Second = v2;
+            }
+        }
+
         public Form1()
         {
             InitializeComponent();
@@ -52,7 +64,7 @@ namespace Lab_3
                 isPressed = true;
                 CurrentPoint = e.Location;
             }
-            else if(file_opened)
+            else if (file_opened)
                 Fill_by_pic(e.Location);
         }
 
@@ -82,54 +94,63 @@ namespace Lab_3
                 choose_point = false;
         }
 
-        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
-        {
-
-        }
-
         private void open_Click(object sender, EventArgs e)
         {
             openFileDialog1.ShowDialog();
             file_opened = true;
         }
 
-        private int Fill_untill_border(int cur_X, int cur_Y, int dir, int border)
+        private Pair<int, int> Fill_untill_border(int cur_X, int cur_Y, int pic_X, int pic_Y, int dir, int border)
         {
-            while (cur_X*(-dir) >= border)
+            while (cur_X * (-dir) >= border)
             {
                 Color cur_color = ((Bitmap)pictureBox1.Image).GetPixel(cur_X, cur_Y);
                 if (cur_color.ToArgb() == CurrentColor.ToArgb())
                     break;
-                ((Bitmap)pictureBox1.Image).SetPixel(cur_X, cur_Y, img2.GetPixel(cur_X, cur_Y));
+                if (pic_X >= pictureBox1.Image.Width)
+                    pic_X -= pictureBox1.Image.Width;
+                if (pic_X < 0)
+                    pic_X = pictureBox1.Image.Width + pic_X;
+                ((Bitmap)pictureBox1.Image).SetPixel(cur_X, cur_Y, img2.GetPixel(pic_X, pic_Y));
                 filled[cur_X, cur_Y] = true;
                 cur_X += dir;
+                pic_X += dir;
             }
-            return cur_X - dir;
+
+            return new Pair<int, int>(cur_X - dir, pic_X - dir);
         }
 
-        private void Fill_by_pixels(int cur_X, int cur_Y)
+        private void Fill_by_pixels(int cur_X, int cur_Y, int pic_X, int pic_Y)
         {
             Color pixelColor = ((Bitmap)pictureBox1.Image).GetPixel(cur_X, cur_Y);
             if (pixelColor.ToArgb() == CurrentColor.ToArgb() || filled[cur_X, cur_Y])
                 return;
-            int left_border = Fill_untill_border(cur_X, cur_Y, -1, 0);
-            int right_border = Fill_untill_border(cur_X, cur_Y, 1, 1-pictureBox1.Width);
-            if(cur_Y < pictureBox1.Height - 1)
+            if (pic_Y >= pictureBox1.Image.Height)
+                pic_Y = 0;
+            if (pic_Y < 0)
+                pic_Y = pictureBox1.Image.Height - 1;
+            Pair<int, int> left_border2 = Fill_untill_border(cur_X, cur_Y, pic_X, pic_Y, -1, 0);
+            int left_border = left_border2.First;
+            int left_border_cur = left_border2.Second;
+            Pair<int, int> right_border2 = Fill_untill_border(cur_X, cur_Y, pic_X, pic_Y, 1, 1 - pictureBox1.Width);
+            int right_border = right_border2.First;
+            if (cur_Y < pictureBox1.Height - 1)
                 for (int x = left_border; x < right_border + 1; ++x)
-                    Fill_by_pixels(x, cur_Y+1);
+                    Fill_by_pixels(x, cur_Y + 1, left_border_cur++, pic_Y + 1);
+            left_border_cur = left_border2.Second;
             if (cur_Y > 0)
                 for (int x = left_border; x < right_border + 1; ++x)
-                    Fill_by_pixels(x, cur_Y - 1);
+                    Fill_by_pixels(x, cur_Y - 1, left_border_cur++, pic_Y - 1);
         }
 
         private void Fill_by_pic(Point start)
         {
             Image img = Image.FromFile(openFileDialog1.FileName);
             img2 = new Bitmap(img, pictureBox1.Width, pictureBox1.Height);
-            Fill_by_pixels(start.X, start.Y);
+            Fill_by_pixels(start.X, start.Y, pictureBox1.Width / 2, pictureBox1.Height / 2);
             for (int x = 0; x < img2.Width; ++x)
                 for (int y = 0; y < img2.Height; ++y)
-                    filled[x,y] = false;
+                    filled[x, y] = false;
             pictureBox1.Invalidate();
         }
     }
