@@ -16,6 +16,7 @@ namespace Task
         Tuple<double, double> dot;
         bool method = false; //применимость(true) или проверка
         bool t5 = false;
+        Matrixes m = new Matrixes();
 
         public Form1()
         {
@@ -126,6 +127,15 @@ namespace Task
             textBox2.Text = e.Y.ToString();
         }
 
+        private float Border_X(float x)
+        {
+            return Math.Min(pictureBox1.Size.Width, Math.Max(0, x));
+        }
+
+        private float Border_Y(float y)
+        {
+            return Math.Min(pictureBox1.Size.Height, Math.Max(0, y));
+        }
 
         private void choose_method()
         {
@@ -142,6 +152,23 @@ namespace Task
                     break;
 
                 case "Поворот":
+                    double cen_x = ((primitiv[0].Item1 + primitiv[1].Item1)/2);
+                    double cen_y = ((primitiv[0].Item2 + primitiv[1].Item2)/2);
+                    Tuple<Tuple<double,double>, Tuple<double, double>> res = m.Rotate_Edge_90_Grad(
+                        primitiv[0].Item1-cen_x,
+                        primitiv[0].Item2-cen_y,
+                        primitiv[1].Item1-cen_x,
+                        primitiv[1].Item2-cen_y,
+                        true);
+                    var pen = new Pen(Color.Red, 3);
+                    var g = Graphics.FromImage(pictureBox1.Image);
+                    g.DrawLine(pen,
+                        Border_X((float)(res.Item1.Item1+cen_x)),
+                        Border_Y((float)(res.Item1.Item2+cen_y)),
+                        Border_X((float)(res.Item2.Item1+cen_x)),
+                        Border_Y((float)(res.Item2.Item2+cen_y)));
+                    pictureBox1.Image = pictureBox1.Image;
+
 
                     break;
 
@@ -167,9 +194,6 @@ namespace Task
             pictureBox1.Image = pictureBox1.Image;
         }
 
-        private void button2_Click1(object sender, EventArgs e) {
-
-        }
 
 
 		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -246,5 +270,14 @@ namespace Task
                     break;
             }
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            choose_method();
+        }
+        // public Tuple<int,int> Intersection(int x11,int y11,int x12,int y12,int x21,int y21,int x22,int y22)
+        // {
+
+        // }
     }
 }
