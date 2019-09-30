@@ -7,11 +7,19 @@ using System.Drawing;
 
 namespace Task
 {
-    
     class Matrixes
     {
-       
-        private int[] matrix_mult(double[,] afin_matrix, int[] point)
+        public List<Point> get_transformed_points(double[,] afin_matrix, List<Point> points)
+        {
+            for (int i = 0; i < points.Count(); ++i)
+            {
+                int[] transformed = matrix_mult(afin_matrix, new int[3] { points[i].X, points[i].Y, 1 });
+                points[i] = new Point(transformed[0] * transformed[2], transformed[1] * transformed[2]);
+            }
+            return points;
+        }
+
+        public int[] matrix_mult(double[,] afin_matrix, int[] point)
         {
             double[] res = new double[3];
             for (int i = 0; i < 3; ++i)
@@ -26,7 +34,7 @@ namespace Task
             return result;
         }
 
-        private double[,] matrix_offset(int dx, int dy)
+        public double[,] matrix_offset(int dx, int dy)
         {
             double[,] afin_matrix = new double[3, 3];
             for (int i = 0; i < 3; ++i)
@@ -40,7 +48,7 @@ namespace Task
             return afin_matrix;
         }
 
-        private double[,] matrix_rotation(int angle, int a, int b)
+        public double[,] matrix_rotation(int angle, int a, int b)
         {
             double rad_angle = angle / 180.0 * Math.PI;
             double[,] afin_matrix = new double[3, 3];
@@ -56,7 +64,7 @@ namespace Task
             return afin_matrix;
         }
 
-        private double[,] matrix_scale(double koef, int a, int b)
+        public double[,] matrix_scale(double koef, int a, int b)
         {
             double[,] afin_matrix = new double[3, 3];
             afin_matrix[0, 0] = koef;
@@ -71,20 +79,37 @@ namespace Task
             return afin_matrix;
         }
 
-        private List<Point> get_transformed_points(double[,] afin_matrix, List<Point> points)
-        {
-            for (int i = 0; i < points.Count(); ++i)
-            {
-                int[] transformed = matrix_mult(afin_matrix, new int[3] { points[i].X, points[i].Y, 1 });
-                points[i] = new Point(transformed[0] * transformed[2], transformed[1] * transformed[2]);
-            }
-            return points;
-        }
-
         public Matrixes()
         {
-            //_________________________________
-          
         }
     }
 }
+
+
+/*bool is_right = check_is_right(list[0], list[1], list[2]);
+                    int i_cur = 0;
+                    int dir = 1;
+                    int i_cur1 = 1;
+                    if (!check_is_right(list[0], list[1], list[2]))
+                    {
+                        dir = -2;
+                        i_cur1 = list.Count() - 1;
+                    }
+                    Point check = new Point((int)dot.Item1, (int)dot.Item2);
+                    bool f = true;
+                    while (i_cur1 != 0)
+                    {
+                        if (!check_is_right(list[i_cur], list[i_cur1], check))
+                        {
+                            label5.Text = "Точка не принадлежит многоугольнику";
+                            f = false;
+                            break;
+                        }
+                        i_cur = i_cur1;
+                        if (i_cur == 2)
+                            dir += 1;
+                        i_cur1 = (i_cur1 + dir) % list.Count();
+                    }
+                    if (f)
+                        label5.Text = "Точка принадлежит многоугольнику";
+                    break;*/

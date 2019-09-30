@@ -152,6 +152,15 @@ namespace Task
                     break;
 
                 case "Поворот":
+                    bool dir;
+                    if (primitiv[0].Item1 < primitiv[1].Item1)
+                    {
+                        dir = false;
+                    }
+                    else
+                    {
+                        dir = true;
+                    }
                     double cen_x = ((primitiv[0].Item1 + primitiv[1].Item1)/2);
                     double cen_y = ((primitiv[0].Item2 + primitiv[1].Item2)/2);
                     Tuple<Tuple<double,double>, Tuple<double, double>> res = m.Rotate_Edge_90_Grad(
