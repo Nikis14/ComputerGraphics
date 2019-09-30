@@ -42,7 +42,7 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.choose_point = new System.Windows.Forms.CheckBox();
+            this.choose_PointF = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -202,25 +202,25 @@
             this.label5.TabIndex = 15;
             this.label5.Text = "label5";
             // 
-            // choose_point
+            // choose_PointF
             // 
-            this.choose_point.Appearance = System.Windows.Forms.Appearance.Button;
-            this.choose_point.AutoSize = true;
-            this.choose_point.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.choose_point.Location = new System.Drawing.Point(103, 302);
-            this.choose_point.Name = "choose_point";
-            this.choose_point.Size = new System.Drawing.Size(116, 27);
-            this.choose_point.TabIndex = 16;
-            this.choose_point.Text = "Выбрать точку";
-            this.choose_point.UseVisualStyleBackColor = true;
-            this.choose_point.CheckedChanged += new System.EventHandler(this.choose_point_CheckedChanged);
+            this.choose_PointF.Appearance = System.Windows.Forms.Appearance.Button;
+            this.choose_PointF.AutoSize = true;
+            this.choose_PointF.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.choose_PointF.Location = new System.Drawing.Point(103, 302);
+            this.choose_PointF.Name = "choose_PointF";
+            this.choose_PointF.Size = new System.Drawing.Size(116, 27);
+            this.choose_PointF.TabIndex = 16;
+            this.choose_PointF.Text = "Выбрать точку";
+            this.choose_PointF.UseVisualStyleBackColor = true;
+            this.choose_PointF.CheckedChanged += new System.EventHandler(this.choose_PointF_CheckedChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1276, 629);
-            this.Controls.Add(this.choose_point);
+            this.Controls.Add(this.choose_PointF);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.textBox3);
@@ -260,7 +260,7 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.CheckBox choose_point;
+        private System.Windows.Forms.CheckBox choose_PointF;
     }
 }
 

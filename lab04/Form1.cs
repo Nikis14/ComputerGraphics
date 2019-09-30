@@ -13,7 +13,7 @@ namespace Task
         Bitmap bmp;
         bool isPressed = false;
         Matrixes matr = new Matrixes();
-        Tuple<double, double> dot;
+        Tuple<float, float> dot;
         bool method = false; //применимость(true) или проверка
         bool t5 = false;
 
@@ -27,7 +27,7 @@ namespace Task
             Clear();
             pictureBox1.Image = bmp;
             label5.Visible = false;
-            choose_point.Visible = false;
+            choose_PointF.Visible = false;
         }
 
         //удаление всех объектов
@@ -36,19 +36,19 @@ namespace Task
             var g = Graphics.FromImage(pictureBox1.Image);
             g.Clear(pictureBox1.BackColor);
             isPressed = false;
-            choose_point.Checked = false;
+            choose_PointF.Checked = false;
             pictureBox1.Image = pictureBox1.Image;
             list.Clear();
             primitiv.Clear();
-            dot = Tuple.Create(-1.0, -1.0);
+            dot = Tuple.Create((float)-1.0, (float)-1.0);
             cnt = 0;
             label5.Text = "";
             comboBox1.SelectedItem = "...";
             t5 = false;
         }
 
-        List<Tuple<double, double>> primitiv = new List<Tuple<double,double>>(); //список точек для примитива
-        List<Point> list = new List<Point>();
+        List<Tuple<float, float>> primitiv = new List<Tuple<float,float>>(); //список точек для примитива
+        List<PointF> list = new List<PointF>();
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
@@ -57,14 +57,14 @@ namespace Task
                 if ((radioButton2.Checked && (cnt < 1 || cnt < 2 && t5)) || radioButton3.Checked) //для ребра больше одной линии нельзя
                 {
                     drawing = true;
-                    primitiv.Add(Tuple.Create(e.X * 1.0, e.Y * 1.0));
-                    list.Add(new Point(e.X, e.Y));
+                    primitiv.Add(Tuple.Create((float)(e.X * 1.0), (float)(e.Y * 1.0)));
+                    list.Add(new PointF(e.X, e.Y));
                     cnt++;
                 }
 
                 if (radioButton1.Checked && dot.Item1 == -1)
                 {
-                    dot = Tuple.Create(e.X * 1.0, e.Y * 1.0);
+                    dot = Tuple.Create((float)(e.X * 1.0),(float)(e.Y * 1.0));
                     ((Bitmap)pictureBox1.Image).SetPixel(e.X, e.Y, Color.Black);
 
                     pictureBox1.Invalidate();
@@ -86,9 +86,9 @@ namespace Task
 
                 if ((radioButton2.Checked && (cnt > 1 && !t5 || cnt > 2 && t5)) || !drawing) return;
 
-                list.Add(new Point(e.X, e.Y));
-                primitiv.Add(Tuple.Create(e.X * 1.0, e.Y * 1.0));
-                Point start = list.First();
+                list.Add(new PointF(e.X, e.Y));
+                primitiv.Add(Tuple.Create((float)(e.X * 1.0), (float)(e.Y * 1.0)));
+                PointF start = list.First();
 
                 if (!t5)
                 {
@@ -108,9 +108,9 @@ namespace Task
                 {
                     var pen = new Pen(Color.Black, 1);
                     var g = Graphics.FromImage(pictureBox1.Image);
-                    g.DrawLine(pen, start, new Point(Convert.ToInt32(Math.Round(primitiv[1].Item1)), Convert.ToInt32(Math.Round(primitiv[1].Item2))));
-                    g.DrawLine(pen, new Point(Convert.ToInt32(Math.Round(primitiv[2].Item1)), Convert.ToInt32(Math.Round(primitiv[2].Item2))),
-                        new Point(Convert.ToInt32(Math.Round(primitiv[3].Item1)), Convert.ToInt32(Math.Round(primitiv[3].Item2))));
+                    g.DrawLine(pen, start, new PointF(Convert.ToInt32(Math.Round(primitiv[1].Item1)), Convert.ToInt32(Math.Round(primitiv[1].Item2))));
+                    g.DrawLine(pen, new PointF(Convert.ToInt32(Math.Round(primitiv[2].Item1)), Convert.ToInt32(Math.Round(primitiv[2].Item2))),
+                        new PointF(Convert.ToInt32(Math.Round(primitiv[3].Item1)), Convert.ToInt32(Math.Round(primitiv[3].Item2))));
                     pen.Dispose();
                     g.Dispose();
                     pictureBox1.Invalidate();
@@ -134,24 +134,24 @@ namespace Task
         }
 
 
-        private void draw_new_polygon(List<Point> points)
+        private void draw_new_polygon(List<PointF> PointFs)
         {
             var g = Graphics.FromImage(pictureBox1.Image);
             g.Clear(pictureBox1.BackColor);
-            var pen = new Pen(Color.Black, 3);
-            for (int i = 0; i < points.Count() - 1; i++)
+            var pen = new Pen(Color.Black, 1);
+            for (int i = 0; i < PointFs.Count() - 1; i++)
             {
-                g.DrawLine(pen, points[i], points[i + 1]);
+                g.DrawLine(pen, PointFs[i], PointFs[i + 1]);
             }
-            //g.DrawLine(pen, points[0], points[points.Count() - 1]);
+            //g.DrawLine(pen, PointFs[0], PointFs[PointFs.Count() - 1]);
             pictureBox1.Invalidate();
         }
 
-        private void get_center_fig(ref int a, ref int b)
+        private void get_center_fig(ref float a, ref float b)
         {
             a = 0;
             b = 0;
-            foreach(Point p in list)
+            foreach(PointF p in list)
             {
                 a += p.X;
                 b += p.Y;
@@ -161,43 +161,43 @@ namespace Task
             b /= list.Count();
         }
 
-        private bool check_is_right(Point p1, Point p2, Point p3)
+        private bool check_is_right(PointF p1, PointF p2, PointF p3)
         {
-            int xa = p2.X - p1.X;
-            int ya = p2.Y - p1.Y;
-            int xb = p3.X - p1.X;
-            int yb = p3.Y - p1.Y;
+            float xa = p2.X - p1.X;
+            float ya = p2.Y - p1.Y;
+            float xb = p3.X - p1.X;
+            float yb = p3.Y - p1.Y;
             return yb*xa - xb*ya <= 0;
         }
 
-        private bool get_intersect(Point a, Point b, Point c, Point d, ref Point res)
+        private bool get_intersect(PointF a, PointF b, PointF c, PointF d, ref PointF res)
         {
-            int div = (d.X-c.X)*(b.Y-a.Y) - (d.Y - c.Y) * (b.X - a.X);
+            float div = (d.X-c.X)*(b.Y-a.Y) - (d.Y - c.Y) * (b.X - a.X);
             if (div == 0 && (b.X == c.X || b.Y == c.Y))
             {
-                res = new Point(-1, -1);
+                res = new PointF(-1, -1);
                 return true;
             }
             if(div == 0)
             {
-                res = new Point(-1, -1);
+                res = new PointF(-1, -1);
                 return false;
             }
-            double t2 = (a.X * (b.Y - a.Y) - a.Y * (b.X - a.X) + c.Y * (b.X - a.X) - c.X * (b.Y - a.Y)) / (double)div;
-            double t1;
+            float t2 = (a.X * (b.Y - a.Y) - a.Y * (b.X - a.X) + c.Y * (b.X - a.X) - c.X * (b.Y - a.Y)) / (float)div;
+            float t1;
             if (b.X == a.X)
-                t1 = (c.Y + (d.Y - c.Y) * t2 - a.Y) / (double)(b.Y - a.Y);
+                t1 = (c.Y + (d.Y - c.Y) * t2 - a.Y) / (float)(b.Y - a.Y);
             else
-                t1 = (c.X + (d.X - c.X) * t2 - a.X) / (double)(b.X - a.X);
+                t1 = (c.X + (d.X - c.X) * t2 - a.X) / (float)(b.X - a.X);
             int x = (int)(a.X + (b.X - a.X) * t1);
             int y = (int)(a.Y + (b.Y - a.Y) * t1);
-            res = new Point(x, y);
+            res = new PointF(x, y);
             return true;
         }
 
-        private double distance(Point p1, Point p2)
+        private float distance(PointF p1, PointF p2)
         {
-            return Math.Sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
+            return (float)Math.Sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
         }
 
         private float Border_X(float x)
@@ -210,12 +210,12 @@ namespace Task
             return Math.Min(pictureBox1.Size.Height, Math.Max(0, y));
         }
 
-        private Point Tuple_Double_ToPoint(Tuple<double,double> t)
+        private PointF Tuple_float_ToPointF(Tuple<float,float> t)
         {
-            return new Point((int)Math.Round(t.Item1), (int)Math.Round(t.Item2));
+            return new PointF((int)Math.Round(t.Item1), (int)Math.Round(t.Item2));
         }
 
-        private bool point_between(Point target, Point source1,Point source_2)
+        private bool PointF_between(PointF target, PointF source1,PointF source_2)
         {
             bool x_beetween = target.X <= Math.Max(source1.X, source_2.X) && target.X >= Math.Min(source1.X, source_2.X);
             bool y_beetween = target.Y <= Math.Max(source1.Y, source_2.Y) && target.Y >= Math.Min(source1.Y, source_2.Y);
@@ -228,83 +228,82 @@ namespace Task
             switch (comboBox1.SelectedItem.ToString())
             {
                 case "Смещение":
-                    int dx, dy;
+                    float dx, dy;
                     if (textBox1.Text != "" && textBox2.Text != "")
                     {
-                        dx = Int32.Parse(textBox1.Text);
-                        dy = Int32.Parse(textBox2.Text);
+                        dx = float.Parse(textBox1.Text);
+                        dy = float.Parse(textBox2.Text);
                     }
                     else
                         break;
-                    double[,] afin_matrix = matr.matrix_offset(dx, dy);
-                    list = matr.get_transformed_points(afin_matrix, list);
+                    float[,] afin_matrix = matr.matrix_offset(dx, dy);
+                    list = matr.get_transformed_PointFs(afin_matrix, list);
                     draw_new_polygon(list);
                     break;
 
                 case "Масштабирование":
-                    int x = 0, y = 0;
+                    float x = 0, y = 0;
                     if (textBox1.Text != "" && textBox2.Text != "")
                     {
-                        x = Int32.Parse(textBox1.Text);
-                        y = Int32.Parse(textBox2.Text);
+                        x = float.Parse(textBox1.Text);
+                        y = float.Parse(textBox2.Text);
                     }
                     else
                         get_center_fig(ref x, ref y);
-                    double koef;
+                    float koef;
                     if (textBox3.Text != "")
-                        koef = Double.Parse(textBox3.Text);
+                        koef = float.Parse(textBox3.Text);
                     else
                         break;
                     afin_matrix = matr.matrix_scale(koef, x, y);
-                    list = matr.get_transformed_points(afin_matrix, list);
-                    var pen = new Pen(Color.Red, 3);
-                    var g = Graphics.FromImage(pictureBox1.Image);
-                    g.DrawLine(pen,
-                        Border_X((list[0].X)),
-                        Border_Y((list[0].Y)),
-                        Border_X((list[1].X)),
-                        Border_Y((list[1].Y)));
-                    pictureBox1.Image = pictureBox1.Image;
-                    break;
-
-                case "Поворот":
-                    int a = 0, b = 0;
-                    if (textBox1.Text != "" && textBox2.Text != "")
-                    {
-                        a = Int32.Parse(textBox1.Text);
-                        b = Int32.Parse(textBox2.Text);
-                    }
-                    else
-                        get_center_fig(ref a, ref b);
-                    int angle;
-                    if (textBox3.Text != "")
-                        angle = Int32.Parse(textBox3.Text);
-                    else
-                        break;
-                    afin_matrix = matr.matrix_rotation(angle, a, b);
-                    list = matr.get_transformed_points(afin_matrix, list);
+                    list = matr.get_transformed_PointFs(afin_matrix, list);
+                    var pen = new Pen(Color.Black,1);
                     draw_new_polygon(list);
                     break;
 
+                case "Поворот":
+                    //for (int i = 0; i < 100; i++)
+                    {
+                        float a = 0, b = 0;
+                        if (textBox1.Text != "" && textBox2.Text != "")
+                        {
+                            a = float.Parse(textBox1.Text);
+                            b = float.Parse(textBox2.Text);
+                        }
+                        else
+                            get_center_fig(ref a, ref b);
+                        int angle;
+                        if (textBox3.Text != "")
+                            angle = Int32.Parse(textBox3.Text);
+                        else
+                            break;
+                        afin_matrix = matr.matrix_rotation(angle, a, b);
+                        list = matr.get_transformed_PointFs(afin_matrix, list);
+                        draw_new_polygon(list);
+                        pictureBox1.Invalidate();
+                        System.Threading.Thread.Sleep(1);
+                    }
+                    break;
+
                 case "Поворот отрезка":
-                    double cen_x = ((primitiv[0].Item1 + primitiv[1].Item1) / 2);
-                    double cen_y = ((primitiv[0].Item2 + primitiv[1].Item2) / 2);
-                    afin_matrix = matr.matrix_rotation(90, (int)Math.Round(cen_x), (int)Math.Round(cen_y));
-                    list = matr.get_transformed_points(afin_matrix, list);
+                    float cen_x = ((primitiv[0].Item1 + primitiv[1].Item1) / 2);
+                    float cen_y = ((primitiv[0].Item2 + primitiv[1].Item2) / 2);
+                    afin_matrix = matr.matrix_rotation(90, cen_x, cen_y);
+                    list = matr.get_transformed_PointFs(afin_matrix, list);
                     draw_new_polygon(list);
                     break;
 
                 case "Положение точки относительно ребра":
                     if (dot.Item1 == -1 || primitiv.Count != 2)
                         return;
-                    Tuple<double, double> cm1 = primitiv.First();
+                    Tuple<float, float> cm1 = primitiv.First();
 
                     label5.Text = "Точка лежит относительно ребра: ";
 
-                    double yb = primitiv.Last().Item2 - cm1.Item2;
-                    double xb = primitiv.Last().Item1 - cm1.Item1;
-                    double ya = dot.Item2 - cm1.Item2;
-                    double xa = dot.Item1 - cm1.Item1;
+                    float yb = primitiv.Last().Item2 - cm1.Item2;
+                    float xb = primitiv.Last().Item1 - cm1.Item1;
+                    float ya = dot.Item2 - cm1.Item2;
+                    float xa = dot.Item1 - cm1.Item1;
 
                     if (yb * xa - xb * ya > 0)
                         label5.Text += " левее";
@@ -313,9 +312,9 @@ namespace Task
                     break;
 
                 case "Принадлежит ли точка многоугольнику":
-                    Point check = new Point((int)dot.Item1, (int)dot.Item2);
-                    Point res = new Point(0,0);
-                    Point start = new Point((list[0].X + list[1].X) / 2, (list[0].Y + list[1].Y) / 2);
+                    PointF check = new PointF((float)dot.Item1, (float)dot.Item2);
+                    PointF res = new PointF(0,0);
+                    PointF start = new PointF((list[0].X + list[1].X) / 2, (list[0].Y + list[1].Y) / 2);
                     bool isSingle = get_intersect(check, start, list[0], list[1], ref res);
                     if(isSingle && res.X == -1 && res.Y == -1)
                     {
@@ -327,11 +326,11 @@ namespace Task
                     {
                         int ind = (i + 1) % list.Count();
                         bool is_inter = get_intersect(check, start, list[i], list[ind], ref res);
-                        if (is_inter && point_between(res,list[i],list[ind]) && distance(res, start) < distance(res, check))
+                        if (is_inter && PointF_between(res,list[i],list[ind]) && distance(res, start) < distance(res, check))
                             cnt++;
                     }
                     if(cnt%2 == 0)
-                        label5.Text = "Точка принадлежит не многоугольнику";
+                        label5.Text = "Точка не принадлежит многоугольнику";
                     else
                         label5.Text = "Точка принадлежит многоугольнику";
 
@@ -339,27 +338,27 @@ namespace Task
                     
 
                 case "Поиск точки пересечения двух ребер":
-                    Point intersection = new Point(0, 0);
+                    PointF intersection = new PointF(0, 0);
                     bool intersected = get_intersect(
-                        Tuple_Double_ToPoint(primitiv[0]),
-                        Tuple_Double_ToPoint(primitiv[1]),
-                        Tuple_Double_ToPoint(primitiv[2]),
-                        Tuple_Double_ToPoint(primitiv[3]),
+                        Tuple_float_ToPointF(primitiv[0]),
+                        Tuple_float_ToPointF(primitiv[1]),
+                        Tuple_float_ToPointF(primitiv[2]),
+                        Tuple_float_ToPointF(primitiv[3]),
                         ref intersection);
                     pen = new Pen(Color.Red, 3);
-                    g = Graphics.FromImage(pictureBox1.Image);
+                    var g = Graphics.FromImage(pictureBox1.Image);
                     if (intersected &&
-                        point_between(
+                        PointF_between(
                             intersection,
-                            Tuple_Double_ToPoint(primitiv[0]),
-                            Tuple_Double_ToPoint(primitiv[1])) &&
-                         point_between(
+                            Tuple_float_ToPointF(primitiv[0]),
+                            Tuple_float_ToPointF(primitiv[1])) &&
+                         PointF_between(
                             intersection,
-                            Tuple_Double_ToPoint(primitiv[2]),
-                            Tuple_Double_ToPoint(primitiv[3])))
+                            Tuple_float_ToPointF(primitiv[2]),
+                            Tuple_float_ToPointF(primitiv[3])))
                     { 
-                        g.DrawLine(pen, new Point(intersection.X - 1, intersection.Y -1), 
-                            new Point(intersection.X+1,intersection.Y+1));
+                        g.DrawLine(pen, new PointF(intersection.X - 1, intersection.Y -1), 
+                            new PointF(intersection.X+1,intersection.Y+1));
                         pictureBox1.Invalidate();
                         label5.Text = "";
                     }
@@ -383,7 +382,7 @@ namespace Task
         }
 
 
-        bool less1(double p1, double p2)
+        bool less1(float p1, float p2)
         {
             return (p1 < p2 && Math.Abs(p1 - p2) >= 0.00001);
         }
@@ -409,7 +408,7 @@ namespace Task
                     textBox3.Visible = false;
                     method = true;
                     label5.Visible = false;
-                    choose_point.Visible = false;
+                    choose_PointF.Visible = false;
                     break;
 
                 case "Поворот":
@@ -421,7 +420,7 @@ namespace Task
                     label3.Text = "Введите угол поворота";
                     textBox3.Visible = true;
                     label5.Visible = false;
-                    choose_point.Visible = true;
+                    choose_PointF.Visible = true;
                     method = true;
                     break;
 
@@ -434,7 +433,7 @@ namespace Task
                     label3.Visible = true;
                     label3.Text = "Выберите коэф масштабир-я";
                     textBox3.Visible = true;
-                    choose_point.Visible = true;
+                    choose_PointF.Visible = true;
                     method = true;
                     break;
 
@@ -446,7 +445,7 @@ namespace Task
                     label3.Visible = false;
                     textBox3.Visible = false;
                     method = false;
-                    choose_point.Visible = false;
+                    choose_PointF.Visible = false;
                     break;
 
                 case "Принадлежит ли точка многоугольнику":
@@ -458,7 +457,7 @@ namespace Task
                     label3.Visible = false;
                     textBox3.Visible = false;
                     method = false;
-                    choose_point.Visible = false;
+                    choose_PointF.Visible = false;
                     break;
 
                 case "Поиск точки пересечения двух ребер":
@@ -471,7 +470,7 @@ namespace Task
                     textBox3.Visible = false;
                     method = false;
                     t5 = true;
-                    choose_point.Visible = false;
+                    choose_PointF.Visible = false;
                     break;
 
                 default:
@@ -479,7 +478,7 @@ namespace Task
             }
         }
 
-        private void choose_point_CheckedChanged(object sender, EventArgs e)
+        private void choose_PointF_CheckedChanged(object sender, EventArgs e)
         {
             CheckBox checkBox = (CheckBox)sender;
             if (checkBox.Checked == true)

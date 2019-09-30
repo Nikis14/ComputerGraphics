@@ -9,34 +9,34 @@ namespace Task
 {
     class Matrixes
     {
-        public List<Point> get_transformed_points(double[,] afin_matrix, List<Point> points)
+        public List<PointF> get_transformed_PointFs(float[,] afin_matrix, List<PointF> PointFs)
         {
-            for (int i = 0; i < points.Count(); ++i)
+            for (int i = 0; i < PointFs.Count(); ++i)
             {
-                int[] transformed = matrix_mult(afin_matrix, new int[3] { points[i].X, points[i].Y, 1 });
-                points[i] = new Point(transformed[0] * transformed[2], transformed[1] * transformed[2]);
+                float[] transformed = matrix_mult(afin_matrix, new float[3] { PointFs[i].X, PointFs[i].Y, 1 });
+                PointFs[i] = new PointF(transformed[0] * transformed[2], transformed[1] * transformed[2]);
             }
-            return points;
+            return PointFs;
         }
 
-        public int[] matrix_mult(double[,] afin_matrix, int[] point)
+        public float[] matrix_mult(float[,] afin_matrix, float[] PointF)
         {
-            double[] res = new double[3];
+            float[] res = new float[3];
             for (int i = 0; i < 3; ++i)
             {
                 res[i] = 0;
                 for (int k = 0; k < 3; ++k)
-                    res[i] += afin_matrix[k, i] * point[k];
+                    res[i] += afin_matrix[k, i] * PointF[k];
             }
-            int[] result = new int[3];
+            float[] result = new float[3];
             for (int i = 0; i < 3; ++i)
                 result[i] = (int)Math.Round(res[i]);
             return result;
         }
 
-        public double[,] matrix_offset(int dx, int dy)
+        public float[,] matrix_offset(float dx, float dy)
         {
-            double[,] afin_matrix = new double[3, 3];
+            float[,] afin_matrix = new float[3, 3];
             for (int i = 0; i < 3; ++i)
                 afin_matrix[i, i] = 1;
             afin_matrix[0, 1] = 0;
@@ -48,25 +48,25 @@ namespace Task
             return afin_matrix;
         }
 
-        public double[,] matrix_rotation(int angle, int a, int b)
+        public float[,] matrix_rotation(int angle, float a, float b)
         {
-            double rad_angle = angle / 180.0 * Math.PI;
-            double[,] afin_matrix = new double[3, 3];
-            afin_matrix[0, 0] = Math.Cos(rad_angle);
-            afin_matrix[0, 1] = Math.Sin(rad_angle);
+            float rad_angle = (float)(angle / 180.0 * Math.PI);
+            float[,] afin_matrix = new float[3, 3];
+            afin_matrix[0, 0] = (float)Math.Cos(rad_angle);
+            afin_matrix[0, 1] = (float)Math.Sin(rad_angle);
             afin_matrix[0, 2] = 0;
-            afin_matrix[1, 0] = -Math.Sin(rad_angle);
-            afin_matrix[1, 1] = Math.Cos(rad_angle);
+            afin_matrix[1, 0] = (float)-Math.Sin(rad_angle);
+            afin_matrix[1, 1] = (float)Math.Cos(rad_angle);
             afin_matrix[1, 2] = 0;
-            afin_matrix[2, 0] = -a * Math.Cos(rad_angle) + b * Math.Sin(rad_angle) + a;
-            afin_matrix[2, 1] = -a * Math.Sin(rad_angle) - b * Math.Cos(rad_angle) + b;
+            afin_matrix[2, 0] = (float)(-a * Math.Cos(rad_angle) + b * Math.Sin(rad_angle) + a);
+            afin_matrix[2, 1] = (float)(-a * Math.Sin(rad_angle) - b * Math.Cos(rad_angle) + b);
             afin_matrix[2, 2] = 1;
             return afin_matrix;
         }
 
-        public double[,] matrix_scale(double koef, int a, int b)
+        public float[,] matrix_scale(float koef, float a, float b)
         {
-            double[,] afin_matrix = new double[3, 3];
+            float[,] afin_matrix = new float[3, 3];
             afin_matrix[0, 0] = koef;
             afin_matrix[0, 1] = 0;
             afin_matrix[0, 2] = 0;
@@ -95,7 +95,7 @@ namespace Task
                         dir = -2;
                         i_cur1 = list.Count() - 1;
                     }
-                    Point check = new Point((int)dot.Item1, (int)dot.Item2);
+                    PointF check = new PointF((int)dot.Item1, (int)dot.Item2);
                     bool f = true;
                     while (i_cur1 != 0)
                     {
