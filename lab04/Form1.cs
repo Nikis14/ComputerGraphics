@@ -21,7 +21,7 @@ namespace Task
         {
             InitializeComponent();
             radioButton1.Checked = true;
-        
+
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             bmp = (Bitmap)pictureBox1.Image;
             Clear();
@@ -47,7 +47,7 @@ namespace Task
             t5 = false;
         }
 
-        List<Tuple<float, float>> primitiv = new List<Tuple<float,float>>(); //список точек для примитива
+        List<Tuple<float, float>> primitiv = new List<Tuple<float, float>>(); //список точек для примитива
         List<PointF> list = new List<PointF>();
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -64,7 +64,7 @@ namespace Task
 
                 if (radioButton1.Checked && dot.Item1 == -1)
                 {
-                    dot = Tuple.Create((float)(e.X * 1.0),(float)(e.Y * 1.0));
+                    dot = Tuple.Create((float)(e.X * 1.0), (float)(e.Y * 1.0));
                     ((Bitmap)pictureBox1.Image).SetPixel(e.X, e.Y, Color.Black);
 
                     pictureBox1.Invalidate();
@@ -120,11 +120,12 @@ namespace Task
             }
         }
 
-        private void button1_Click(object sender, EventArgs e){
+        private void button1_Click(object sender, EventArgs e)
+        {
             Clear();
         }
 
-      
+
 
 
         private void pictureBox1_MouseDown1(object sender, MouseEventArgs e)
@@ -151,7 +152,7 @@ namespace Task
         {
             a = 0;
             b = 0;
-            foreach(PointF p in list)
+            foreach (PointF p in list)
             {
                 a += p.X;
                 b += p.Y;
@@ -167,18 +168,18 @@ namespace Task
             float ya = p2.Y - p1.Y;
             float xb = p3.X - p1.X;
             float yb = p3.Y - p1.Y;
-            return yb*xa - xb*ya <= 0;
+            return yb * xa - xb * ya <= 0;
         }
 
         private bool get_intersect(PointF a, PointF b, PointF c, PointF d, ref PointF res)
         {
-            float div = (d.X-c.X)*(b.Y-a.Y) - (d.Y - c.Y) * (b.X - a.X);
+            float div = (d.X - c.X) * (b.Y - a.Y) - (d.Y - c.Y) * (b.X - a.X);
             if (div == 0 && (b.X == c.X || b.Y == c.Y))
             {
                 res = new PointF(-1, -1);
                 return true;
             }
-            if(div == 0)
+            if (div == 0)
             {
                 res = new PointF(-1, -1);
                 return false;
@@ -210,12 +211,12 @@ namespace Task
             return Math.Min(pictureBox1.Size.Height, Math.Max(0, y));
         }
 
-        private PointF Tuple_float_ToPointF(Tuple<float,float> t)
+        private PointF Tuple_float_ToPointF(Tuple<float, float> t)
         {
             return new PointF((int)Math.Round(t.Item1), (int)Math.Round(t.Item2));
         }
 
-        private bool PointF_between(PointF target, PointF source1,PointF source_2)
+        private bool PointF_between(PointF target, PointF source1, PointF source_2)
         {
             bool x_beetween = target.X <= Math.Max(source1.X, source_2.X) && target.X >= Math.Min(source1.X, source_2.X);
             bool y_beetween = target.Y <= Math.Max(source1.Y, source_2.Y) && target.Y >= Math.Min(source1.Y, source_2.Y);
@@ -257,32 +258,29 @@ namespace Task
                         break;
                     afin_matrix = matr.matrix_scale(koef, x, y);
                     list = matr.get_transformed_PointFs(afin_matrix, list);
-                    var pen = new Pen(Color.Black,1);
+                    var pen = new Pen(Color.Black, 1);
                     draw_new_polygon(list);
                     break;
 
                 case "Поворот":
-                    //for (int i = 0; i < 100; i++)
+                    float a = 0, b = 0;
+                    if (textBox1.Text != "" && textBox2.Text != "")
                     {
-                        float a = 0, b = 0;
-                        if (textBox1.Text != "" && textBox2.Text != "")
-                        {
-                            a = float.Parse(textBox1.Text);
-                            b = float.Parse(textBox2.Text);
-                        }
-                        else
-                            get_center_fig(ref a, ref b);
-                        int angle;
-                        if (textBox3.Text != "")
-                            angle = Int32.Parse(textBox3.Text);
-                        else
-                            break;
-                        afin_matrix = matr.matrix_rotation(angle, a, b);
-                        list = matr.get_transformed_PointFs(afin_matrix, list);
-                        draw_new_polygon(list);
-                        pictureBox1.Invalidate();
-                        System.Threading.Thread.Sleep(1);
+                        a = float.Parse(textBox1.Text);
+                        b = float.Parse(textBox2.Text);
                     }
+                    else
+                        get_center_fig(ref a, ref b);
+                    int angle;
+                    if (textBox3.Text != "")
+                        angle = Int32.Parse(textBox3.Text);
+                    else
+                        break;
+                    afin_matrix = matr.matrix_rotation(angle, a, b);
+                    list = matr.get_transformed_PointFs(afin_matrix, list);
+                    draw_new_polygon(list);
+                    pictureBox1.Invalidate();
+                    System.Threading.Thread.Sleep(1);
                     break;
 
                 case "Поворот отрезка":
@@ -313,29 +311,29 @@ namespace Task
 
                 case "Принадлежит ли точка многоугольнику":
                     PointF check = new PointF((float)dot.Item1, (float)dot.Item2);
-                    PointF res = new PointF(0,0);
+                    PointF res = new PointF(0, 0);
                     PointF start = new PointF((list[0].X + list[1].X) / 2, (list[0].Y + list[1].Y) / 2);
                     bool isSingle = get_intersect(check, start, list[0], list[1], ref res);
-                    if(isSingle && res.X == -1 && res.Y == -1)
+                    if (isSingle && res.X == -1 && res.Y == -1)
                     {
                         label5.Text = "Точка принадлежит многоугольнику";
                         break;
                     }
                     int cnt = 1;
-                    for(int i = 1; i < list.Count(); ++i)
+                    for (int i = 1; i < list.Count(); ++i)
                     {
                         int ind = (i + 1) % list.Count();
                         bool is_inter = get_intersect(check, start, list[i], list[ind], ref res);
-                        if (is_inter && PointF_between(res,list[i],list[ind]) && distance(res, start) < distance(res, check))
+                        if (is_inter && PointF_between(res, list[i], list[ind]) && distance(res, start) < distance(res, check))
                             cnt++;
                     }
-                    if(cnt%2 == 0)
+                    if (cnt % 2 == 0)
                         label5.Text = "Точка не принадлежит многоугольнику";
                     else
                         label5.Text = "Точка принадлежит многоугольнику";
 
                     break;
-                    
+
 
                 case "Поиск точки пересечения двух ребер":
                     PointF intersection = new PointF(0, 0);
@@ -356,15 +354,15 @@ namespace Task
                             intersection,
                             Tuple_float_ToPointF(primitiv[2]),
                             Tuple_float_ToPointF(primitiv[3])))
-                    { 
-                        g.DrawLine(pen, new PointF(intersection.X - 1, intersection.Y -1), 
-                            new PointF(intersection.X+1,intersection.Y+1));
+                    {
+                        g.DrawLine(pen, new PointF(intersection.X - 1, intersection.Y - 1),
+                            new PointF(intersection.X + 1, intersection.Y + 1));
                         pictureBox1.Invalidate();
                         label5.Text = "";
                     }
                     else
                     {
-                        label5.Text = "Нет пересечения"; 
+                        label5.Text = "Нет пересечения";
                     }
                     break;
 
@@ -396,7 +394,7 @@ namespace Task
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-         
+
             switch (comboBox1.SelectedItem.ToString())
             {
                 case "Смещение":

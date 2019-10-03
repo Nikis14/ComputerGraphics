@@ -49,10 +49,10 @@
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.pictureBox1.Location = new System.Drawing.Point(245, 84);
+            this.pictureBox1.Location = new System.Drawing.Point(277, 65);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1015, 530);
+            this.pictureBox1.Size = new System.Drawing.Size(1065, 585);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
@@ -117,7 +117,7 @@
             "Положение точки относительно ребра",
             "Принадлежит ли точка многоугольнику",
             "Поворот отрезка"});
-            this.comboBox1.Location = new System.Drawing.Point(-1, 105);
+            this.comboBox1.Location = new System.Drawing.Point(19, 105);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(247, 24);
@@ -175,7 +175,7 @@
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(25, 304);
+            this.textBox3.Location = new System.Drawing.Point(20, 304);
             this.textBox3.Margin = new System.Windows.Forms.Padding(4);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(53, 22);
@@ -219,7 +219,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1276, 629);
+            this.ClientSize = new System.Drawing.Size(1355, 663);
             this.Controls.Add(this.choose_PointF);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
