@@ -3,56 +3,113 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace Task
 {
     class Matrixes
     {
-        int[][] matrix_rotation = new int[3][];
-
-        private int[] multiply_matrixes(int[] point)
+        public List<PointF> get_transformed_PointFs(float[,] afin_matrix, List<PointF> PointFs)
         {
-            int[] res = new int[3];
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < PointFs.Count(); ++i)
             {
-                res[i] = 0;
-                for (int i1 = 0; i1 < 3; i1++)
-                {
-                    res[i] += point[i1] * matrix_rotation[i][i1];
-                }
+                float[] transformed = matrix_mult(afin_matrix, new float[3] { PointFs[i].X, PointFs[i].Y, 1 });
+                PointFs[i] = new PointF(transformed[0] * transformed[2], transformed[1] * transformed[2]);
             }
-            return res;
+            return PointFs;
         }
 
-        public Tuple<Tuple<int,int>,Tuple<int,int>> Rotate_Edge_90_Grad(int x1, int x2, int y1, int y2, bool dir)
+        public float[] matrix_mult(float[,] afin_matrix, float[] PointF)
         {
-            int[] source1 = { x1, y1, 1 };
-            int[] source2 = { x2, y2, 1 };
-            int[] res1 = multiply_matrixes(source1);
-            int[] res2 = multiply_matrixes(source2);
-            Tuple<int, int> point1 = new Tuple<int, int>(res1[0], res1[1]);
-            Tuple<int, int> point2 = new Tuple<int, int>(res2[0], res2[1]);
-            Tuple<Tuple<int, int>, Tuple<int, int>> res = new Tuple<Tuple<int, int>, Tuple<int, int>>(point1, point2);
-            return res;
+            float[] res = new float[3];
+            for (int i = 0; i < 3; ++i)
+            {
+                res[i] = 0;
+                for (int k = 0; k < 3; ++k)
+                    res[i] += afin_matrix[k, i] * PointF[k];
+            }
+            float[] result = new float[3];
+            for (int i = 0; i < 3; ++i)
+                result[i] = (int)Math.Round(res[i]);
+            return result;
+        }
 
+        public float[,] matrix_offset(float dx, float dy)
+        {
+            float[,] afin_matrix = new float[3, 3];
+            for (int i = 0; i < 3; ++i)
+                afin_matrix[i, i] = 1;
+            afin_matrix[0, 1] = 0;
+            afin_matrix[0, 2] = 0;
+            afin_matrix[1, 0] = 0;
+            afin_matrix[1, 2] = 0;
+            afin_matrix[2, 0] = dx;
+            afin_matrix[2, 1] = dy;
+            return afin_matrix;
+        }
+
+        public float[,] matrix_rotation(int angle, float a, float b)
+        {
+            float rad_angle = (float)(angle / 180.0 * Math.PI);
+            float[,] afin_matrix = new float[3, 3];
+            afin_matrix[0, 0] = (float)Math.Cos(rad_angle);
+            afin_matrix[0, 1] = (float)Math.Sin(rad_angle);
+            afin_matrix[0, 2] = 0;
+            afin_matrix[1, 0] = (float)-Math.Sin(rad_angle);
+            afin_matrix[1, 1] = (float)Math.Cos(rad_angle);
+            afin_matrix[1, 2] = 0;
+            afin_matrix[2, 0] = (float)(-a * Math.Cos(rad_angle) + b * Math.Sin(rad_angle) + a);
+            afin_matrix[2, 1] = (float)(-a * Math.Sin(rad_angle) - b * Math.Cos(rad_angle) + b);
+            afin_matrix[2, 2] = 1;
+            return afin_matrix;
+        }
+
+        public float[,] matrix_scale(float koef, float a, float b)
+        {
+            float[,] afin_matrix = new float[3, 3];
+            afin_matrix[0, 0] = koef;
+            afin_matrix[0, 1] = 0;
+            afin_matrix[0, 2] = 0;
+            afin_matrix[1, 0] = 0;
+            afin_matrix[1, 1] = koef;
+            afin_matrix[1, 2] = 0;
+            afin_matrix[2, 0] = -a * koef + a;
+            afin_matrix[2, 1] = -b * koef + b;
+            afin_matrix[2, 2] = 1;
+            return afin_matrix;
         }
 
         public Matrixes()
         {
-            //_________________________________
-            for (int i = 0; i < 3; i++)
-            {
-                matrix_rotation[i] = new int[3];
-            }
-            matrix_rotation[0][0] = 1;
-            matrix_rotation[0][1] = 0;
-            matrix_rotation[0][2] = 0;
-            matrix_rotation[1][0] = -1;
-            matrix_rotation[1][1] = 0;
-            matrix_rotation[1][2] = 0;
-            matrix_rotation[2][0] = 0;
-            matrix_rotation[2][1] = 0;
-            matrix_rotation[2][2] = 1;
         }
     }
 }
+
+
+/*bool is_right = check_is_right(list[0], list[1], list[2]);
+                    int i_cur = 0;
+                    int dir = 1;
+                    int i_cur1 = 1;
+                    if (!check_is_right(list[0], list[1], list[2]))
+                    {
+                        dir = -2;
+                        i_cur1 = list.Count() - 1;
+                    }
+                    PointF check = new PointF((int)dot.Item1, (int)dot.Item2);
+                    bool f = true;
+                    while (i_cur1 != 0)
+                    {
+                        if (!check_is_right(list[i_cur], list[i_cur1], check))
+                        {
+                            label5.Text = "Точка не принадлежит многоугольнику";
+                            f = false;
+                            break;
+                        }
+                        i_cur = i_cur1;
+                        if (i_cur == 2)
+                            dir += 1;
+                        i_cur1 = (i_cur1 + dir) % list.Count();
+                    }
+                    if (f)
+                        label5.Text = "Точка принадлежит многоугольнику";
+                    break;*/
