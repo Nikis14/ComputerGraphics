@@ -270,7 +270,11 @@ namespace Task
                         b = float.Parse(textBox2.Text);
                     }
                     else
+                    {
+                        //Graphics g1 = Graphics.FromImage(pictureBox1.Image);
                         get_center_fig(ref a, ref b);
+                        
+                    }
                     int angle;
                     if (textBox3.Text != "")
                         angle = Int32.Parse(textBox3.Text);
@@ -279,6 +283,11 @@ namespace Task
                     afin_matrix = matr.matrix_rotation(angle, a, b);
                     list = matr.get_transformed_PointFs(afin_matrix, list);
                     draw_new_polygon(list);
+                    Graphics g1 = Graphics.FromImage(pictureBox1.Image);
+                    //get_center_fig(ref a, ref b);
+                    SolidBrush br = new SolidBrush(Color.Red);
+                    g1.FillEllipse(br, a, b - 5, 11, 11);
+                    br.Dispose();
                     pictureBox1.Invalidate();
                     System.Threading.Thread.Sleep(1);
                     break;
@@ -312,21 +321,48 @@ namespace Task
                 case "Принадлежит ли точка многоугольнику":
                     PointF check = new PointF((float)dot.Item1, (float)dot.Item2);
                     PointF res = new PointF(0, 0);
-                    PointF start = new PointF((list[0].X + list[1].X) / 2, (list[0].Y + list[1].Y) / 2);
-                    bool isSingle = get_intersect(check, start, list[0], list[1], ref res);
+                    PointF start = new PointF((float)0.0, (float)dot.Item2);//new PointF((list[0].X + list[1].X) / 2, (list[0].Y + list[1].Y) / 2);
+                    /*bool isSingle = get_intersect(check, start, list[0], list[1], ref res);
                     if (isSingle && res.X == -1 && res.Y == -1)
                     {
                         label5.Text = "Точка принадлежит многоугольнику";
                         break;
-                    }
-                    int cnt = 1;
-                    for (int i = 1; i < list.Count(); ++i)
+                    }*/
+                    int cnt = 0;
+                    bool f = false;
+                    for (int i = 0; i < list.Count(); ++i)
                     {
                         int ind = (i + 1) % list.Count();
                         bool is_inter = get_intersect(check, start, list[i], list[ind], ref res);
+                        if(res.X == list[ind].X && res.Y == list[ind].Y && distance(res, start) < distance(res, check))
+                        {
+                            //f = true;
+                            int cnt2 = 0;
+                            if (list[ind % list.Count()].X < list[i].X)
+                                cnt2--;
+                            else if (list[ind % list.Count()].X == list[i].X)
+                                continue;
+                            else
+                                cnt2++;
+
+                           
+                            if (list[(ind+1) % list.Count()].X < list[i].X)
+                                cnt2--;
+                            else if (list[ind % list.Count()].X > list[i].X)
+                                cnt2++;
+
+                            if (cnt2 == 0)
+                                cnt++;
+                            else
+                                cnt += 2;
+                            // break;
+                            continue;
+                            
+                        }
                         if (is_inter && PointF_between(res, list[i], list[ind]) && distance(res, start) < distance(res, check))
                             cnt++;
                     }
+
                     if (cnt % 2 == 0)
                         label5.Text = "Точка не принадлежит многоугольнику";
                     else
