@@ -21,7 +21,7 @@ namespace Lab5Task3
         public Form1()
         {
             InitializeComponent();
-            textBox1.Text = "4 points remaining";
+            
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pens[0] = new Pen(Color.Red, 3);
             pens[1] = new Pen(Color.Aqua, 3);
@@ -99,7 +99,12 @@ namespace Lab5Task3
 
         private void button6_Click(object sender, EventArgs e)
         {
+            pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             var g = Graphics.FromImage(pictureBox1.Image);
+            for (int i = 0; i < 4; i++)
+            {
+                DrawPoint(i, points[i].X, points[i].Y);
+            }
             double t = 0.0;
             PointF prev = calculate(0);
             Pen p = new Pen(Color.Black, 1);
@@ -112,7 +117,7 @@ namespace Lab5Task3
                 prev = next;
             }
             p.Dispose();
-            g.DrawBezier(checks,points[0], points[1], points[2], points[3]);
+            //g.DrawBezier(checks,points[0], points[1], points[2], points[3]);
             pictureBox1.Invalidate();
 
         }
