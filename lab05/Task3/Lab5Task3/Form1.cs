@@ -13,114 +13,187 @@ namespace Lab5Task3
     public partial class Form1 : Form
     {
         Bitmap image;
-        bool[] changed = new bool[4];
-        PointF[] points = new PointF[4];
+
+        List<PointF> points = new List<PointF>();
         Pen[] pens = new Pen[4];
         int current;
+        bool move_point_mode = false;
+        PointF lstreq;
 
         public Form1()
         {
             InitializeComponent();
-            
+
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pens[0] = new Pen(Color.Red, 3);
             pens[1] = new Pen(Color.Aqua, 3);
             pens[2] = new Pen(Color.Purple, 3);
             pens[3] = new Pen(Color.Lime, 3);
-            button6.Hide();
+            // button6.Hide();
         }
 
-        private void DrawPoint(int num, float x, float y)
+        private void DrawPoint(float x, float y, int pen)
         {
-            changed[num] = true;
             var g = Graphics.FromImage(pictureBox1.Image);
-            g.DrawEllipse(pens[num], x - 1, y - 1, 2, 2);
+            if (pen == 0)
+            {
+                g.DrawEllipse(pens[0], x - 1, y - 1, 2, 2);
+            }
+            else if (pen == 1)
+            {
+                g.DrawEllipse(pens[2], x - 1, y - 1, 2, 2);
+            }
+            else
+            {
+                g.DrawEllipse(pens[3], x - 1, y - 1, 2, 2);
+            }
             pictureBox1.Invalidate();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-            List<PointF> points = new List<PointF>();
-            for (int i = 0; i < 4; i++)
-            {
-                changed[i] = false;
-            }
-            button6.Hide();
+            points.Clear();
+
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             current = 0;
-            groupBox1.Hide();
+
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            current = 1;
-            groupBox1.Hide();
-        }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            current = 2;
-            groupBox1.Hide();
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            current = 3;
-            groupBox1.Hide();
-        }
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
-            DrawPoint(current, e.X, e.Y);
-            points[current] = new PointF(e.X, e.Y);
-            groupBox1.Show();
-            if (changed[0] && changed[1] && changed[2] && changed[3])
+            if (move_point_mode)
             {
-                button6.Show();
+                points[comboBox1.SelectedIndex] = new PointF(e.X, e.Y);
+                DrawPoint(e.X, e.Y, 1);
+                redraw();
             }
+            else
+            {
+                DrawPoint(e.X, e.Y, 0);
+                points.Add(new PointF(e.X, e.Y));
+                comboBox1.Items.Add("Point#" + points.Count + " X=" + e.X + " Y=" + e.Y);
+            }
+
+
         }
 
-        private PointF calculate(double t)
+        private PointF calculate(double t, PointF p1, PointF p2, PointF p3, PointF p4)//Where i is a start index of list
         {
             double f = (1 - t);
-            double x = Math.Pow(f, 3) * points[0].X +
-                 3 * Math.Pow(f, 2) * t * points[1].X +
-                 3 * f * Math.Pow(t, 2) * points[2].X +
-                 Math.Pow(t, 3) * points[3].X;
-            double y = Math.Pow(f, 3) * points[0].Y +
-                 3 * Math.Pow(f, 2) * t * points[1].Y +
-                 3 * f * Math.Pow(t, 2) * points[2].Y +
-                 Math.Pow(t, 3) * points[3].Y;
+            double x = Math.Pow(f, 3) * p1.X +
+                 3 * Math.Pow(f, 2) * t * p2.X +
+                 3 * f * Math.Pow(t, 2) * p3.X +
+                 Math.Pow(t, 3) * p4.X;
+            double y = Math.Pow(f, 3) * p1.Y +
+                 3 * Math.Pow(f, 2) * t * p2.Y +
+                 3 * f * Math.Pow(t, 2) * p3.Y +
+                 Math.Pow(t, 3) * p4.Y;
             return new PointF((float)x, (float)y);
         }
 
-        private void button6_Click(object sender, EventArgs e)
+        private PointF find_btw_point(PointF p1, PointF p2)
         {
-            pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+            return new PointF((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
+        }
+
+        private Tuple<PointF, PointF> find_btw_points(PointF pm1, PointF p1, PointF p2, PointF p2p)
+        {
+
+            PointF pt1_new = new PointF(pm1.X + 2 * (p1.X - pm1.X), pm1.Y + 2 * (p1.Y - pm1.Y));
+            PointF pt2_new = new PointF(p2p.X + 2 * (p2.X - p2p.X), p2p.Y + 2 * (p2.Y - p2p.Y));
+            return new Tuple<PointF, PointF>(pt1_new, pt2_new);
+        }
+
+        private void drawcurveBy4pts(PointF p1, PointF p2, PointF p3, PointF p4)
+        {
             var g = Graphics.FromImage(pictureBox1.Image);
-            for (int i = 0; i < 4; i++)
-            {
-                DrawPoint(i, points[i].X, points[i].Y);
-            }
             double t = 0.0;
-            PointF prev = calculate(0);
             Pen p = new Pen(Color.Black, 1);
-            Pen checks = new Pen(Color.Blue);
+            PointF prev = calculate(t, p1, p2, p3, p4);
             while (t <= 1.0)
             {
-                PointF next = calculate(t);
+                PointF next = calculate(t, p1, p2, p3, p4);
                 g.DrawLine(p, prev, next);
                 t += 0.001;
                 prev = next;
             }
-            p.Dispose();
-            //g.DrawBezier(checks,points[0], points[1], points[2], points[3]);
             pictureBox1.Invalidate();
+            p.Dispose();
+        }
+
+        private void redraw()
+        {
+            pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+            var g = Graphics.FromImage(pictureBox1.Image);
+            int counter = 4;
+            Pen p = new Pen(Color.Black, 1);
+            foreach (var item in points)
+            {
+                DrawPoint(item.X, item.Y, 0);
+            }
+            while (points.Count >= counter)
+            {
+                drawcurveBy4pts(points[counter - 4],
+                    points[counter - 3],
+                    points[counter - 2],
+                    points[counter - 1]);
+                if (counter != 4)
+                {
+                    var c = find_btw_points(points[counter - 6], points[counter - 5], points[counter - 4], points[counter - 3]);
+                    drawcurveBy4pts(points[counter - 5], c.Item1, c.Item2, points[counter - 4]);
+                }
+                counter += 4;
+            }
+            if ((points.Count - (counter - 4)) == 1)
+            {
+                var c = find_btw_points(points[points.Count - 2],
+                    points[points.Count - 2],
+                    points[points.Count - 1],
+                    points[points.Count - 1]);
+                drawcurveBy4pts(points[points.Count - 2], c.Item1, c.Item2, points[points.Count - 1]);
+            }
+            else if (points.Count - (counter - 4) == 2)
+            {
+                var c = find_btw_point(points[points.Count - 1], points[points.Count - 2]);
+                drawcurveBy4pts(points[points.Count - 3], points[points.Count - 2], c, points[points.Count - 1]);
+            }
+            else if (points.Count - (counter - 4) == 3)
+            {
+              
+                drawcurveBy4pts(points[points.Count-4],points[points.Count - 3], points[points.Count - 2], points[points.Count - 1]);
+            }
+
 
         }
-       
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            redraw();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstreq == null)
+            {
+                DrawPoint(points[comboBox1.SelectedIndex].X, points[comboBox1.SelectedIndex].Y, 1);
+                lstreq = points[comboBox1.SelectedIndex];
+            }
+            else
+            {
+                DrawPoint(lstreq.X, lstreq.Y, 0);
+                DrawPoint(points[comboBox1.SelectedIndex].X, points[comboBox1.SelectedIndex].Y, 1);
+                lstreq = points[comboBox1.SelectedIndex];
+            }
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            move_point_mode = true;
+        }
     }
 }

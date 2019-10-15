@@ -1,4 +1,0 @@
-X 90 right
-F F
-X X+YF+
-Y -FX-Y
