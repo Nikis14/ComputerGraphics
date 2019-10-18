@@ -15,10 +15,15 @@ namespace Lab5Task3
         Bitmap image;
 
         List<PointF> points = new List<PointF>();
+        List<PointF> pointsBezier = new List<PointF>();
+
         Pen[] pens = new Pen[4];
         int current;
         bool move_point_mode = false;
         PointF lstreq;
+        int counter;
+
+        bool add_pt = false;
 
         public Form1()
         {
@@ -29,6 +34,7 @@ namespace Lab5Task3
             pens[1] = new Pen(Color.Aqua, 3);
             pens[2] = new Pen(Color.Purple, 3);
             pens[3] = new Pen(Color.Lime, 3);
+            counter = 0;
             // button6.Hide();
         }
 
@@ -54,6 +60,8 @@ namespace Lab5Task3
         {
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             points.Clear();
+            counter = 0;
+            pointsBezier.Clear();
 
         }
 
@@ -69,8 +77,10 @@ namespace Lab5Task3
             if (move_point_mode)
             {
                 points[comboBox1.SelectedIndex] = new PointF(e.X, e.Y);
+                points.Remove(points.ElementAt(comboBox1.SelectedIndex));
                 DrawPoint(e.X, e.Y, 1);
                 redraw();
+                move_point_mode = false;
             }
             else
             {
@@ -112,6 +122,7 @@ namespace Lab5Task3
         private void drawcurveBy4pts(PointF p1, PointF p2, PointF p3, PointF p4)
         {
             var g = Graphics.FromImage(pictureBox1.Image);
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             double t = 0.0;
             Pen p = new Pen(Color.Black, 1);
             PointF prev = calculate(t, p1, p2, p3, p4);
@@ -130,26 +141,42 @@ namespace Lab5Task3
         {
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             var g = Graphics.FromImage(pictureBox1.Image);
-            int counter = 4;
             Pen p = new Pen(Color.Black, 1);
+
+            pointsBezier.Clear();
+            pointsBezier = new List<PointF>();
+            pointsBezier.Add(points[0]);
+            int ct = 1;
+            while (ct < points.Count -3)
+            {
+                pointsBezier.Add(points[ct]);
+                ct += 1;
+                pointsBezier.Add(points[ct]);
+                ct += 1;
+                pointsBezier.Add(find_btw_point(points[ct - 1], points[ct]));
+               
+               // ct += 1;
+
+            }
+            int bez_ct = 4;
+            while (bez_ct <= pointsBezier.Count)
+            {
+                drawcurveBy4pts(pointsBezier[bez_ct - 4],
+                  pointsBezier[bez_ct - 3],
+                  pointsBezier[bez_ct - 2],
+                  pointsBezier[bez_ct - 1]);
+                bez_ct += 3;
+            }
+
+            foreach (var item in pointsBezier)
+            {
+                DrawPoint(item.X, item.Y, 2);
+            }
             foreach (var item in points)
             {
                 DrawPoint(item.X, item.Y, 0);
             }
-            while (points.Count >= counter)
-            {
-                drawcurveBy4pts(points[counter - 4],
-                    points[counter - 3],
-                    points[counter - 2],
-                    points[counter - 1]);
-                if (counter != 4)
-                {
-                    var c = find_btw_points(points[counter - 6], points[counter - 5], points[counter - 4], points[counter - 3]);
-                    drawcurveBy4pts(points[counter - 5], c.Item1, c.Item2, points[counter - 4]);
-                }
-                counter += 4;
-            }
-            if ((points.Count - (counter - 4)) == 1)
+            /*if ((points.Count - (counter - 3)) == 1)
             {
                 var c = find_btw_points(points[points.Count - 2],
                     points[points.Count - 2],
@@ -157,17 +184,17 @@ namespace Lab5Task3
                     points[points.Count - 1]);
                 drawcurveBy4pts(points[points.Count - 2], c.Item1, c.Item2, points[points.Count - 1]);
             }
-            else if (points.Count - (counter - 4) == 2)
+            else if (points.Count - (counter - 3) == 2)
             {
                 var c = find_btw_point(points[points.Count - 1], points[points.Count - 2]);
                 drawcurveBy4pts(points[points.Count - 3], points[points.Count - 2], c, points[points.Count - 1]);
             }
-            else if (points.Count - (counter - 4) == 3)
+           /* else if (points.Count - (counter - 3) == 2)
             {
               
                 drawcurveBy4pts(points[points.Count-4],points[points.Count - 3], points[points.Count - 2], points[points.Count - 1]);
             }
-
+            */
 
         }
 
