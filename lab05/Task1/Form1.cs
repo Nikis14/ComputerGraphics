@@ -124,7 +124,7 @@ namespace L_systems
                 new_points.Add(np);
             }
 
-            Pen pen = new Pen(Color.RoyalBlue);
+            Pen pen = new Pen(Color.RoyalBlue,2);
             for (int i = 0; i < new_points.Count() - 1; ++i)
                 g.DrawLine(pen, new_points[i], new_points[i + 1]);
         }

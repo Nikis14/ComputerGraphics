@@ -15,6 +15,7 @@ namespace AffinTransform3D
     {
         Bitmap bmp;
         Graphics g;
+        Matrixes matr = new Matrixes();
         Pen pen_shape = new Pen(Color.Red); // для фигуры
         int centerX, centerY; // центр pictureBox
         bool is_axis = false; // выбрана ли ось для поворота
@@ -325,13 +326,31 @@ namespace AffinTransform3D
 
         private void axis_rotate(my_point pt1, my_point pt2, double angle) // поворот вокруг оси
         {
+            // Пункт 0. Выводим вектор.
+            double l = pt2.X - pt1.X;
+            double m = pt2.Y - pt1.Y;
+            double n = pt2.Z - pt1.Z;
+            //Как в учебнике: Пункт 1 - перенести точку в начало координат.
+            points = matr.get_transformed_my_points(matr.matrix_offset(-pt1.X, -pt1.Y, -pt1.Z),points);
+            //Пункт 2 - вращаем вектор
+            points = matr.get_transformed_my_points(matr.matrix_rotation_x(l, n),points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_y(m, n), points);
+            //Пункт 3 - вращаем сам полигон
+            points = matr.get_transformed_my_points(matr.matrix_rotation(angle), points);
+            //Пункт 4 - 2 в обратном порядке
+            points = matr.get_transformed_my_points(matr.matrix_rotation_y(-m, -n), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_x(-l, -n), points);
+            //Пункт 5 - обратен 1
+            points = matr.get_transformed_my_points(matr.matrix_offset(pt1.X, pt1.Y, pt1.Z), points);
+           
             
         }
 
         private void displacement_button_Click(object sender, EventArgs e) // перенос
         {
             int kx = (int)x_shift.Value, ky = (int)y_shift.Value, kz = (int)z_shift.Value;
-            displacement(kx, ky, kz);
+            var new_points = matr.get_transformed_my_points(matr.matrix_offset(kx, ky, kz), points);
+            //displacement(kx, ky, kz);
             redraw_image();
         }
 
@@ -411,38 +430,5 @@ namespace AffinTransform3D
             redraw_image();
         }
 
-    }
-
-    public class my_point
-    {
-        public double X, Y, Z;
-
-        public my_point()
-        {
-            this.X = this.Y = this.Z = 0;
-        }
-
-        public my_point(double x, double y, double z)
-        {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
-        }
-
-    }
-
-    public class face
-    {
-        public List<my_point> points;
-
-        public face()
-        {
-            points = new List<my_point>();
-        }
-
-        public void add(my_point p)
-        {
-            points.Add(p);
-        }
     }
 }
