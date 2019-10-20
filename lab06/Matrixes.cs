@@ -59,10 +59,12 @@ namespace AffinTransform3D
             return afin_matrix;
         }
 
-        public double[,] matrix_rotation_x(double l, double n)
+        public double[,] matrix_rotation_x(double rad_angle)
         {
-
-            double d = Math.Sqrt(l * l + n * n);
+            //double rad_angle = (angle / 180.0 * Math.PI);
+            double cos_ang = Math.Cos(rad_angle);
+            double sin_ang = Math.Sin(rad_angle);
+            //double d = Math.Sqrt(l * l + n * n);
             double[,] afin_matrix = new double[4, 4];
             for (int i = 0; i < 4; i++)
             {
@@ -78,16 +80,19 @@ namespace AffinTransform3D
                     }
                 }
             }
-            afin_matrix[0, 0] = l;
-            afin_matrix[0, 2] = -d;
-            afin_matrix[2, 0] = d;
-            afin_matrix[2, 2] = l;
+            afin_matrix[0, 0] = cos_ang;
+            afin_matrix[2, 0] = -sin_ang;
+            afin_matrix[0, 2] = sin_ang;
+            afin_matrix[2, 2] = cos_ang;
             return afin_matrix;
         }
 
-        public double[,] matrix_rotation_y(double m, double n)
+        public double[,] matrix_rotation_y(double rad_angle)
         {
-            double d = Math.Sqrt(m * m+n * n);
+           // double rad_angle = (angle / 180.0 * Math.PI);
+            double cos_ang = Math.Cos(rad_angle);
+            double sin_ang = Math.Sin(rad_angle);
+            //double d = Math.Sqrt(l * l + n * n);
             double[,] afin_matrix = new double[4, 4];
             for (int i = 0; i < 4; i++)
             {
@@ -103,16 +108,19 @@ namespace AffinTransform3D
                     }
                 }
             }
-            afin_matrix[1, 1] = n / d;
-            afin_matrix[1, 2] = m / d; 
-            afin_matrix[2, 1] = -m/d;
-            afin_matrix[2, 2] = n/d;
+            afin_matrix[1, 1] = cos_ang;
+            afin_matrix[2, 1] = -sin_ang;
+            afin_matrix[1, 2] = sin_ang;
+            afin_matrix[2, 2] = cos_ang;
             return afin_matrix;
         }
         //TMP UU
-        public double[,] matrix_rotation_z(double angle)
+        public double[,] matrix_rotation_z(double rad_angle)
         {
-            double rad_angle = (angle / 180.0 * Math.PI);
+           // double rad_angle = (angle / 180.0 * Math.PI);
+            double cos_ang = Math.Cos(rad_angle);
+            double sin_ang = Math.Sin(rad_angle);
+            //double d = Math.Sqrt(l * l + n * n);
             double[,] afin_matrix = new double[4, 4];
             for (int i = 0; i < 4; i++)
             {
@@ -128,10 +136,10 @@ namespace AffinTransform3D
                     }
                 }
             }
-            afin_matrix[0, 0] = (float)Math.Cos(rad_angle);
-            afin_matrix[0, 1] = (float)Math.Sin(rad_angle);
-            afin_matrix[1, 0] = -(float)Math.Sin(rad_angle);
-            afin_matrix[1, 1] = (float)Math.Cos(rad_angle);
+            afin_matrix[0, 0] = cos_ang;
+            afin_matrix[1, 0] = -sin_ang;
+            afin_matrix[0, 1] = sin_ang;
+            afin_matrix[1, 1] = cos_ang;
             return afin_matrix;
         }
 
@@ -154,14 +162,14 @@ namespace AffinTransform3D
                     }
                 }
             }
-            afin_matrix[0, 0] = (float)Math.Cos(rad_angle);
-            afin_matrix[0, 1] = (float)Math.Sin(rad_angle);
-            afin_matrix[1, 0] = -(float)Math.Sin(rad_angle);
-            afin_matrix[1, 1] = (float)Math.Cos(rad_angle);
+            afin_matrix[0, 0] = Math.Cos(rad_angle);
+            afin_matrix[0, 1] = Math.Sin(rad_angle);
+            afin_matrix[1, 0] = -Math.Sin(rad_angle);
+            afin_matrix[1, 1] = Math.Cos(rad_angle);
             return afin_matrix;
         }
 
-        public double[,] matrix_scale(double koef)
+        public double[,] matrix_refl(double koef_x, double koef_y, double koef_z)
         {
             double[,] afin_matrix = new double[4, 4];
             for (int i = 0; i < 4; ++i)
@@ -170,7 +178,7 @@ namespace AffinTransform3D
                 {
                     if (i1 != i)
                     {
-                        afin_matrix[i, i1] = koef;
+                        afin_matrix[i, i1] = 0;
                     }
                     else
                     {
@@ -178,6 +186,32 @@ namespace AffinTransform3D
                     }
                 }
             }
+            afin_matrix[0, 0] = koef_x;
+            afin_matrix[1, 1] = koef_y;
+            afin_matrix[2, 2] = koef_z;
+            return afin_matrix;
+        }
+
+        public double[,] matrix_scale(double koef_x,double koef_y,double koef_z)
+        {
+            double[,] afin_matrix = new double[4, 4];
+            for (int i = 0; i < 4; ++i)
+            {
+                for (int i1 = 0; i1 < 4; ++i1)
+                {
+                    if (i1 != i)
+                    {
+                        afin_matrix[i, i1] = 0;
+                    }
+                    else
+                    {
+                        afin_matrix[i, i1] = 1;
+                    }
+                }
+            }
+            afin_matrix[0, 0] = koef_x;
+            afin_matrix[1, 1] = koef_y;
+            afin_matrix[2, 2] = koef_z;
             return afin_matrix;
         }
 
