@@ -66,11 +66,11 @@ namespace AffinTransform3D
 
             for (int i = 0; i < n; i++)
             {
-               x1 = (int)Math.Round(f.points[i].X + centerX);
-               x2 = (int)Math.Round(f.points[i + 1].X + centerX);
-               y1 = (int)Math.Round(-f.points[i].Y + centerY);
-               y2 = (int)Math.Round(-f.points[i + 1].Y + centerY);
-               g.DrawLine(pen_shape, x1, y1, x2, y2);
+                x1 = (int)Math.Round(f.points[i].X + centerX);
+                x2 = (int)Math.Round(f.points[i + 1].X + centerX);
+                y1 = (int)Math.Round(-f.points[i].Y + centerY);
+                y2 = (int)Math.Round(-f.points[i + 1].Y + centerY);
+                g.DrawLine(pen_shape, x1, y1, x2, y2);
             }
         }
 
@@ -245,7 +245,6 @@ namespace AffinTransform3D
             foreach (my_point p in points)
             {
                 p.X += kx;
-                p.X += kx;
                 p.Y += ky;
                 p.Z += kz;
             }
@@ -340,34 +339,37 @@ namespace AffinTransform3D
             redraw_image();
         }
 
+        private my_point normalize_vector(my_point pt1,my_point pt2)
+        {
+            double x = pt2.X - pt1.X;
+            double y = pt2.Y - pt1.Y;
+            double z = pt2.Z - pt1.Z;
+            double d = Math.Max(1, Math.Sqrt(x * x + y * y + z * z));
+            return new my_point(x / d, y / d, z / d); 
+        }
 
         private void axis_rotate(my_point pt1, my_point pt2, double angle) // поворот вокруг оси
         {
+            my_point c = normalize_vector(pt1, pt2);
             // Пункт 0. Выводим вектор.
-            double l = pt2.X - pt1.X;
-            double m = pt2.Y - pt1.Y;
-            double n = pt2.Z - pt1.Z;
-            if(n == 0)
-            {
-                n = 1;
-            }
+            double d = Math.Sqrt(c.Y * c.Y + c.Z * c.Z);
             //double rad_angle = (angle / 180.0 * Math.PI);
-            double psi = (Math.Atan(l / n) / 180.0 * Math.PI);
-            double ot = (Math.Atan(m / n) / 180.0 * Math.PI);
+            double alpha = (-Math.Asin(c.Y/d) / 180.0 * Math.PI);
+            double beta = (Math.Asin(c.X) / 180.0 * Math.PI);
             //Как в учебнике: Пункт 1 - перенести точку в начало координат.
-            points = matr.get_transformed_my_points(matr.matrix_offset(-pt1.X, -pt1.Y, -pt1.Z),points);
+            points = matr.get_transformed_my_points(matr.matrix_offset(-pt1.X, -pt1.Y, -pt1.Z), points);
             //Пункт 2 - вращаем вектор
-            points = matr.get_transformed_my_points(matr.matrix_rotation_x(psi),points);
-            points = matr.get_transformed_my_points(matr.matrix_rotation_y(ot), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_x(alpha), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_y(beta), points);
             //Пункт 3 - вращаем сам полигон
             points = matr.get_transformed_my_points(matr.matrix_rotation(angle), points);
             //Пункт 4 - 2 в обратном порядке
-            points = matr.get_transformed_my_points(matr.matrix_rotation_y(-ot), points);
-            points = matr.get_transformed_my_points(matr.matrix_rotation_x(-psi), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_y(-beta), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_x(-alpha), points);
             //Пункт 5 - обратен 1
             points = matr.get_transformed_my_points(matr.matrix_offset(pt1.X, pt1.Y, pt1.Z), points);
-           
-            
+
+
         }
 
         private void displacement_button_Click(object sender, EventArgs e) // перенос
@@ -393,9 +395,9 @@ namespace AffinTransform3D
         private void scale_button_Click(object sender, EventArgs e) // масштабирование
         {
             my_point center_P = center_point();
-            matr.get_transformed_my_points(matr.matrix_offset(-center_P.X, -center_P.Y, -center_P.Z),points);
+            matr.get_transformed_my_points(matr.matrix_offset(-center_P.X, -center_P.Y, -center_P.Z), points);
             matr.get_transformed_my_points(matr.matrix_scale((double)x_scale.Value, (double)y_scale.Value, (double)z_scale.Value), points);
-            matr.get_transformed_my_points(matr.matrix_offset(center_P.X, center_P.Y, center_P.Z),points);
+            matr.get_transformed_my_points(matr.matrix_offset(center_P.X, center_P.Y, center_P.Z), points);
             //scaling((double)x_scale.Value, (double)y_scale.Value, (double)z_scale.Value);
             redraw_image();
         }
@@ -420,7 +422,7 @@ namespace AffinTransform3D
         private void axis_rotate_button_Click(object sender, EventArgs e) // поворот вокруг оси
         {
             axis_rotate(new my_point(Convert.ToDouble(x1_box.Value),
-                Convert.ToDouble(y1_box.Value), 
+                Convert.ToDouble(y1_box.Value),
                 Convert.ToDouble(z1_box.Value)),
                 new my_point(Convert.ToDouble(x2_box.Value),
                 Convert.ToDouble(y2_box.Value),
