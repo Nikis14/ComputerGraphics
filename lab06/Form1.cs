@@ -245,6 +245,7 @@ namespace AffinTransform3D
             foreach (my_point p in points)
             {
                 p.X += kx;
+                p.X += kx;
                 p.Y += ky;
                 p.Z += kz;
             }
@@ -346,6 +347,10 @@ namespace AffinTransform3D
             double l = pt2.X - pt1.X;
             double m = pt2.Y - pt1.Y;
             double n = pt2.Z - pt1.Z;
+            if(n == 0)
+            {
+                n = 1;
+            }
             //double rad_angle = (angle / 180.0 * Math.PI);
             double psi = (Math.Atan(l / n) / 180.0 * Math.PI);
             double ot = (Math.Atan(m / n) / 180.0 * Math.PI);
@@ -413,6 +418,18 @@ namespace AffinTransform3D
         }
 
         private void axis_rotate_button_Click(object sender, EventArgs e) // поворот вокруг оси
+        {
+            axis_rotate(new my_point(Convert.ToDouble(x1_box.Value),
+                Convert.ToDouble(y1_box.Value), 
+                Convert.ToDouble(z1_box.Value)),
+                new my_point(Convert.ToDouble(x2_box.Value),
+                Convert.ToDouble(y2_box.Value),
+                Convert.ToDouble(z2_box.Value)),
+                Convert.ToDouble(axis_angle.Value));
+            redraw_image();
+        }
+
+        private void label10_Click(object sender, EventArgs e)
         {
 
         }
