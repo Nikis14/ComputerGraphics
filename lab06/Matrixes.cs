@@ -59,39 +59,11 @@ namespace AffinTransform3D
             return afin_matrix;
         }
 
-        public double[,] matrix_rotation_x(double rad_angle)
+        public double[,] matrix_rotation_x(double n, double m, double d)
         {
             //double rad_angle = (angle / 180.0 * Math.PI);
-            double cos_ang = Math.Cos(rad_angle);
-            double sin_ang = Math.Sin(rad_angle);
-            //double d = Math.Sqrt(l * l + n * n);
-            double[,] afin_matrix = new double[4, 4];
-            for (int i = 0; i < 4; i++)
-            {
-                for (int i1 = 0; i1 < 4; i1++)
-                {
-                    if (i1 != i)
-                    {
-                        afin_matrix[i, i1] = 0;
-                    }
-                    else
-                    {
-                        afin_matrix[i, i1] = 1;
-                    }
-                }
-            }
-            afin_matrix[0, 0] = cos_ang;
-            afin_matrix[2, 0] = -sin_ang;
-            afin_matrix[0, 2] = sin_ang;
-            afin_matrix[2, 2] = cos_ang;
-            return afin_matrix;
-        }
-
-        public double[,] matrix_rotation_y(double rad_angle)
-        {
-           // double rad_angle = (angle / 180.0 * Math.PI);
-            double cos_ang = Math.Cos(rad_angle);
-            double sin_ang = Math.Sin(rad_angle);
+            double cos_ang = n/ d;
+            double sin_ang = m / d;
             //double d = Math.Sqrt(l * l + n * n);
             double[,] afin_matrix = new double[4, 4];
             for (int i = 0; i < 4; i++)
@@ -109,8 +81,36 @@ namespace AffinTransform3D
                 }
             }
             afin_matrix[1, 1] = cos_ang;
-            afin_matrix[2, 1] = -sin_ang;
             afin_matrix[1, 2] = sin_ang;
+            afin_matrix[2, 1] = -sin_ang;
+            afin_matrix[2, 2] = cos_ang;
+            return afin_matrix;
+        }
+
+        public double[,] matrix_rotation_y(double l, double d)
+        {
+            //double rad_angle = (angle / 180.0 * Math.PI);
+            double cos_ang = l;
+            double sin_ang = -d;
+            //double d = Math.Sqrt(l * l + n * n);
+            double[,] afin_matrix = new double[4, 4];
+            for (int i = 0; i < 4; i++)
+            {
+                for (int i1 = 0; i1 < 4; i1++)
+                {
+                    if (i1 != i)
+                    {
+                        afin_matrix[i, i1] = 0;
+                    }
+                    else
+                    {
+                        afin_matrix[i, i1] = 1;
+                    }
+                }
+            }
+            afin_matrix[0,0 ] = cos_ang;
+            afin_matrix[0, 2] = sin_ang;
+            afin_matrix[2, 0] = -sin_ang;
             afin_matrix[2, 2] = cos_ang;
             return afin_matrix;
         }
@@ -212,6 +212,90 @@ namespace AffinTransform3D
             afin_matrix[0, 0] = koef_x;
             afin_matrix[1, 1] = koef_y;
             afin_matrix[2, 2] = koef_z;
+            return afin_matrix;
+        }
+
+        public double[,] matrix_rotation_x_angular(double rad_angle)
+        {
+            //double rad_angle = (angle / 180.0 * Math.PI);
+            double cos_ang = Math.Cos(rad_angle);
+            double sin_ang = Math.Sin(rad_angle);
+            //double d = Math.Sqrt(l * l + n * n);
+            double[,] afin_matrix = new double[4, 4];
+            for (int i = 0; i < 4; i++)
+            {
+                for (int i1 = 0; i1 < 4; i1++)
+                {
+                    if (i1 != i)
+                    {
+                        afin_matrix[i, i1] = 0;
+                    }
+                    else
+                    {
+                        afin_matrix[i, i1] = 1;
+                    }
+                }
+            }
+            afin_matrix[1, 1] = cos_ang;
+            afin_matrix[1, 2] = -sin_ang;
+            afin_matrix[2, 1] = sin_ang;
+            afin_matrix[2, 2] = cos_ang;
+            return afin_matrix;
+        }
+
+        public double[,] matrix_rotation_y_angular(double rad_angle)
+        {
+            //double rad_angle = -(angle / 180.0 * Math.PI);
+            double cos_ang = Math.Cos(rad_angle);
+            double sin_ang = Math.Sin(rad_angle);
+            //double d = Math.Sqrt(l * l + n * n);
+            double[,] afin_matrix = new double[4, 4];
+            for (int i = 0; i < 4; i++)
+            {
+                for (int i1 = 0; i1 < 4; i1++)
+                {
+                    if (i1 != i)
+                    {
+                        afin_matrix[i, i1] = 0;
+                    }
+                    else
+                    {
+                        afin_matrix[i, i1] = 1;
+                    }
+                }
+            }
+            afin_matrix[0, 0] = cos_ang;
+            afin_matrix[0, 2] = -sin_ang;
+            afin_matrix[2, 0] = sin_ang;
+            afin_matrix[2, 2] = cos_ang;
+            return afin_matrix;
+        }
+
+        public double[,] matrix_rotation_z_angular(double rad_angle)
+        {
+            //double rad_angle = (angle / 180.0 * Math.PI);
+            double cos_ang = Math.Cos(rad_angle);
+            double sin_ang = Math.Sin(rad_angle);
+            //double d = Math.Sqrt(l * l + n * n);
+            double[,] afin_matrix = new double[4, 4];
+            for (int i = 0; i < 4; i++)
+            {
+                for (int i1 = 0; i1 < 4; i1++)
+                {
+                    if (i1 != i)
+                    {
+                        afin_matrix[i, i1] = 0;
+                    }
+                    else
+                    {
+                        afin_matrix[i, i1] = 1;
+                    }
+                }
+            }
+            afin_matrix[0, 0] = cos_ang;
+            afin_matrix[0, 1] = -sin_ang;
+            afin_matrix[1, 0] = sin_ang;
+            afin_matrix[1, 1] = cos_ang;
             return afin_matrix;
         }
 

@@ -344,7 +344,7 @@ namespace AffinTransform3D
             double x = pt2.X - pt1.X;
             double y = pt2.Y - pt1.Y;
             double z = pt2.Z - pt1.Z;
-            double d = Math.Max(1, Math.Sqrt(x * x + y * y + z * z));
+            double d = Math.Sqrt(x * x + y * y + z * z);
             return new my_point(x / d, y / d, z / d); 
         }
 
@@ -354,18 +354,18 @@ namespace AffinTransform3D
             // Пункт 0. Выводим вектор.
             double d = Math.Sqrt(c.Y * c.Y + c.Z * c.Z);
             //double rad_angle = (angle / 180.0 * Math.PI);
-            double alpha = (-Math.Asin(c.Y/d) / 180.0 * Math.PI);
-            double beta = (Math.Asin(c.X) / 180.0 * Math.PI);
+            //double alpha = (-Math.Asin(c.Y/d) / 180.0 * Math.PI);
+            //double beta = (Math.Asin(c.X) / 180.0 * Math.PI);
             //Как в учебнике: Пункт 1 - перенести точку в начало координат.
             points = matr.get_transformed_my_points(matr.matrix_offset(-pt1.X, -pt1.Y, -pt1.Z), points);
             //Пункт 2 - вращаем вектор
-            points = matr.get_transformed_my_points(matr.matrix_rotation_x(alpha), points);
-            points = matr.get_transformed_my_points(matr.matrix_rotation_y(beta), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_x(c.Y,c.Z,d), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_y(c.X,d), points);
             //Пункт 3 - вращаем сам полигон
             points = matr.get_transformed_my_points(matr.matrix_rotation(angle), points);
-            //Пункт 4 - 2 в обратном порядке
-            points = matr.get_transformed_my_points(matr.matrix_rotation_y(-beta), points);
-            points = matr.get_transformed_my_points(matr.matrix_rotation_x(-alpha), points);
+            //Пункт 4 - 2 в обратном порядк
+            points = matr.get_transformed_my_points(matr.matrix_rotation_y(c.X, d), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_x(c.Y, c.Z, d), points);
             //Пункт 5 - обратен 1
             points = matr.get_transformed_my_points(matr.matrix_offset(pt1.X, pt1.Y, pt1.Z), points);
 
@@ -386,9 +386,9 @@ namespace AffinTransform3D
             double y_angle = ((double)y_rotate.Value * Math.PI) / 180;
             double z_angle = ((double)z_rotate.Value * Math.PI) / 180;
             //rotate(x_angle, y_angle, z_angle);
-            matr.get_transformed_my_points(matr.matrix_rotation_x(x_angle), points);
-            matr.get_transformed_my_points(matr.matrix_rotation_y(y_angle), points);
-            matr.get_transformed_my_points(matr.matrix_rotation_z(z_angle), points);
+            matr.get_transformed_my_points(matr.matrix_rotation_x_angular(x_angle), points);
+            matr.get_transformed_my_points(matr.matrix_rotation_y_angular(y_angle), points);
+            matr.get_transformed_my_points(matr.matrix_rotation_z_angular(z_angle), points);
             redraw_image();
         }
 
