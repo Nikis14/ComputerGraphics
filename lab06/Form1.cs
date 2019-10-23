@@ -356,16 +356,21 @@ namespace AffinTransform3D
             //double rad_angle = (angle / 180.0 * Math.PI);
             //double alpha = (-Math.Asin(c.Y/d) / 180.0 * Math.PI);
             //double beta = (Math.Asin(c.X) / 180.0 * Math.PI);
-            //Как в учебнике: Пункт 1 - перенести точку в начало координат.
+            double x_angle = 0;//Угол поворота относительно Х
+            double y_angle = 0;//Угол поворота относительно У
+            double z_angle = 0;//Угол поворота относительно Z
+            //Как в учебнике: Пункт 1 - перенести точки в начало координат.
             points = matr.get_transformed_my_points(matr.matrix_offset(-pt1.X, -pt1.Y, -pt1.Z), points);
             //Пункт 2 - вращаем вектор
-            points = matr.get_transformed_my_points(matr.matrix_rotation_x(c.Y,c.Z,d), points);
-            points = matr.get_transformed_my_points(matr.matrix_rotation_y(c.X,d), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_x_angular(x_angle), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_y_angular(y_angle), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_z_angular(z_angle), points);
             //Пункт 3 - вращаем сам полигон
             points = matr.get_transformed_my_points(matr.matrix_rotation(angle), points);
             //Пункт 4 - 2 в обратном порядк
-            points = matr.get_transformed_my_points(matr.matrix_rotation_y(c.X, d), points);
-            points = matr.get_transformed_my_points(matr.matrix_rotation_x(c.Y, c.Z, d), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_z_angular(-z_angle), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_y_angular(-y_angle), points);
+            points = matr.get_transformed_my_points(matr.matrix_rotation_x_angular(-x_angle), points);
             //Пункт 5 - обратен 1
             points = matr.get_transformed_my_points(matr.matrix_offset(pt1.X, pt1.Y, pt1.Z), points);
 
