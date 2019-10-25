@@ -14,6 +14,18 @@ namespace AffinTransform3D
             for (int i = 0; i < PointFs.Count(); ++i)
             {
                 double[] transformed = matrix_mult(afin_matrix, new double[4] { PointFs[i].X, PointFs[i].Y, PointFs[i].Z, 1 });
+                PointFs[i].X = transformed[0] / transformed[3];
+                PointFs[i].Y = transformed[1] / transformed[3];
+                PointFs[i].Z = transformed[2] / transformed[3];
+            }
+            return PointFs;
+        }
+
+        public List<my_point> get_transformed_my_points_right(double[,] afin_matrix, List<my_point> PointFs)
+        {
+            for (int i = 0; i < PointFs.Count(); ++i)
+            {
+                double[] transformed = matrix_mult_right(afin_matrix, new double[4] { PointFs[i].X, PointFs[i].Y, PointFs[i].Z, 1 });
                 PointFs[i].X = transformed[0] * transformed[3];
                 PointFs[i].Y = transformed[1] * transformed[3];
                 PointFs[i].Z = transformed[2] * transformed[3];
@@ -29,6 +41,21 @@ namespace AffinTransform3D
                 res[i] = 0;
                 for (int k = 0; k < 4; ++k)
                     res[i] += afin_matrix[k, i] * PointF[k];
+            }
+            double[] result = new double[4];
+            for (int i = 0; i < 4; ++i)
+                result[i] = res[i];
+            return result;
+        }
+
+        public double[] matrix_mult_right(double[,] afin_matrix, double[] PointF)
+        {
+            double[] res = new double[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                res[i] = 0;
+                for (int k = 0; k < 4; ++k)
+                    res[i] += afin_matrix[i, k] * PointF[k];
             }
             double[] result = new double[4];
             for (int i = 0; i < 4; ++i)
@@ -169,6 +196,31 @@ namespace AffinTransform3D
             return afin_matrix;
         }
 
+        public double[,] matrix_rotate_general(double l, double m, double n, double angle)
+        {
+            double rad_angle = (angle / 180.0 * Math.PI);
+            double cos_ang = Math.Cos(rad_angle);
+            double sin_ang = Math.Sin(rad_angle);
+            
+            double[,] afin_matrix = new double[4, 4];
+            afin_matrix[0, 0] = l * l + cos_ang * (1 - l * l);
+            afin_matrix[0, 1] = l * (1 - cos_ang) * m + n * sin_ang;
+            afin_matrix[0, 2] = l * (1 - cos_ang) * n - m * sin_ang;
+            afin_matrix[1, 0] = l * (1 - cos_ang) * m - n * sin_ang;
+            afin_matrix[1, 1] = m*m + cos_ang * (1 - m*m);
+            afin_matrix[1, 2] = m * (1 - cos_ang) * n + l * sin_ang;
+            afin_matrix[2, 0] = l * (1 - cos_ang) * n + m * sin_ang;
+            afin_matrix[2, 1] = m * (1 - cos_ang) * n - l * sin_ang;
+            afin_matrix[2, 2] = n * n + cos_ang * (1 - n * n);
+            for (int i = 0; i < 3; ++i)
+            {
+                afin_matrix[i, 3] = 0;
+                afin_matrix[3, i] = 0;
+            }
+            afin_matrix[3, 3] = 1;
+            return afin_matrix;
+        }
+
         public double[,] matrix_refl(double koef_x, double koef_y, double koef_z)
         {
             double[,] afin_matrix = new double[4, 4];
@@ -297,6 +349,81 @@ namespace AffinTransform3D
             afin_matrix[1, 0] = sin_ang;
             afin_matrix[1, 1] = cos_ang;
             return afin_matrix;
+        }
+
+        public double[,] matrix_projection_xy()
+        {
+            double[,] res_matrix = new double[4, 4];
+            res_matrix[0, 0] = 1;
+            res_matrix[1, 1] = 1;
+            res_matrix[3, 3] = 1;
+            return res_matrix;
+        }
+
+        public double[,] matrix_projection_xz()
+        {
+            double[,] res_matrix = new double[4, 4];
+            res_matrix[0, 0] = 1;
+            res_matrix[2, 2] = 1;
+            res_matrix[3, 3] = 1;
+            return res_matrix;
+        }
+
+        public double[,] matrix_projection_yz()
+        {
+            double[,] res_matrix = new double[4, 4];
+            res_matrix[1, 1] = 1;
+            res_matrix[2, 2] = 1;
+            res_matrix[3, 3] = 1;
+            return res_matrix;
+        }
+
+        public double[,] matrix_projection_one()
+        {
+            double[,] res_matrix = new double[4, 4];
+            res_matrix[0, 0] = 1;
+            res_matrix[1, 1] = 1;
+            res_matrix[2, 2] = 1;
+            res_matrix[3, 3] = 1;
+            return res_matrix;
+        }
+
+        public double[,] matrix_isometry()
+        {
+            double[,] res_matrix = new double[4, 4]; /*{{ Math.Sqrt(0.5), 0, -Math.Sqrt(0.5), 0 },
+                                                     { 1 / Math.Sqrt(6), 2 / Math.Sqrt(6), 1 / Math.Sqrt(6), 0 },
+                                                     { 1 / Math.Sqrt(3), -1 / Math.Sqrt(3), 1 / Math.Sqrt(3), 0 },
+                                                     { 0, 0, 0, 1 } };*/
+            double cos_x = Math.Cos(120 * Math.PI / 180);
+            double sin_x = Math.Sin(120 * Math.PI / 180);
+
+            double cos_y = cos_x;//1/Math.Sqrt(2);
+            double sin_y = sin_x;//1 / Math.Sqrt(2);
+
+            res_matrix[0, 0] = cos_y;
+            res_matrix[0, 1] = sin_y*sin_x;
+            res_matrix[1, 1] = cos_x;
+            res_matrix[2, 0] = sin_y;
+            res_matrix[2, 1] = -cos_y * sin_x;
+            /*res_matrix[0, 0] = Math.Sqrt(3)/2;
+            res_matrix[0, 1] = -0.5;
+            res_matrix[0, 2] = 1/Math.Sqrt(3);
+            res_matrix[1, 1] = 1;
+            res_matrix[1, 2] = 1 / Math.Sqrt(3);
+            res_matrix[2, 0] = -Math.Sqrt(3) / 2;
+            res_matrix[2, 1] = -0.5;
+            res_matrix[2, 2] = 1 / Math.Sqrt(3);*/
+            res_matrix[3, 3] = 1;
+            return res_matrix;
+        }
+
+        public double[,] matrix_perspective(double r)
+        {
+            double[,] res_matrix = new double[4, 4] { { 1, 0, 0, 0},
+                                                    { 0, 1, 0, 0 },
+                                                    { 0, 0, 0, -1/r },
+                                                    { 0, 0, 0, 1 }};
+            return res_matrix;
         }
 
         public Matrixes()

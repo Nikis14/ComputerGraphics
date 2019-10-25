@@ -22,6 +22,7 @@ namespace AffinTransform3D
         my_point axis_P1, axis_P2; // точки оси для поворота
         List<face> shape = new List<face>(); // фигура - список граней
         List<my_point> points = new List<my_point>(); // список точек
+        List<Tuple<int, int, int, int>> check = new List<Tuple<int, int, int, int>>();
         bool not_redraw = false; // перерисовывать или нет текущее положение
 
         public Form1()
@@ -38,6 +39,11 @@ namespace AffinTransform3D
             g = Graphics.FromImage(pictureBox.Image);
             g.Clear(Color.White);
             pictureBox.Invalidate();
+
+            panel1.Controls.Add(XOY_o);
+            panel1.Controls.Add(XOZ_o);
+            panel1.Controls.Add(YOZ_o);
+            panel1.Visible = true;
         }
 
         private void build_points()
@@ -54,8 +60,64 @@ namespace AffinTransform3D
             g.FillEllipse(new SolidBrush(Color.Green), (int)Math.Round(p.X + centerX - 3), (int)Math.Round(-p.Y + centerY - 3), 6, 6);
         }
 
+        private List<my_point> Copy(List<my_point> l)
+        {
+            List<my_point> res = new List<my_point>(l.Count);
+            for (int i = 0; i < l.Count; ++i)
+                res.Add(new my_point(l[i].X, l[i].Y, l[i].Z));
+            return res;
+        }
+
         private void draw_face(face f) // рисуем грань
         {
+            List<my_point> points_to_draw = new List<my_point>(f.points.Count());
+            if (isometry.Checked)
+            {
+                points_to_draw = matr.get_transformed_my_points(matr.matrix_isometry(), Copy(f.points));
+                /*for (int i = 0; i < points_to_draw1.Count(); i++)
+                {
+                    points_to_draw.Add(new my_point(points_to_draw1[i].X, points_to_draw1[i].Y, points_to_draw1[i].Z));
+                }*/
+            }
+            else if (perspective.Checked)
+            {
+                points_to_draw = matr.get_transformed_my_points(matr.matrix_perspective(1000), Copy(f.points));
+
+            }
+            else if (XOY_o.Checked)
+            {
+                List<my_point> points_to_draw1 = matr.get_transformed_my_points(matr.matrix_projection_xy(), Copy(f.points));
+                for (int i = 0; i < points_to_draw1.Count(); i++)
+                {
+                    points_to_draw.Add(new my_point(points_to_draw1[i].X, points_to_draw1[i].Y, points_to_draw1[i].Z));
+                }
+            }
+            else if (XOZ_o.Checked)
+            {
+                List<my_point> points_to_draw1 = matr.get_transformed_my_points(matr.matrix_projection_xz(), Copy(f.points));
+                for (int i = 0; i < points_to_draw1.Count(); i++)
+                {
+                    points_to_draw.Add(new my_point(points_to_draw1[i].X, points_to_draw1[i].Z, points_to_draw1[i].Z));
+                }
+            }
+            else
+            {
+                List<my_point> points_to_draw1 = matr.get_transformed_my_points(matr.matrix_projection_yz(), Copy(f.points));
+                for (int i = 0; i < points_to_draw1.Count(); i++)
+                {
+                    points_to_draw.Add(new my_point(points_to_draw1[i].Y, points_to_draw1[i].Z, points_to_draw1[i].Z));
+                }
+            }
+
+            for (int i = 0; i < points_to_draw.Count(); i++)
+            {
+                int x1 = (int)Math.Round(points_to_draw[i].X + centerX);
+                int x2 = (int)Math.Round(points_to_draw[(i + 1) % points_to_draw.Count()].X + centerX);
+                int y1 = (int)Math.Round(-points_to_draw[i].Y + centerY);
+                int y2 = (int)Math.Round(-points_to_draw[(i + 1) % points_to_draw.Count()].Y + centerY);
+                g.DrawLine(pen_shape, x1, y1, x2, y2);
+            }
+            /*
             int n = f.points.Count - 1;
 
             int x1 = (int)Math.Round(f.points[0].X + centerX);
@@ -72,6 +134,7 @@ namespace AffinTransform3D
                 y2 = (int)Math.Round(-f.points[i + 1].Y + centerY);
                 g.DrawLine(pen_shape, x1, y1, x2, y2);
             }
+            */
         }
 
         Bitmap bmp2;
@@ -95,11 +158,11 @@ namespace AffinTransform3D
                 flag = true;
                 g.Clear(Color.White);
             }
-            if (axis_P2 != null)
+            /*if (axis_P2 != null)
             {
                 draw_point(axis_P1);
                 draw_point(axis_P2);
-            }
+            }*/
             foreach (face f in shape)
                 draw_face(f);
             pictureBox.Image = bmp;
@@ -107,17 +170,20 @@ namespace AffinTransform3D
 
         private void build_tetrahedron()
         {
-            double h = Math.Sqrt(3) / 2 * 100;
+            double h = Math.Sqrt(3) * 50;
+            double h_big = 25 * Math.Sqrt(13);
 
-            my_point p1 = new my_point(-50, -h / 2, 0);
-            my_point p2 = new my_point(0, -h / 2, -h);
-            my_point p3 = new my_point(50, -h / 2, 0);
-            my_point p4 = new my_point(0, h / 2, 0);
+            my_point p1 = new my_point(-50, -h/3, 0);
+            my_point p2 = new my_point(50, -h/3, 0);
+            my_point p3 = new my_point(0, 2*h/3, 0);
+            my_point p4 = new my_point(0, 0, h_big);
+            shape.Clear();
 
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); shape.Add(f1);
             face f2 = new face(); f2.add(p1); f2.add(p4); f2.add(p2); shape.Add(f2);
             face f3 = new face(); f3.add(p4); f3.add(p2); f3.add(p3); shape.Add(f3);
             face f4 = new face(); f4.add(p1); f4.add(p4); f4.add(p3); shape.Add(f4);
+            
         }
 
         private void build_hexahedron()
@@ -130,7 +196,7 @@ namespace AffinTransform3D
             my_point p6 = new my_point(-50, 50, 50);
             my_point p7 = new my_point(50, 50, 50);
             my_point p8 = new my_point(50, -50, 50);
-
+            shape.Clear();
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); f1.add(p4); shape.Add(f1);
             face f2 = new face(); f2.add(p1); f2.add(p2); f2.add(p6); f2.add(p5); shape.Add(f2);
             face f3 = new face(); f3.add(p5); f3.add(p6); f3.add(p7); f3.add(p8); shape.Add(f3);
@@ -151,7 +217,7 @@ namespace AffinTransform3D
             my_point p4 = new my_point(50, 0, -50);
             my_point p5 = new my_point(-50, 0, 50);
             my_point p6 = new my_point(50, 0, 50);
-
+            shape.Clear();
             face f1 = new face(); f1.add(p2); f1.add(p3); f1.add(p4); shape.Add(f1);
             face f2 = new face(); f2.add(p2); f2.add(p1); f2.add(p4); shape.Add(f2);
             face f3 = new face(); f3.add(p2); f3.add(p3); f3.add(p5); shape.Add(f3);
@@ -187,7 +253,7 @@ namespace AffinTransform3D
             my_point p18 = new my_point(x, x, x);
             my_point p19 = new my_point(-r, 0, 50);
             my_point p20 = new my_point(r, 0, 50);
-
+            shape.Clear();
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); f1.add(p4); f1.add(p5); shape.Add(f1);
             face f2 = new face(); f2.add(p1); f2.add(p5); f2.add(p6); f2.add(p7); f2.add(p8); shape.Add(f2);
             face f3 = new face(); f3.add(p1); f3.add(p2); f3.add(p10); f3.add(p9); f3.add(p8); shape.Add(f3);
@@ -217,7 +283,7 @@ namespace AffinTransform3D
             my_point p10 = new my_point(-r, 0, 50);
             my_point p11 = new my_point(0, -50, r);
             my_point p12 = new my_point(0, 50, r);
-
+            shape.Clear();
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p4); shape.Add(f1);
             face f2 = new face(); f2.add(p1); f2.add(p2); f2.add(p7); shape.Add(f2);
             face f3 = new face(); f3.add(p7); f3.add(p2); f3.add(p8); shape.Add(f3);
@@ -341,46 +407,33 @@ namespace AffinTransform3D
 
         private my_point normalize_vector(my_point pt1,my_point pt2)
         {
+            if(pt2.Z < pt1.Z || (pt2.Z == pt1.Z && pt2.Y < pt1.Y) ||
+                (pt2.Z == pt1.Z && pt2.Y == pt1.Y) && pt2.X < pt1.X)
+            {
+                my_point tmp = pt1;
+                pt1 = pt2;
+                pt2 = tmp;
+            }
             double x = pt2.X - pt1.X;
             double y = pt2.Y - pt1.Y;
             double z = pt2.Z - pt1.Z;
             double d = Math.Sqrt(x * x + y * y + z * z);
-            return new my_point(x / d, y / d, z / d); 
+            if (d != 0)
+                return new my_point(x / d, y / d, z / d); 
+            return new my_point(0, 0, 0);
         }
 
         private void axis_rotate(my_point pt1, my_point pt2, double angle) // поворот вокруг оси
         {
             my_point c = normalize_vector(pt1, pt2);
-            // Пункт 0. Выводим вектор.
-            double d = Math.Sqrt(c.Y * c.Y + c.Z * c.Z);
-            //double rad_angle = (angle / 180.0 * Math.PI);
-            //double alpha = (-Math.Asin(c.Y/d) / 180.0 * Math.PI);
-            //double beta = (Math.Asin(c.X) / 180.0 * Math.PI);
-            double x_angle = 0;//Угол поворота относительно Х
-            double y_angle = 0;//Угол поворота относительно У
-            double z_angle = 0;//Угол поворота относительно Z
-            //Как в учебнике: Пункт 1 - перенести точки в начало координат.
-            points = matr.get_transformed_my_points(matr.matrix_offset(-pt1.X, -pt1.Y, -pt1.Z), points);
-            //Пункт 2 - вращаем вектор
-            points = matr.get_transformed_my_points(matr.matrix_rotation_x_angular(x_angle), points);
-            points = matr.get_transformed_my_points(matr.matrix_rotation_y_angular(y_angle), points);
-            points = matr.get_transformed_my_points(matr.matrix_rotation_z_angular(z_angle), points);
-            //Пункт 3 - вращаем сам полигон
-            points = matr.get_transformed_my_points(matr.matrix_rotation(angle), points);
-            //Пункт 4 - 2 в обратном порядк
-            points = matr.get_transformed_my_points(matr.matrix_rotation_z_angular(-z_angle), points);
-            points = matr.get_transformed_my_points(matr.matrix_rotation_y_angular(-y_angle), points);
-            points = matr.get_transformed_my_points(matr.matrix_rotation_x_angular(-x_angle), points);
-            //Пункт 5 - обратен 1
-            points = matr.get_transformed_my_points(matr.matrix_offset(pt1.X, pt1.Y, pt1.Z), points);
-
-
+            matr.matrix_projection_xy();
+            points = matr.get_transformed_my_points(matr.matrix_rotate_general(c.X, c.Y, c.Z, angle), points);         
         }
 
         private void displacement_button_Click(object sender, EventArgs e) // перенос
         {
             int kx = (int)x_shift.Value, ky = (int)y_shift.Value, kz = (int)z_shift.Value;
-            var new_points = matr.get_transformed_my_points(matr.matrix_offset(kx, ky, kz), points);
+            points = matr.get_transformed_my_points(matr.matrix_offset(kx, ky, kz), points);
             //displacement(kx, ky, kz);
             redraw_image();
         }
@@ -439,6 +492,58 @@ namespace AffinTransform3D
         private void label10_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void orthography_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!orthography.Checked) return;
+            isometry.Checked = false;
+            perspective.Checked = false;
+            YOZ_o.Checked = true;
+            panel1.Visible = true;
+            redraw_image();
+        }
+
+        private void isometry_CheckedChanged(object sender, EventArgs e)
+        { 
+            if (!isometry.Checked) return;
+            //isometry.Checked = true;
+            orthography.Checked = false;
+            perspective.Checked = false;
+            panel1.Visible = false;
+            redraw_image();
+        }
+
+        private void perspective_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!perspective.Checked) return;
+            isometry.Checked = false;
+            orthography.Checked = false;
+            panel1.Visible = false;
+            redraw_image();
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void XOY_o_CheckedChanged(object sender, EventArgs e)
+        {
+            if(XOY_o.Checked)
+                redraw_image();
+        }
+
+        private void XOZ_o_CheckedChanged(object sender, EventArgs e)
+        {
+            if (XOZ_o.Checked)
+                redraw_image();
+        }
+
+        private void YOZ_o_CheckedChanged(object sender, EventArgs e)
+        {
+            if (YOZ_o.Checked)
+                redraw_image();
         }
 
         private void pictureBox_MouseClick(object sender, MouseEventArgs e)
