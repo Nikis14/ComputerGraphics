@@ -582,10 +582,10 @@ namespace AffinTransform3D
             transformed.Add(initial_points);
             points.Clear();
             shape.Clear();
-            for (int i = 1; i < dividence_count.Value-1; i++)
+            for (int i = 1; i < dividence_count.Value; i++)
             {
                 transformed.Add(matr.get_transformed_my_points_nobr(
-                    matr.matrix_rotate_general(c.X, c.Y, c.Z, rot),
+                    matr.matrix_rotate_general(c.X, c.Y, c.Z, rot*i),
                     initial_points));
             }
             int ctr_depth = 0;
@@ -602,18 +602,19 @@ namespace AffinTransform3D
                 ctr_depth += 1;
                 while (ctr_depth < initial_points.Count)
                 {
-                    counter_rot = 0;
-                    points.Add(transformed[counter_rot][ctr_depth]);
-                    for (int i = 1; i < dividence_count.Value-1; i++)
+                    
+                    points.Add(transformed[0][ctr_depth]);
+                    for (int i = 1; i < dividence_count.Value; i++)
                     {
-                        ctr_depth += 1;
-                        points.Add(transformed[counter_rot][ctr_depth]);
+                        
+                        points.Add(transformed[i][ctr_depth]);
                         face t2 = new face();
-                        t2.add(transformed[counter_rot - 1][ctr_depth - 1]);
-                        t2.add(transformed[counter_rot - 1][ctr_depth]);
-                        t2.add(transformed[counter_rot][ctr_depth]);
-                        t2.add(transformed[counter_rot][ctr_depth - 1]);
+                        t2.add(transformed[i - 1][ctr_depth - 1]);
+                        t2.add(transformed[i - 1][ctr_depth]);
+                        t2.add(transformed[i][ctr_depth]);
+                        t2.add(transformed[i][ctr_depth - 1]);
                         shape.Add(t2);
+                        
                     }
                     face t = new face();
                     t.add(transformed[(int)(dividence_count.Value - 1)][ctr_depth - 1]);
@@ -621,6 +622,7 @@ namespace AffinTransform3D
                     t.add(transformed[0][ctr_depth]);
                     t.add(transformed[0][ctr_depth - 1]);
                     shape.Add(t);
+                    ctr_depth += 1;
                 }
                 face tmp2 = new face();
                 foreach (var item in transformed)
@@ -629,6 +631,7 @@ namespace AffinTransform3D
                 }
                 shape.Add(tmp2);
             }
+            redraw_image();
         }
 
         private void pictureBox_MouseClick(object sender, MouseEventArgs e)
