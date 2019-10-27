@@ -21,6 +21,17 @@ namespace AffinTransform3D
             return PointFs;
         }
 
+        public List<my_point> get_transformed_my_points_nobr(double[,] afin_matrix, List<my_point> PointFs)
+        {
+            List<my_point> res = new List<my_point>();
+            for (int i = 0; i < PointFs.Count(); ++i)
+            {
+                double[] transformed = matrix_mult(afin_matrix, new double[4] { PointFs[i].X, PointFs[i].Y, PointFs[i].Z, 1 });
+                res.Add(new my_point(transformed[0] / transformed[3], transformed[1] / transformed[3], transformed[2] / transformed[3]));
+            }
+            return res;
+        }
+
         public List<my_point> get_transformed_my_points_right(double[,] afin_matrix, List<my_point> PointFs)
         {
             for (int i = 0; i < PointFs.Count(); ++i)

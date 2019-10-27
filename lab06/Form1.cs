@@ -24,6 +24,8 @@ namespace AffinTransform3D
         List<my_point> points = new List<my_point>(); // список точек
         List<Tuple<int, int, int, int>> check = new List<Tuple<int, int, int, int>>();
         bool not_redraw = false; // перерисовывать или нет текущее положение
+        List<my_point> initial_points = new List<my_point>();
+
 
         public Form1()
         {
@@ -267,8 +269,12 @@ namespace AffinTransform3D
             face f11 = new face(); f11.add(p19); f11.add(p17); f11.add(p16); f11.add(p14); f11.add(p13); shape.Add(f11);
             face f12 = new face(); f12.add(p16); f12.add(p14); f12.add(p15); f12.add(p20); f12.add(p18); shape.Add(f12);
         }
+        private void build_rotation_figure()
+        {
+           
 
-        private void build_icosahedron() // икосаэдр
+        }
+            private void build_icosahedron() // икосаэдр
         {
             double r = 100 * (1 + Math.Sqrt(5)) / 4; // радиус полувписанной окружности
             my_point p1 = new my_point(0, -50, -r);
@@ -546,6 +552,85 @@ namespace AffinTransform3D
                 redraw_image();
         }
 
+        private void label30_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void rot_list_add_Click(object sender, EventArgs e)
+        {
+            initial_points.Add(new my_point((int)n_pt_X.Value, (int)n_pt_Y.Value, (int)n_pt_Z.Value));
+            init_pts_list.Items.Add("Point #" + (initial_points.Count) +
+                " X= " + (int)n_pt_X.Value +
+                " Y= " + (int)n_pt_Y.Value +
+                " Z= " + (int)n_pt_Z.Value);
+        }
+
+        private void rot_list_reset_Click(object sender, EventArgs e)
+        {
+            initial_points.Clear();
+            init_pts_list.Items.Clear();
+        }
+
+        private void initiate_build_Click(object sender, EventArgs e)
+        {
+            my_point pt1 = new my_point((double)axis_1st_X.Value, (double)axis_1st_Y.Value, (double)axis_1st_Z.Value);
+            my_point pt2 = new my_point((double)axis_2st_X.Value, (double)axis_2st_Y.Value, (double)axis_2st_Z.Value);
+            my_point c = normalize_vector(pt1, pt2);
+            int rot = (int)(360 / dividence_count.Value);
+            List<List<my_point>> transformed = new List<List<my_point>>();
+            transformed.Add(initial_points);
+            points.Clear();
+            shape.Clear();
+            for (int i = 1; i < dividence_count.Value-1; i++)
+            {
+                transformed.Add(matr.get_transformed_my_points_nobr(
+                    matr.matrix_rotate_general(c.X, c.Y, c.Z, rot),
+                    initial_points));
+            }
+            int ctr_depth = 0;
+            int counter_rot = 0;
+            if ((dividence_count.Value >= 3) && (initial_points.Count >= 2))
+            {
+                face tmp = new face();
+                foreach (var item in transformed)
+                {
+                    points.Add(item[ctr_depth]);
+                    tmp.add(item[ctr_depth]);
+                }
+                shape.Add(tmp);
+                ctr_depth += 1;
+                while (ctr_depth < initial_points.Count)
+                {
+                    counter_rot = 0;
+                    points.Add(transformed[counter_rot][ctr_depth]);
+                    for (int i = 1; i < dividence_count.Value-1; i++)
+                    {
+                        ctr_depth += 1;
+                        points.Add(transformed[counter_rot][ctr_depth]);
+                        face t2 = new face();
+                        t2.add(transformed[counter_rot - 1][ctr_depth - 1]);
+                        t2.add(transformed[counter_rot - 1][ctr_depth]);
+                        t2.add(transformed[counter_rot][ctr_depth]);
+                        t2.add(transformed[counter_rot][ctr_depth - 1]);
+                        shape.Add(t2);
+                    }
+                    face t = new face();
+                    t.add(transformed[(int)(dividence_count.Value - 1)][ctr_depth - 1]);
+                    t.add(transformed[(int)(dividence_count.Value - 1)][ctr_depth]);
+                    t.add(transformed[0][ctr_depth]);
+                    t.add(transformed[0][ctr_depth - 1]);
+                    shape.Add(t);
+                }
+                face tmp2 = new face();
+                foreach (var item in transformed)
+                {
+                    tmp2.add(item[initial_points.Count-1]);
+                }
+                shape.Add(tmp2);
+            }
+        }
+
         private void pictureBox_MouseClick(object sender, MouseEventArgs e)
         {
             if (!is_axis || e.Button != System.Windows.Forms.MouseButtons.Left)
@@ -581,6 +666,8 @@ namespace AffinTransform3D
                 build_dodecahedron();
             else if (icosahedron.Checked)
                 build_icosahedron();
+            else if (rotation_figure.Checked)
+                
             build_points();
             redraw_image();
         }

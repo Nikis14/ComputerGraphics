@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using Newtonsoft.Json;
+using System.IO;
+using System.Windows;
 
 namespace AffinTransform3D
 {

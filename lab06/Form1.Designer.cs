@@ -90,6 +90,37 @@
             this.XOZ_o = new System.Windows.Forms.RadioButton();
             this.XOY_o = new System.Windows.Forms.RadioButton();
             this.isometry = new System.Windows.Forms.CheckBox();
+            this.rotation_figure = new System.Windows.Forms.RadioButton();
+            this.dividence_count = new System.Windows.Forms.NumericUpDown();
+            this.label22 = new System.Windows.Forms.Label();
+            this.load_from_file = new System.Windows.Forms.Button();
+            this.axis_1st_X = new System.Windows.Forms.NumericUpDown();
+            this.label23 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.axis_1st_Y = new System.Windows.Forms.NumericUpDown();
+            this.axis_1st_Z = new System.Windows.Forms.NumericUpDown();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.axis_2st_X = new System.Windows.Forms.NumericUpDown();
+            this.axis_2st_Z = new System.Windows.Forms.NumericUpDown();
+            this.axis_2st_Y = new System.Windows.Forms.NumericUpDown();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.init_pts_list = new System.Windows.Forms.ComboBox();
+            this.label31 = new System.Windows.Forms.Label();
+            this.label32 = new System.Windows.Forms.Label();
+            this.n_pt_Z = new System.Windows.Forms.NumericUpDown();
+            this.n_pt_Y = new System.Windows.Forms.NumericUpDown();
+            this.label33 = new System.Windows.Forms.Label();
+            this.n_pt_X = new System.Windows.Forms.NumericUpDown();
+            this.label34 = new System.Windows.Forms.Label();
+            this.rot_list_add = new System.Windows.Forms.Button();
+            this.rot_list_reset = new System.Windows.Forms.Button();
+            this.save_to_file = new System.Windows.Forms.Button();
+            this.label35 = new System.Windows.Forms.Label();
+            this.initiate_build = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.z_shift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.y_shift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.x_shift)).BeginInit();
@@ -108,6 +139,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.y1_box)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.x1_box)).BeginInit();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dividence_count)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_1st_X)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_1st_Y)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_1st_Z)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_2st_X)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_2st_Z)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_2st_Y)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.n_pt_Z)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.n_pt_Y)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.n_pt_X)).BeginInit();
             this.SuspendLayout();
             // 
             // icosahedron
@@ -931,11 +972,395 @@
             this.isometry.UseVisualStyleBackColor = true;
             this.isometry.CheckedChanged += new System.EventHandler(this.isometry_CheckedChanged);
             // 
+            // rotation_figure
+            // 
+            this.rotation_figure.AutoSize = true;
+            this.rotation_figure.Location = new System.Drawing.Point(1245, 167);
+            this.rotation_figure.Name = "rotation_figure";
+            this.rotation_figure.Size = new System.Drawing.Size(150, 21);
+            this.rotation_figure.TabIndex = 37;
+            this.rotation_figure.TabStop = true;
+            this.rotation_figure.Text = "Фигура Вращения";
+            this.rotation_figure.UseVisualStyleBackColor = true;
+            // 
+            // dividence_count
+            // 
+            this.dividence_count.Location = new System.Drawing.Point(1132, 265);
+            this.dividence_count.Margin = new System.Windows.Forms.Padding(4);
+            this.dividence_count.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.dividence_count.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
+            this.dividence_count.Name = "dividence_count";
+            this.dividence_count.Size = new System.Drawing.Size(85, 22);
+            this.dividence_count.TabIndex = 38;
+            this.dividence_count.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(1130, 244);
+            this.label22.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(80, 17);
+            this.label22.TabIndex = 39;
+            this.label22.Text = "Разбиения";
+            // 
+            // load_from_file
+            // 
+            this.load_from_file.Location = new System.Drawing.Point(1094, 487);
+            this.load_from_file.Name = "load_from_file";
+            this.load_from_file.Size = new System.Drawing.Size(133, 26);
+            this.load_from_file.TabIndex = 41;
+            this.load_from_file.Text = "Load From File";
+            this.load_from_file.UseVisualStyleBackColor = true;
+            // 
+            // axis_1st_X
+            // 
+            this.axis_1st_X.Location = new System.Drawing.Point(1145, 40);
+            this.axis_1st_X.Margin = new System.Windows.Forms.Padding(4);
+            this.axis_1st_X.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.axis_1st_X.Name = "axis_1st_X";
+            this.axis_1st_X.Size = new System.Drawing.Size(85, 22);
+            this.axis_1st_X.TabIndex = 42;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(1129, 19);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(98, 17);
+            this.label23.TabIndex = 43;
+            this.label23.Text = "First axis point";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label24.Location = new System.Drawing.Point(1117, 43);
+            this.label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(21, 17);
+            this.label24.TabIndex = 44;
+            this.label24.Text = "X:";
+            // 
+            // axis_1st_Y
+            // 
+            this.axis_1st_Y.Location = new System.Drawing.Point(1145, 70);
+            this.axis_1st_Y.Margin = new System.Windows.Forms.Padding(4);
+            this.axis_1st_Y.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.axis_1st_Y.Name = "axis_1st_Y";
+            this.axis_1st_Y.Size = new System.Drawing.Size(85, 22);
+            this.axis_1st_Y.TabIndex = 45;
+            // 
+            // axis_1st_Z
+            // 
+            this.axis_1st_Z.Location = new System.Drawing.Point(1145, 100);
+            this.axis_1st_Z.Margin = new System.Windows.Forms.Padding(4);
+            this.axis_1st_Z.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.axis_1st_Z.Name = "axis_1st_Z";
+            this.axis_1st_Z.Size = new System.Drawing.Size(85, 22);
+            this.axis_1st_Z.TabIndex = 46;
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label25.Location = new System.Drawing.Point(1117, 100);
+            this.label25.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(21, 17);
+            this.label25.TabIndex = 47;
+            this.label25.Text = "Z:";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label26.Location = new System.Drawing.Point(1117, 74);
+            this.label26.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(21, 17);
+            this.label26.TabIndex = 48;
+            this.label26.Text = "Y:";
+            // 
+            // axis_2st_X
+            // 
+            this.axis_2st_X.Location = new System.Drawing.Point(1145, 147);
+            this.axis_2st_X.Margin = new System.Windows.Forms.Padding(4);
+            this.axis_2st_X.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.axis_2st_X.Name = "axis_2st_X";
+            this.axis_2st_X.Size = new System.Drawing.Size(85, 22);
+            this.axis_2st_X.TabIndex = 49;
+            // 
+            // axis_2st_Z
+            // 
+            this.axis_2st_Z.Location = new System.Drawing.Point(1145, 207);
+            this.axis_2st_Z.Margin = new System.Windows.Forms.Padding(4);
+            this.axis_2st_Z.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.axis_2st_Z.Name = "axis_2st_Z";
+            this.axis_2st_Z.Size = new System.Drawing.Size(85, 22);
+            this.axis_2st_Z.TabIndex = 50;
+            // 
+            // axis_2st_Y
+            // 
+            this.axis_2st_Y.Location = new System.Drawing.Point(1145, 177);
+            this.axis_2st_Y.Margin = new System.Windows.Forms.Padding(4);
+            this.axis_2st_Y.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.axis_2st_Y.Name = "axis_2st_Y";
+            this.axis_2st_Y.Size = new System.Drawing.Size(85, 22);
+            this.axis_2st_Y.TabIndex = 51;
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(1129, 126);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(119, 17);
+            this.label27.TabIndex = 52;
+            this.label27.Text = "Second axis point";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label28.Location = new System.Drawing.Point(1117, 147);
+            this.label28.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(21, 17);
+            this.label28.TabIndex = 53;
+            this.label28.Text = "X:";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label29.Location = new System.Drawing.Point(1117, 208);
+            this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(21, 17);
+            this.label29.TabIndex = 54;
+            this.label29.Text = "Z:";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label30.Location = new System.Drawing.Point(1117, 178);
+            this.label30.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(21, 17);
+            this.label30.TabIndex = 55;
+            this.label30.Text = "Y:";
+            this.label30.Click += new System.EventHandler(this.label30_Click);
+            // 
+            // init_pts_list
+            // 
+            this.init_pts_list.FormattingEnabled = true;
+            this.init_pts_list.Location = new System.Drawing.Point(666, 36);
+            this.init_pts_list.Name = "init_pts_list";
+            this.init_pts_list.Size = new System.Drawing.Size(421, 24);
+            this.init_pts_list.TabIndex = 56;
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label31.Location = new System.Drawing.Point(1117, 362);
+            this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(21, 17);
+            this.label31.TabIndex = 62;
+            this.label31.Text = "Y:";
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label32.Location = new System.Drawing.Point(1117, 388);
+            this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(21, 17);
+            this.label32.TabIndex = 61;
+            this.label32.Text = "Z:";
+            // 
+            // n_pt_Z
+            // 
+            this.n_pt_Z.Location = new System.Drawing.Point(1145, 388);
+            this.n_pt_Z.Margin = new System.Windows.Forms.Padding(4);
+            this.n_pt_Z.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.n_pt_Z.Name = "n_pt_Z";
+            this.n_pt_Z.Size = new System.Drawing.Size(85, 22);
+            this.n_pt_Z.TabIndex = 60;
+            // 
+            // n_pt_Y
+            // 
+            this.n_pt_Y.Location = new System.Drawing.Point(1145, 358);
+            this.n_pt_Y.Margin = new System.Windows.Forms.Padding(4);
+            this.n_pt_Y.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.n_pt_Y.Name = "n_pt_Y";
+            this.n_pt_Y.Size = new System.Drawing.Size(85, 22);
+            this.n_pt_Y.TabIndex = 59;
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label33.Location = new System.Drawing.Point(1117, 331);
+            this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(21, 17);
+            this.label33.TabIndex = 58;
+            this.label33.Text = "X:";
+            // 
+            // n_pt_X
+            // 
+            this.n_pt_X.Location = new System.Drawing.Point(1145, 328);
+            this.n_pt_X.Margin = new System.Windows.Forms.Padding(4);
+            this.n_pt_X.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.n_pt_X.Name = "n_pt_X";
+            this.n_pt_X.Size = new System.Drawing.Size(85, 22);
+            this.n_pt_X.TabIndex = 57;
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(1129, 307);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(84, 17);
+            this.label34.TabIndex = 63;
+            this.label34.Text = "Point to add";
+            // 
+            // rot_list_add
+            // 
+            this.rot_list_add.Location = new System.Drawing.Point(1125, 417);
+            this.rot_list_add.Name = "rot_list_add";
+            this.rot_list_add.Size = new System.Drawing.Size(102, 29);
+            this.rot_list_add.TabIndex = 64;
+            this.rot_list_add.Text = "Add point";
+            this.rot_list_add.UseVisualStyleBackColor = true;
+            this.rot_list_add.Click += new System.EventHandler(this.rot_list_add_Click);
+            // 
+            // rot_list_reset
+            // 
+            this.rot_list_reset.Location = new System.Drawing.Point(1125, 452);
+            this.rot_list_reset.Name = "rot_list_reset";
+            this.rot_list_reset.Size = new System.Drawing.Size(102, 29);
+            this.rot_list_reset.TabIndex = 65;
+            this.rot_list_reset.Text = "Reset list";
+            this.rot_list_reset.UseVisualStyleBackColor = true;
+            this.rot_list_reset.Click += new System.EventHandler(this.rot_list_reset_Click);
+            // 
+            // save_to_file
+            // 
+            this.save_to_file.Location = new System.Drawing.Point(1094, 519);
+            this.save_to_file.Name = "save_to_file";
+            this.save_to_file.Size = new System.Drawing.Size(133, 26);
+            this.save_to_file.TabIndex = 66;
+            this.save_to_file.Text = "Save to file";
+            this.save_to_file.UseVisualStyleBackColor = true;
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(823, 9);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(198, 17);
+            this.label35.TabIndex = 67;
+            this.label35.Text = "Points for initial build of rot_fig";
+            // 
+            // initiate_build
+            // 
+            this.initiate_build.Location = new System.Drawing.Point(1095, 232);
+            this.initiate_build.Name = "initiate_build";
+            this.initiate_build.Size = new System.Drawing.Size(25, 78);
+            this.initiate_build.TabIndex = 68;
+            this.initiate_build.Text = "DO!";
+            this.initiate_build.UseVisualStyleBackColor = true;
+            this.initiate_build.Click += new System.EventHandler(this.initiate_build_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1586, 814);
+            this.Controls.Add(this.initiate_build);
+            this.Controls.Add(this.label35);
+            this.Controls.Add(this.save_to_file);
+            this.Controls.Add(this.rot_list_reset);
+            this.Controls.Add(this.rot_list_add);
+            this.Controls.Add(this.label34);
+            this.Controls.Add(this.label31);
+            this.Controls.Add(this.label32);
+            this.Controls.Add(this.n_pt_Z);
+            this.Controls.Add(this.n_pt_Y);
+            this.Controls.Add(this.label33);
+            this.Controls.Add(this.n_pt_X);
+            this.Controls.Add(this.init_pts_list);
+            this.Controls.Add(this.label30);
+            this.Controls.Add(this.label29);
+            this.Controls.Add(this.label28);
+            this.Controls.Add(this.label27);
+            this.Controls.Add(this.axis_2st_Y);
+            this.Controls.Add(this.axis_2st_Z);
+            this.Controls.Add(this.axis_2st_X);
+            this.Controls.Add(this.label26);
+            this.Controls.Add(this.label25);
+            this.Controls.Add(this.axis_1st_Z);
+            this.Controls.Add(this.axis_1st_Y);
+            this.Controls.Add(this.label24);
+            this.Controls.Add(this.label23);
+            this.Controls.Add(this.axis_1st_X);
+            this.Controls.Add(this.load_from_file);
+            this.Controls.Add(this.label22);
+            this.Controls.Add(this.dividence_count);
+            this.Controls.Add(this.rotation_figure);
             this.Controls.Add(this.isometry);
             this.Controls.Add(this.orthography);
             this.Controls.Add(this.perspective);
@@ -1017,6 +1442,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.x1_box)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dividence_count)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_1st_X)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_1st_Y)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_1st_Z)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_2st_X)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_2st_Z)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axis_2st_Y)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.n_pt_Z)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.n_pt_Y)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.n_pt_X)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1085,6 +1520,37 @@
         private System.Windows.Forms.RadioButton XOZ_o;
         private System.Windows.Forms.RadioButton XOY_o;
         private System.Windows.Forms.CheckBox isometry;
+        private System.Windows.Forms.RadioButton rotation_figure;
+        private System.Windows.Forms.NumericUpDown dividence_count;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.Button load_from_file;
+        private System.Windows.Forms.NumericUpDown axis_1st_X;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.NumericUpDown axis_1st_Y;
+        private System.Windows.Forms.NumericUpDown axis_1st_Z;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.NumericUpDown axis_2st_X;
+        private System.Windows.Forms.NumericUpDown axis_2st_Z;
+        private System.Windows.Forms.NumericUpDown axis_2st_Y;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.ComboBox init_pts_list;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.NumericUpDown n_pt_Z;
+        private System.Windows.Forms.NumericUpDown n_pt_Y;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.NumericUpDown n_pt_X;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.Button rot_list_add;
+        private System.Windows.Forms.Button rot_list_reset;
+        private System.Windows.Forms.Button save_to_file;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.Button initiate_build;
     }
 }
 
