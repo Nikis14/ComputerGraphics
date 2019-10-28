@@ -42,4 +42,23 @@ namespace AffinTransform3D
             points.Add(p);
         }
     }
+
+    public class rotationFigure
+    {
+        public List<my_point> initial_points;
+        public my_point point_1_axis;
+        public my_point point_2_axis;
+        public int divs;
+
+        public rotationFigure(List<my_point> initial_points,
+            my_point point_1_axis,
+            my_point point_2_axis,
+            int divs)
+        {
+            this.initial_points = initial_points;
+            this.point_1_axis = point_1_axis;
+            this.point_2_axis = point_2_axis;
+            this.divs = divs;
+        }
+    }
 }

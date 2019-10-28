@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+using System.IO;
 using System.Drawing.Drawing2D;
 
 namespace AffinTransform3D
@@ -15,6 +17,7 @@ namespace AffinTransform3D
     {
         Bitmap bmp;
         Graphics g;
+        rotationFigure current_saved_figure;
         Matrixes matr = new Matrixes();
         Pen pen_shape = new Pen(Color.Red); // для фигуры
         int centerX, centerY; // центр pictureBox
@@ -271,8 +274,65 @@ namespace AffinTransform3D
         }
         private void build_rotation_figure()
         {
-           
+            my_point pt1 = new my_point((double)axis_1st_X.Value, (double)axis_1st_Y.Value, (double)axis_1st_Z.Value);
+            my_point pt2 = new my_point((double)axis_2st_X.Value, (double)axis_2st_Y.Value, (double)axis_2st_Z.Value);
+            my_point c = normalize_vector(pt1, pt2);
+            int rot = (int)(360 / dividence_count.Value);
+            List<List<my_point>> transformed = new List<List<my_point>>();
+            transformed.Add(this.Copy(initial_points));
+            points.Clear();
+            shape.Clear();
+            for (int i = 1; i < dividence_count.Value; i++)
+            {
+                transformed.Add(matr.get_transformed_my_points_nobr(
+                    matr.matrix_rotate_general(c.X, c.Y, c.Z, rot * i),
+                    initial_points));
+            }
+            int ctr_depth = 0;
+            int counter_rot = 0;
+            if ((dividence_count.Value >= 3) && (initial_points.Count >= 2))
+            {
+                face tmp = new face();
+                foreach (var item in transformed)
+                {
+                    points.Add(item[ctr_depth]);
+                    tmp.add(item[ctr_depth]);
+                }
+                shape.Add(tmp);
+                ctr_depth += 1;
+                while (ctr_depth < initial_points.Count)
+                {
 
+
+                    for (int i = 0; i < dividence_count.Value - 1; i++)
+                    {
+
+                        points.Add(transformed[i][ctr_depth]);
+                        face t2 = new face();
+                        t2.add(transformed[i][ctr_depth - 1]);
+                        t2.add(transformed[i][ctr_depth]);
+                        t2.add(transformed[i + 1][ctr_depth]);
+                        t2.add(transformed[i + 1][ctr_depth - 1]);
+                        shape.Add(t2);
+
+                    }
+                    points.Add(transformed[(int)dividence_count.Value - 1][ctr_depth]);
+                    face t = new face();
+                    t.add(transformed[(int)(dividence_count.Value - 1)][ctr_depth - 1]);
+                    t.add(transformed[(int)(dividence_count.Value - 1)][ctr_depth]);
+                    t.add(transformed[0][ctr_depth]);
+                    t.add(transformed[0][ctr_depth - 1]);
+                    shape.Add(t);
+                    ctr_depth += 1;
+                }
+                face tmp2 = new face();
+                foreach (var item in transformed)
+                {
+                    tmp2.add(item[initial_points.Count - 1]);
+                }
+                shape.Add(tmp2);
+            }
+            redraw_image();
         }
             private void build_icosahedron() // икосаэдр
         {
@@ -576,62 +636,57 @@ namespace AffinTransform3D
         {
             my_point pt1 = new my_point((double)axis_1st_X.Value, (double)axis_1st_Y.Value, (double)axis_1st_Z.Value);
             my_point pt2 = new my_point((double)axis_2st_X.Value, (double)axis_2st_Y.Value, (double)axis_2st_Z.Value);
-            my_point c = normalize_vector(pt1, pt2);
-            int rot = (int)(360 / dividence_count.Value);
-            List<List<my_point>> transformed = new List<List<my_point>>();
-            transformed.Add(initial_points);
-            points.Clear();
-            shape.Clear();
-            for (int i = 1; i < dividence_count.Value; i++)
+            this.current_saved_figure = new rotationFigure(this.initial_points,
+                pt1,
+                pt2,
+                (int)dividence_count.Value);
+            build_rotation_figure();  
+        }
+
+        private void save_to_file_Click(object sender, EventArgs e)
+        {
+            
+            string file_str  = JsonConvert.SerializeObject(this.current_saved_figure);
+            //System.IO.File.WriteAllText(@"C:\Users\Sokolov\Downloads\WriteLines.txt", file_str)
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                transformed.Add(matr.get_transformed_my_points_nobr(
-                    matr.matrix_rotate_general(c.X, c.Y, c.Z, rot*i),
-                    initial_points));
+                if (saveFileDialog1.CheckFileExists)
+                {
+                    File.Delete(saveFileDialog1.FileName);
+                }
+                File.WriteAllText(saveFileDialog1.FileName, file_str);
             }
-            int ctr_depth = 0;
-            int counter_rot = 0;
-            if ((dividence_count.Value >= 3) && (initial_points.Count >= 2))
+        }
+
+        private void load_from_file_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog1.FilterIndex = 2;
+            openFileDialog1.RestoreDirectory = true;
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                face tmp = new face();
-                foreach (var item in transformed)
+                if (openFileDialog1.CheckFileExists)
                 {
-                    points.Add(item[ctr_depth]);
-                    tmp.add(item[ctr_depth]);
+                    string res = File.ReadAllText(openFileDialog1.FileName);
+                    rotationFigure f = JsonConvert.DeserializeObject<rotationFigure>(res);
+                    this.initial_points = f.initial_points;
+                    this.axis_1st_X.Value = (decimal)f.point_1_axis.X;
+                    this.axis_1st_Y.Value = (decimal)f.point_1_axis.Y;
+                    this.axis_1st_Z.Value = (decimal)f.point_1_axis.Z;
+                    this.axis_2st_X.Value = (decimal)f.point_2_axis.X;
+                    this.axis_2st_Y.Value = (decimal)f.point_2_axis.Y;
+                    this.axis_2st_Z.Value = (decimal)f.point_2_axis.Z;
+                    this.dividence_count.Value = f.divs;
+                    this.current_saved_figure = f;
+                    build_rotation_figure();
                 }
-                shape.Add(tmp);
-                ctr_depth += 1;
-                while (ctr_depth < initial_points.Count)
-                {
-                    
-                    points.Add(transformed[0][ctr_depth]);
-                    for (int i = 1; i < dividence_count.Value; i++)
-                    {
-                        
-                        points.Add(transformed[i][ctr_depth]);
-                        face t2 = new face();
-                        t2.add(transformed[i - 1][ctr_depth - 1]);
-                        t2.add(transformed[i - 1][ctr_depth]);
-                        t2.add(transformed[i][ctr_depth]);
-                        t2.add(transformed[i][ctr_depth - 1]);
-                        shape.Add(t2);
-                        
-                    }
-                    face t = new face();
-                    t.add(transformed[(int)(dividence_count.Value - 1)][ctr_depth - 1]);
-                    t.add(transformed[(int)(dividence_count.Value - 1)][ctr_depth]);
-                    t.add(transformed[0][ctr_depth]);
-                    t.add(transformed[0][ctr_depth - 1]);
-                    shape.Add(t);
-                    ctr_depth += 1;
-                }
-                face tmp2 = new face();
-                foreach (var item in transformed)
-                {
-                    tmp2.add(item[initial_points.Count-1]);
-                }
-                shape.Add(tmp2);
             }
-            redraw_image();
         }
 
         private void pictureBox_MouseClick(object sender, MouseEventArgs e)

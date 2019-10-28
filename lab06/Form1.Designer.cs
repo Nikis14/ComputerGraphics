@@ -1024,6 +1024,7 @@
             this.load_from_file.TabIndex = 41;
             this.load_from_file.Text = "Load From File";
             this.load_from_file.UseVisualStyleBackColor = true;
+            this.load_from_file.Click += new System.EventHandler(this.load_from_file_Click);
             // 
             // axis_1st_X
             // 
@@ -1305,6 +1306,7 @@
             this.save_to_file.TabIndex = 66;
             this.save_to_file.Text = "Save to file";
             this.save_to_file.UseVisualStyleBackColor = true;
+            this.save_to_file.Click += new System.EventHandler(this.save_to_file_Click);
             // 
             // label35
             // 
