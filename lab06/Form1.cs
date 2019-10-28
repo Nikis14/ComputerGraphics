@@ -44,7 +44,7 @@ namespace AffinTransform3D
             g = Graphics.FromImage(pictureBox.Image);
             g.Clear(Color.White);
             pictureBox.Invalidate();
-
+            groupBox1.Hide();
             panel1.Controls.Add(XOY_o);
             panel1.Controls.Add(XOZ_o);
             panel1.Controls.Add(YOZ_o);
@@ -289,7 +289,6 @@ namespace AffinTransform3D
                     initial_points));
             }
             int ctr_depth = 0;
-            int counter_rot = 0;
             if ((dividence_count.Value >= 3) && (initial_points.Count >= 2))
             {
                 face tmp = new face();
@@ -689,6 +688,11 @@ namespace AffinTransform3D
             }
         }
 
+        private void label26_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void pictureBox_MouseClick(object sender, MouseEventArgs e)
         {
             if (!is_axis || e.Button != System.Windows.Forms.MouseButtons.Left)
@@ -709,6 +713,7 @@ namespace AffinTransform3D
 
         private void shape_CheckedChanged(object sender, EventArgs e)
         {
+            groupBox1.Hide();
             if (sender == null)
                 return;
             if ((sender as RadioButton).Checked == false)
@@ -725,7 +730,7 @@ namespace AffinTransform3D
             else if (icosahedron.Checked)
                 build_icosahedron();
             else if (rotation_figure.Checked)
-                
+                groupBox1.Show();
             build_points();
             redraw_image();
         }
