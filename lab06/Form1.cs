@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.IO;
 using System.Drawing.Drawing2D;
+//using System.Runtime.Serialization;
 
 namespace AffinTransform3D
 {
@@ -28,6 +29,9 @@ namespace AffinTransform3D
         List<Tuple<int, int, int, int>> check = new List<Tuple<int, int, int, int>>();
         bool not_redraw = false; // перерисовывать или нет текущее положение
         List<my_point> initial_points = new List<my_point>();
+        Dictionary<int, List<int>> relationships = new Dictionary<int, List<int>>();
+        //ObjectIDGenerator linker;
+
 
 
         public Form1()
@@ -183,7 +187,10 @@ namespace AffinTransform3D
             my_point p3 = new my_point(0, 2*h/3, 0);
             my_point p4 = new my_point(0, 0, h_big);
             shape.Clear();
-
+            relationships.Add(0, new List<int>() { 0, 1, 2 });
+            relationships.Add(1, new List<int>() { 0, 3, 1 });
+            relationships.Add(2, new List<int>() { 3, 1, 2 });
+            relationships.Add(3, new List<int>() { 0, 3, 2 });
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); shape.Add(f1);
             face f2 = new face(); f2.add(p1); f2.add(p4); f2.add(p2); shape.Add(f2);
             face f3 = new face(); f3.add(p4); f3.add(p2); f3.add(p3); shape.Add(f3);
@@ -274,6 +281,8 @@ namespace AffinTransform3D
         }
         private void build_rotation_figure()
         {
+            int cntr = 0;
+            int cntrpt = 0;
             my_point pt1 = new my_point((double)axis_1st_X.Value, (double)axis_1st_Y.Value, (double)axis_1st_Z.Value);
             my_point pt2 = new my_point((double)axis_2st_X.Value, (double)axis_2st_Y.Value, (double)axis_2st_Z.Value);
             my_point c = normalize_vector(pt1, pt2);
@@ -292,12 +301,16 @@ namespace AffinTransform3D
             if ((dividence_count.Value >= 3) && (initial_points.Count >= 2))
             {
                 face tmp = new face();
+                relationships.Add(cntr, new List<int>());
                 foreach (var item in transformed)
                 {
+                    relationships[cntr].Add(cntrpt);
+                    cntrpt += 1;
                     points.Add(item[ctr_depth]);
                     tmp.add(item[ctr_depth]);
                 }
                 shape.Add(tmp);
+                cntr += 1;
                 ctr_depth += 1;
                 while (ctr_depth < initial_points.Count)
                 {
@@ -305,28 +318,43 @@ namespace AffinTransform3D
 
                     for (int i = 0; i < dividence_count.Value - 1; i++)
                     {
-
+                        relationships.Add(cntr, new List<int>());
                         points.Add(transformed[i][ctr_depth]);
                         face t2 = new face();
+                        relationships[cntr].Add(cntrpt-(int)dividence_count.Value);
+                        relationships[cntr].Add(cntrpt);
+                        relationships[cntr].Add(cntrpt+1);
+                        relationships[cntr].Add(cntrpt - (int)dividence_count.Value+1);
                         t2.add(transformed[i][ctr_depth - 1]);
                         t2.add(transformed[i][ctr_depth]);
                         t2.add(transformed[i + 1][ctr_depth]);
                         t2.add(transformed[i + 1][ctr_depth - 1]);
                         shape.Add(t2);
-
+                        cntr += 1;
+                        cntrpt += 1;
                     }
                     points.Add(transformed[(int)dividence_count.Value - 1][ctr_depth]);
                     face t = new face();
+                    relationships.Add(cntr, new List<int>());
+                    relationships[cntr].Add(cntrpt - (int)dividence_count.Value);
+                    relationships[cntr].Add(cntrpt);
+                    relationships[cntr].Add(cntrpt - (int)dividence_count.Value+1);
+                    relationships[cntr].Add(cntrpt - 2*(int)dividence_count.Value+1);
                     t.add(transformed[(int)(dividence_count.Value - 1)][ctr_depth - 1]);
                     t.add(transformed[(int)(dividence_count.Value - 1)][ctr_depth]);
                     t.add(transformed[0][ctr_depth]);
                     t.add(transformed[0][ctr_depth - 1]);
                     shape.Add(t);
                     ctr_depth += 1;
+                    cntr += 1;
+                    cntrpt += 1;
                 }
+                relationships.Add(cntr, new List<int>());
                 face tmp2 = new face();
                 foreach (var item in transformed)
                 {
+                    relationships[cntr].Add(cntrpt-(int)dividence_count.Value);
+                    cntrpt += 1;
                     tmp2.add(item[initial_points.Count - 1]);
                 }
                 shape.Add(tmp2);
@@ -644,8 +672,8 @@ namespace AffinTransform3D
 
         private void save_to_file_Click(object sender, EventArgs e)
         {
-            
-            string file_str  = JsonConvert.SerializeObject(this.current_saved_figure);
+            figure f = new figure(this.points, this.relationships);
+            string file_str  = JsonConvert.SerializeObject(f);
             //System.IO.File.WriteAllText(@"C:\Users\Sokolov\Downloads\WriteLines.txt", file_str)
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
@@ -673,22 +701,29 @@ namespace AffinTransform3D
                 if (openFileDialog1.CheckFileExists)
                 {
                     string res = File.ReadAllText(openFileDialog1.FileName);
-                    rotationFigure f = JsonConvert.DeserializeObject<rotationFigure>(res);
-                    this.initial_points = f.initial_points;
-                    this.axis_1st_X.Value = (decimal)f.point_1_axis.X;
-                    this.axis_1st_Y.Value = (decimal)f.point_1_axis.Y;
-                    this.axis_1st_Z.Value = (decimal)f.point_1_axis.Z;
-                    this.axis_2st_X.Value = (decimal)f.point_2_axis.X;
-                    this.axis_2st_Y.Value = (decimal)f.point_2_axis.Y;
-                    this.axis_2st_Z.Value = (decimal)f.point_2_axis.Z;
-                    this.dividence_count.Value = f.divs;
-                    this.current_saved_figure = f;
-                    build_rotation_figure();
+                    figure f = JsonConvert.DeserializeObject<figure>(res);
+                    this.points = f.points;
+                    this.shape.Clear();
+                    foreach (var item in f.relationships)
+                    {
+                        face q = new face();
+                        foreach (var pt in item.Value)
+                        {
+                            q.add(points[pt]);
+                        }
+                        this.shape.Add(q);
+                    }
+                    redraw_image();
                 }
             }
         }
 
         private void label26_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label23_Click(object sender, EventArgs e)
         {
 
         }

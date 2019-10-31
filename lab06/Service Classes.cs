@@ -61,4 +61,15 @@ namespace AffinTransform3D
             this.divs = divs;
         }
     }
+
+    public class figure
+    {
+        public List<my_point> points;
+        public Dictionary<int, List<int>> relationships;
+        public figure(List<my_point> points, Dictionary<int, List<int>> relationships)
+        {
+            this.points = points;
+            this.relationships = relationships;
+        }
+    }
 }
