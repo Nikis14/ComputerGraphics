@@ -122,6 +122,20 @@
             this.label35 = new System.Windows.Forms.Label();
             this.initiate_build = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.listBox_funs = new System.Windows.Forms.ListBox();
+            this.label36 = new System.Windows.Forms.Label();
+            this.label37 = new System.Windows.Forms.Label();
+            this.textBox_step = new System.Windows.Forms.TextBox();
+            this.textBox_y1 = new System.Windows.Forms.TextBox();
+            this.textBox_y2 = new System.Windows.Forms.TextBox();
+            this.textBox_x1 = new System.Windows.Forms.TextBox();
+            this.textBox_x2 = new System.Windows.Forms.TextBox();
+            this.button_build = new System.Windows.Forms.Button();
+            this.label38 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
+            this.label40 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.label42 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.z_shift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.y_shift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.x_shift)).BeginInit();
@@ -763,10 +777,10 @@
             // 
             // pictureBox
             // 
-            this.pictureBox.Location = new System.Drawing.Point(16, 73);
+            this.pictureBox.Location = new System.Drawing.Point(172, 73);
             this.pictureBox.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(1123, 726);
+            this.pictureBox.Size = new System.Drawing.Size(967, 726);
             this.pictureBox.TabIndex = 16;
             this.pictureBox.TabStop = false;
             // 
@@ -922,9 +936,9 @@
             this.panel1.Controls.Add(this.XOZ_o);
             this.panel1.Controls.Add(this.XOY_o);
             this.panel1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.panel1.Location = new System.Drawing.Point(1281, 690);
+            this.panel1.Location = new System.Drawing.Point(1286, 690);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(149, 87);
+            this.panel1.Size = new System.Drawing.Size(144, 86);
             this.panel1.TabIndex = 35;
             // 
             // YOZ_o
@@ -1050,7 +1064,6 @@
             this.label23.Size = new System.Drawing.Size(126, 17);
             this.label23.TabIndex = 43;
             this.label23.Text = "Первая точка оси";
-            this.label23.Click += new System.EventHandler(this.label23_Click);
             // 
             // label24
             // 
@@ -1382,11 +1395,153 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
             // 
+            // listBox_funs
+            // 
+            this.listBox_funs.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.listBox_funs.FormattingEnabled = true;
+            this.listBox_funs.ItemHeight = 25;
+            this.listBox_funs.Items.AddRange(new object[] {
+            "sin(x)+sin(y)",
+            "x+y",
+            "x*y"});
+            this.listBox_funs.Location = new System.Drawing.Point(12, 187);
+            this.listBox_funs.Name = "listBox_funs";
+            this.listBox_funs.Size = new System.Drawing.Size(141, 29);
+            this.listBox_funs.TabIndex = 70;
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(26, 161);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(109, 17);
+            this.label36.TabIndex = 71;
+            this.label36.Text = "Выберите f(x,y)";
+            // 
+            // label37
+            // 
+            this.label37.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label37.Location = new System.Drawing.Point(12, 52);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(145, 79);
+            this.label37.TabIndex = 72;
+            this.label37.Text = "Работа с графиками";
+            this.label37.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // textBox_step
+            // 
+            this.textBox_step.Location = new System.Drawing.Point(47, 459);
+            this.textBox_step.Name = "textBox_step";
+            this.textBox_step.Size = new System.Drawing.Size(65, 22);
+            this.textBox_step.TabIndex = 73;
+            this.textBox_step.Text = "1";
+            // 
+            // textBox_y1
+            // 
+            this.textBox_y1.Location = new System.Drawing.Point(47, 340);
+            this.textBox_y1.Name = "textBox_y1";
+            this.textBox_y1.Size = new System.Drawing.Size(65, 22);
+            this.textBox_y1.TabIndex = 74;
+            this.textBox_y1.Text = "0";
+            // 
+            // textBox_y2
+            // 
+            this.textBox_y2.Location = new System.Drawing.Point(47, 368);
+            this.textBox_y2.Name = "textBox_y2";
+            this.textBox_y2.Size = new System.Drawing.Size(65, 22);
+            this.textBox_y2.TabIndex = 75;
+            this.textBox_y2.Text = "10";
+            // 
+            // textBox_x1
+            // 
+            this.textBox_x1.Location = new System.Drawing.Point(47, 253);
+            this.textBox_x1.Name = "textBox_x1";
+            this.textBox_x1.Size = new System.Drawing.Size(65, 22);
+            this.textBox_x1.TabIndex = 76;
+            this.textBox_x1.Text = "0";
+            // 
+            // textBox_x2
+            // 
+            this.textBox_x2.Location = new System.Drawing.Point(47, 283);
+            this.textBox_x2.Name = "textBox_x2";
+            this.textBox_x2.Size = new System.Drawing.Size(65, 22);
+            this.textBox_x2.TabIndex = 77;
+            this.textBox_x2.Text = "10";
+            // 
+            // button_build
+            // 
+            this.button_build.Location = new System.Drawing.Point(29, 528);
+            this.button_build.Name = "button_build";
+            this.button_build.Size = new System.Drawing.Size(101, 51);
+            this.button_build.TabIndex = 78;
+            this.button_build.Text = "Построить график";
+            this.button_build.UseVisualStyleBackColor = true;
+            this.button_build.Click += new System.EventHandler(this.button_build_Click);
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(15, 255);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(29, 17);
+            this.label38.TabIndex = 79;
+            this.label38.Text = "X1:";
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(15, 285);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(29, 17);
+            this.label39.TabIndex = 80;
+            this.label39.Text = "X2:";
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(15, 370);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(29, 17);
+            this.label40.TabIndex = 81;
+            this.label40.Text = "Y2:";
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(15, 345);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(29, 17);
+            this.label41.TabIndex = 82;
+            this.label41.Text = "Y1:";
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(44, 439);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(73, 17);
+            this.label42.TabIndex = 83;
+            this.label42.Text = "Шаг сетки";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1586, 814);
+            this.Controls.Add(this.label42);
+            this.Controls.Add(this.label41);
+            this.Controls.Add(this.label40);
+            this.Controls.Add(this.label39);
+            this.Controls.Add(this.label38);
+            this.Controls.Add(this.button_build);
+            this.Controls.Add(this.textBox_x2);
+            this.Controls.Add(this.textBox_x1);
+            this.Controls.Add(this.textBox_y2);
+            this.Controls.Add(this.textBox_y1);
+            this.Controls.Add(this.textBox_step);
+            this.Controls.Add(this.label37);
+            this.Controls.Add(this.label36);
+            this.Controls.Add(this.listBox_funs);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label35);
             this.Controls.Add(this.init_pts_list);
@@ -1586,6 +1741,20 @@
         private System.Windows.Forms.Label label35;
         private System.Windows.Forms.Button initiate_build;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.ListBox listBox_funs;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.TextBox textBox_step;
+        private System.Windows.Forms.TextBox textBox_y1;
+        private System.Windows.Forms.TextBox textBox_y2;
+        private System.Windows.Forms.TextBox textBox_x1;
+        private System.Windows.Forms.TextBox textBox_x2;
+        private System.Windows.Forms.Button button_build;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.Label label40;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Label label42;
     }
 }
 
