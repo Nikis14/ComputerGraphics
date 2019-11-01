@@ -7,7 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+using System.IO;
 using System.Drawing.Drawing2D;
+//using System.Runtime.Serialization;
 
 namespace AffinTransform3D
 {
@@ -15,6 +18,7 @@ namespace AffinTransform3D
     {
         Bitmap bmp;
         Graphics g;
+        rotationFigure current_saved_figure;
         Matrixes matr = new Matrixes();
         Pen pen_shape = new Pen(Color.Red); // для фигуры
         int centerX, centerY; // центр pictureBox
@@ -24,6 +28,11 @@ namespace AffinTransform3D
         List<my_point> points = new List<my_point>(); // список точек
         List<Tuple<int, int, int, int>> check = new List<Tuple<int, int, int, int>>();
         bool not_redraw = false; // перерисовывать или нет текущее положение
+        List<my_point> initial_points = new List<my_point>();
+        Dictionary<int, List<int>> relationships = new Dictionary<int, List<int>>();
+        //ObjectIDGenerator linker;
+
+
 
         public Form1()
         {
@@ -39,7 +48,7 @@ namespace AffinTransform3D
             g = Graphics.FromImage(pictureBox.Image);
             g.Clear(Color.White);
             pictureBox.Invalidate();
-
+            groupBox1.Hide();
             panel1.Controls.Add(XOY_o);
             panel1.Controls.Add(XOZ_o);
             panel1.Controls.Add(YOZ_o);
@@ -178,7 +187,10 @@ namespace AffinTransform3D
             my_point p3 = new my_point(0, 2*h/3, 0);
             my_point p4 = new my_point(0, 0, h_big);
             shape.Clear();
-
+            relationships.Add(0, new List<int>() { 0, 1, 2 });
+            relationships.Add(1, new List<int>() { 0, 3, 1 });
+            relationships.Add(2, new List<int>() { 3, 1, 2 });
+            relationships.Add(3, new List<int>() { 0, 3, 2 });
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); shape.Add(f1);
             face f2 = new face(); f2.add(p1); f2.add(p4); f2.add(p2); shape.Add(f2);
             face f3 = new face(); f3.add(p4); f3.add(p2); f3.add(p3); shape.Add(f3);
@@ -267,8 +279,89 @@ namespace AffinTransform3D
             face f11 = new face(); f11.add(p19); f11.add(p17); f11.add(p16); f11.add(p14); f11.add(p13); shape.Add(f11);
             face f12 = new face(); f12.add(p16); f12.add(p14); f12.add(p15); f12.add(p20); f12.add(p18); shape.Add(f12);
         }
+        private void build_rotation_figure()
+        {
+            int cntr = 0;
+            int cntrpt = 0;
+            my_point pt1 = new my_point((double)axis_1st_X.Value, (double)axis_1st_Y.Value, (double)axis_1st_Z.Value);
+            my_point pt2 = new my_point((double)axis_2st_X.Value, (double)axis_2st_Y.Value, (double)axis_2st_Z.Value);
+            my_point c = normalize_vector(pt1, pt2);
+            int rot = (int)(360 / dividence_count.Value);
+            List<List<my_point>> transformed = new List<List<my_point>>();
+            transformed.Add(this.Copy(initial_points));
+            points.Clear();
+            shape.Clear();
+            for (int i = 1; i < dividence_count.Value; i++)
+            {
+                transformed.Add(matr.get_transformed_my_points_nobr(
+                    matr.matrix_rotate_general(c.X, c.Y, c.Z, rot * i),
+                    initial_points));
+            }
+            int ctr_depth = 0;
+            if ((dividence_count.Value >= 3) && (initial_points.Count >= 2))
+            {
+                face tmp = new face();
+                relationships.Add(cntr, new List<int>());
+                foreach (var item in transformed)
+                {
+                    relationships[cntr].Add(cntrpt);
+                    cntrpt += 1;
+                    points.Add(item[ctr_depth]);
+                    tmp.add(item[ctr_depth]);
+                }
+                shape.Add(tmp);
+                cntr += 1;
+                ctr_depth += 1;
+                while (ctr_depth < initial_points.Count)
+                {
 
-        private void build_icosahedron() // икосаэдр
+
+                    for (int i = 0; i < dividence_count.Value - 1; i++)
+                    {
+                        relationships.Add(cntr, new List<int>());
+                        points.Add(transformed[i][ctr_depth]);
+                        face t2 = new face();
+                        relationships[cntr].Add(cntrpt-(int)dividence_count.Value);
+                        relationships[cntr].Add(cntrpt);
+                        relationships[cntr].Add(cntrpt+1);
+                        relationships[cntr].Add(cntrpt - (int)dividence_count.Value+1);
+                        t2.add(transformed[i][ctr_depth - 1]);
+                        t2.add(transformed[i][ctr_depth]);
+                        t2.add(transformed[i + 1][ctr_depth]);
+                        t2.add(transformed[i + 1][ctr_depth - 1]);
+                        shape.Add(t2);
+                        cntr += 1;
+                        cntrpt += 1;
+                    }
+                    points.Add(transformed[(int)dividence_count.Value - 1][ctr_depth]);
+                    face t = new face();
+                    relationships.Add(cntr, new List<int>());
+                    relationships[cntr].Add(cntrpt - (int)dividence_count.Value);
+                    relationships[cntr].Add(cntrpt);
+                    relationships[cntr].Add(cntrpt - (int)dividence_count.Value+1);
+                    relationships[cntr].Add(cntrpt - 2*(int)dividence_count.Value+1);
+                    t.add(transformed[(int)(dividence_count.Value - 1)][ctr_depth - 1]);
+                    t.add(transformed[(int)(dividence_count.Value - 1)][ctr_depth]);
+                    t.add(transformed[0][ctr_depth]);
+                    t.add(transformed[0][ctr_depth - 1]);
+                    shape.Add(t);
+                    ctr_depth += 1;
+                    cntr += 1;
+                    cntrpt += 1;
+                }
+                relationships.Add(cntr, new List<int>());
+                face tmp2 = new face();
+                foreach (var item in transformed)
+                {
+                    relationships[cntr].Add(cntrpt-(int)dividence_count.Value);
+                    cntrpt += 1;
+                    tmp2.add(item[initial_points.Count - 1]);
+                }
+                shape.Add(tmp2);
+            }
+            redraw_image();
+        }
+            private void build_icosahedron() // икосаэдр
         {
             double r = 100 * (1 + Math.Sqrt(5)) / 4; // радиус полувписанной окружности
             my_point p1 = new my_point(0, -50, -r);
@@ -546,6 +639,224 @@ namespace AffinTransform3D
                 redraw_image();
         }
 
+        private void label30_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void rot_list_add_Click(object sender, EventArgs e)
+        {
+            initial_points.Add(new my_point((int)n_pt_X.Value, (int)n_pt_Y.Value, (int)n_pt_Z.Value));
+            init_pts_list.Items.Add("Point #" + (initial_points.Count) +
+                " X= " + (int)n_pt_X.Value +
+                " Y= " + (int)n_pt_Y.Value +
+                " Z= " + (int)n_pt_Z.Value);
+        }
+
+        private void rot_list_reset_Click(object sender, EventArgs e)
+        {
+            initial_points.Clear();
+            init_pts_list.Items.Clear();
+        }
+
+        private void initiate_build_Click(object sender, EventArgs e)
+        {
+            my_point pt1 = new my_point((double)axis_1st_X.Value, (double)axis_1st_Y.Value, (double)axis_1st_Z.Value);
+            my_point pt2 = new my_point((double)axis_2st_X.Value, (double)axis_2st_Y.Value, (double)axis_2st_Z.Value);
+            this.current_saved_figure = new rotationFigure(this.initial_points,
+                pt1,
+                pt2,
+                (int)dividence_count.Value);
+            build_rotation_figure();  
+        }
+
+        private void save_to_file_Click(object sender, EventArgs e)
+        {
+            figure f = new figure(this.points, this.relationships);
+            string file_str  = JsonConvert.SerializeObject(f);
+            //System.IO.File.WriteAllText(@"C:\Users\Sokolov\Downloads\WriteLines.txt", file_str)
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (saveFileDialog1.CheckFileExists)
+                {
+                    File.Delete(saveFileDialog1.FileName);
+                }
+                File.WriteAllText(saveFileDialog1.FileName, file_str);
+            }
+        }
+
+        private void load_from_file_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog1.FilterIndex = 2;
+            openFileDialog1.RestoreDirectory = true;
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (openFileDialog1.CheckFileExists)
+                {
+                    string res = File.ReadAllText(openFileDialog1.FileName);
+                    figure f = JsonConvert.DeserializeObject<figure>(res);
+                    this.points = f.points;
+                    this.shape.Clear();
+                    foreach (var item in f.relationships)
+                    {
+                        face q = new face();
+                        foreach (var pt in item.Value)
+                        {
+                            q.add(points[pt]);
+                        }
+                        this.shape.Add(q);
+                    }
+                    build_points();
+                    redraw_image();
+                }
+            }
+        }
+
+        private void label26_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private double sum_sin(double x, double y)
+        {
+            return Math.Sin(x) + Math.Sin(y);
+        }
+
+        private double sum(double x, double y)
+        {
+            return x+y;
+        }
+
+        private double mult(double x, double y)
+        {
+            return x*y;
+        }
+
+        private void process_points(List<my_point> cur_points, ref List<my_point> built_points, ref Dictionary<Tuple<double, double>, int> point_num, ref int cur_est, int i)
+        {
+            face f_func = new face();
+            relationships[i] = new List<int>();
+            foreach (my_point p in cur_points)
+            {
+                Tuple<double, double> t = new Tuple<double, double>(p.X, p.Y);
+                
+                if (!point_num.ContainsKey(t))
+                {
+                    f_func.add(p);
+                    built_points.Add(p);
+                    point_num.Add(t, cur_est);
+                    ++cur_est;
+                }
+                else
+                    f_func.add(built_points[point_num[t]]);
+                relationships[i].Add(point_num[t]);
+            }
+            shape.Add(f_func);
+        }
+
+        private void make_func_shape(Func<double, double, double> f, double x1, double x2, double y1, double y2, double step)
+        {
+            relationships.Clear();
+            shape.Clear();
+            Dictionary<Tuple<double, double>, int> point_num = new Dictionary<Tuple<double, double>, int>();
+            List<my_point> built_points = new List<my_point>();
+            int i = 0;
+            int cur_est = 0;
+            for (double x = x1; x <= x2-step; x += step)
+            {
+                for(double y = y1; y <= y2-step; y += step)
+                {
+                    List<my_point> cur_points = new List<my_point>(){
+                        new my_point(x, y, f(x, y)),
+                        new my_point(x+step, y, f(x+step, y)),
+                        new my_point(x, y+step, f(x, y+step)),
+                        new my_point(x + step, y + step, f(x + step, y + step))
+                    };
+                    process_points(cur_points, ref built_points, ref point_num, ref cur_est, i);
+                    i++;
+                }
+            }
+            if(x1 == x2)
+                for (double y = y1; y <= y2 - step; y += step)
+                {
+                    List<my_point> cur_points = new List<my_point>(){
+                        new my_point(x1, y, f(x1, y)),
+                        new my_point(x1, y+step, f(x1, y+step))
+                    };
+                    process_points(cur_points, ref built_points, ref point_num, ref cur_est, i);
+                    i++;
+                }
+            else if(y1 == y2)
+                for (double x = x1; x <= x2 - step; x += step)
+                {
+                    List<my_point> cur_points = new List<my_point>(){
+                        new my_point(x, y1, f(x1, y1)),
+                        new my_point(x+step, y1, f(x1 + step, y1))
+                    };
+                    process_points(cur_points, ref built_points, ref point_num, ref cur_est, i);
+                    i++;
+                }
+        }
+
+        private void plot_graphic(Func<double, double, double> f)
+        {
+            double x1, x2, y1, y2, step;
+            bool if_read = Double.TryParse(textBox_x1.Text, out x1);
+            if_read = Double.TryParse(textBox_x2.Text, out x2);
+            if_read = Double.TryParse(textBox_y1.Text, out y1);
+            if_read = Double.TryParse(textBox_y2.Text, out y2);
+            if_read = Double.TryParse(textBox_step.Text, out step);
+
+            if(x1 > x2)
+            {
+                MessageBox.Show("x1 > x2");
+                return;
+            }
+            if (y1 > y2)
+            {
+                MessageBox.Show("y1 > y2");
+                return;
+            }
+            if(step <= 0)
+            {
+                MessageBox.Show("Шаг должен быть > 0");
+                return;
+            }
+
+            make_func_shape(f, x1, x2, y1, y2, step);
+            build_points();
+            redraw_image();
+        }
+
+        private void button_build_Click(object sender, EventArgs e)
+        {
+            if(listBox_funs.SelectedItem == null)
+            {
+                MessageBox.Show("Выберите функцию!");
+                return;
+            }
+            string chosen_fun = listBox_funs.SelectedItem.ToString();
+            switch(chosen_fun)
+            {
+                case "sin(x)+sin(y)":
+                    plot_graphic(sum_sin);
+                    break;
+                case "x+y":
+                    plot_graphic(sum);
+                    break;
+                case "x*y":
+                    plot_graphic(mult);
+                    break;
+            }
+        }
+
         private void pictureBox_MouseClick(object sender, MouseEventArgs e)
         {
             if (!is_axis || e.Button != System.Windows.Forms.MouseButtons.Left)
@@ -566,6 +877,7 @@ namespace AffinTransform3D
 
         private void shape_CheckedChanged(object sender, EventArgs e)
         {
+            groupBox1.Hide();
             if (sender == null)
                 return;
             if ((sender as RadioButton).Checked == false)
@@ -581,6 +893,8 @@ namespace AffinTransform3D
                 build_dodecahedron();
             else if (icosahedron.Checked)
                 build_icosahedron();
+            else if (rotation_figure.Checked)
+                groupBox1.Show();
             build_points();
             redraw_image();
         }
