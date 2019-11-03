@@ -824,6 +824,7 @@ namespace AffinTransform3D
                         }
                         this.shape.Add(q);
                     }
+                    build_points();
                     redraw_image();
                 }
             }
@@ -834,9 +835,137 @@ namespace AffinTransform3D
 
         }
 
-        private void label23_Click(object sender, EventArgs e)
+        private double sum_sin(double x, double y)
         {
+            return Math.Sin(x) + Math.Sin(y);
+        }
 
+        private double sum(double x, double y)
+        {
+            return x+y;
+        }
+
+        private double mult(double x, double y)
+        {
+            return x*y;
+        }
+
+        private void process_points(List<my_point> cur_points, ref List<my_point> built_points, ref Dictionary<Tuple<double, double>, int> point_num, ref int cur_est, int i)
+        {
+            face f_func = new face();
+            relationships[i] = new List<int>();
+            foreach (my_point p in cur_points)
+            {
+                Tuple<double, double> t = new Tuple<double, double>(p.X, p.Y);
+                
+                if (!point_num.ContainsKey(t))
+                {
+                    f_func.add(p);
+                    built_points.Add(p);
+                    point_num.Add(t, cur_est);
+                    ++cur_est;
+                }
+                else
+                    f_func.add(built_points[point_num[t]]);
+                relationships[i].Add(point_num[t]);
+            }
+            shape.Add(f_func);
+        }
+
+        private void make_func_shape(Func<double, double, double> f, double x1, double x2, double y1, double y2, double step)
+        {
+            relationships.Clear();
+            shape.Clear();
+            Dictionary<Tuple<double, double>, int> point_num = new Dictionary<Tuple<double, double>, int>();
+            List<my_point> built_points = new List<my_point>();
+            int i = 0;
+            int cur_est = 0;
+            for (double x = x1; x <= x2-step; x += step)
+            {
+                for(double y = y1; y <= y2-step; y += step)
+                {
+                    List<my_point> cur_points = new List<my_point>(){
+                        new my_point(x, y, f(x, y)),
+                        new my_point(x+step, y, f(x+step, y)),
+                        new my_point(x, y+step, f(x, y+step)),
+                        new my_point(x + step, y + step, f(x + step, y + step))
+                    };
+                    process_points(cur_points, ref built_points, ref point_num, ref cur_est, i);
+                    i++;
+                }
+            }
+            if(x1 == x2)
+                for (double y = y1; y <= y2 - step; y += step)
+                {
+                    List<my_point> cur_points = new List<my_point>(){
+                        new my_point(x1, y, f(x1, y)),
+                        new my_point(x1, y+step, f(x1, y+step))
+                    };
+                    process_points(cur_points, ref built_points, ref point_num, ref cur_est, i);
+                    i++;
+                }
+            else if(y1 == y2)
+                for (double x = x1; x <= x2 - step; x += step)
+                {
+                    List<my_point> cur_points = new List<my_point>(){
+                        new my_point(x, y1, f(x1, y1)),
+                        new my_point(x+step, y1, f(x1 + step, y1))
+                    };
+                    process_points(cur_points, ref built_points, ref point_num, ref cur_est, i);
+                    i++;
+                }
+        }
+
+        private void plot_graphic(Func<double, double, double> f)
+        {
+            double x1, x2, y1, y2, step;
+            bool if_read = Double.TryParse(textBox_x1.Text, out x1);
+            if_read = Double.TryParse(textBox_x2.Text, out x2);
+            if_read = Double.TryParse(textBox_y1.Text, out y1);
+            if_read = Double.TryParse(textBox_y2.Text, out y2);
+            if_read = Double.TryParse(textBox_step.Text, out step);
+
+            if(x1 > x2)
+            {
+                MessageBox.Show("x1 > x2");
+                return;
+            }
+            if (y1 > y2)
+            {
+                MessageBox.Show("y1 > y2");
+                return;
+            }
+            if(step <= 0)
+            {
+                MessageBox.Show("Шаг должен быть > 0");
+                return;
+            }
+
+            make_func_shape(f, x1, x2, y1, y2, step);
+            build_points();
+            redraw_image();
+        }
+
+        private void button_build_Click(object sender, EventArgs e)
+        {
+            if(listBox_funs.SelectedItem == null)
+            {
+                MessageBox.Show("Выберите функцию!");
+                return;
+            }
+            string chosen_fun = listBox_funs.SelectedItem.ToString();
+            switch(chosen_fun)
+            {
+                case "sin(x)+sin(y)":
+                    plot_graphic(sum_sin);
+                    break;
+                case "x+y":
+                    plot_graphic(sum);
+                    break;
+                case "x*y":
+                    plot_graphic(mult);
+                    break;
+            }
         }
 
         private void pictureBox_MouseClick(object sender, MouseEventArgs e)
