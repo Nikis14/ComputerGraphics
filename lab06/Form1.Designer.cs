@@ -136,6 +136,15 @@
             this.label40 = new System.Windows.Forms.Label();
             this.label41 = new System.Windows.Forms.Label();
             this.label42 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.z_vis = new System.Windows.Forms.NumericUpDown();
+            this.y_vis = new System.Windows.Forms.NumericUpDown();
+            this.x_vis = new System.Windows.Forms.NumericUpDown();
+            this.label46 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label44 = new System.Windows.Forms.Label();
+            this.label43 = new System.Windows.Forms.Label();
+            this.inv_gr = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.z_shift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.y_shift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.x_shift)).BeginInit();
@@ -165,6 +174,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.n_pt_Y)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.n_pt_X)).BeginInit();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.z_vis)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.y_vis)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.x_vis)).BeginInit();
             this.SuspendLayout();
             // 
             // icosahedron
@@ -1523,11 +1536,98 @@
             this.label42.TabIndex = 83;
             this.label42.Text = "Шаг сетки";
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.inv_gr);
+            this.groupBox2.Controls.Add(this.z_vis);
+            this.groupBox2.Controls.Add(this.y_vis);
+            this.groupBox2.Controls.Add(this.x_vis);
+            this.groupBox2.Controls.Add(this.label46);
+            this.groupBox2.Controls.Add(this.label45);
+            this.groupBox2.Controls.Add(this.label44);
+            this.groupBox2.Controls.Add(this.label43);
+            this.groupBox2.Location = new System.Drawing.Point(12, 590);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(159, 191);
+            this.groupBox2.TabIndex = 84;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "groupBox2";
+            // 
+            // z_vis
+            // 
+            this.z_vis.Location = new System.Drawing.Point(25, 100);
+            this.z_vis.Name = "z_vis";
+            this.z_vis.Size = new System.Drawing.Size(120, 22);
+            this.z_vis.TabIndex = 6;
+            // 
+            // y_vis
+            // 
+            this.y_vis.Location = new System.Drawing.Point(25, 73);
+            this.y_vis.Name = "y_vis";
+            this.y_vis.Size = new System.Drawing.Size(120, 22);
+            this.y_vis.TabIndex = 5;
+            // 
+            // x_vis
+            // 
+            this.x_vis.Location = new System.Drawing.Point(25, 45);
+            this.x_vis.Name = "x_vis";
+            this.x_vis.Size = new System.Drawing.Size(120, 22);
+            this.x_vis.TabIndex = 4;
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(3, 100);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(17, 17);
+            this.label46.TabIndex = 3;
+            this.label46.Text = "Z";
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(3, 73);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(17, 17);
+            this.label45.TabIndex = 2;
+            this.label45.Text = "Y";
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(3, 47);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(17, 17);
+            this.label44.TabIndex = 1;
+            this.label44.Text = "X";
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(3, 18);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(106, 17);
+            this.label43.TabIndex = 0;
+            this.label43.Text = "Вектор обзора";
+            // 
+            // inv_gr
+            // 
+            this.inv_gr.AutoSize = true;
+            this.inv_gr.Location = new System.Drawing.Point(0, 132);
+            this.inv_gr.Name = "inv_gr";
+            this.inv_gr.Size = new System.Drawing.Size(110, 55);
+            this.inv_gr.TabIndex = 85;
+            this.inv_gr.Text = "Отсечение\r\n невидимых \r\nграней!\r\n";
+            this.inv_gr.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.inv_gr.UseVisualStyleBackColor = true;
+            this.inv_gr.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1586, 814);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.label42);
             this.Controls.Add(this.label41);
             this.Controls.Add(this.label40);
@@ -1641,6 +1741,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.n_pt_X)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.z_vis)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.y_vis)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.x_vis)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1755,6 +1860,15 @@
         private System.Windows.Forms.Label label40;
         private System.Windows.Forms.Label label41;
         private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.NumericUpDown z_vis;
+        private System.Windows.Forms.NumericUpDown y_vis;
+        private System.Windows.Forms.NumericUpDown x_vis;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.CheckBox inv_gr;
     }
 }
 

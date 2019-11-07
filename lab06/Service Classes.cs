@@ -12,6 +12,15 @@ namespace AffinTransform3D
 {
     public class my_point
     {
+        public static my_point multiply_two_vectors(my_point v1, my_point v2)
+        {
+            my_point res = new my_point();
+            res.X = (v1.Y * v2.Z - v1.Z * v2.Y);
+            res.Y = (v1.Z * v2.X - v1.X * v2.Z);
+            res.Z = (v1.X * v2.Y - v1.Y * v2.X);
+            return res;
+        }
+
         public double X, Y, Z;
 
         public my_point()
@@ -31,6 +40,7 @@ namespace AffinTransform3D
     public class face
     {
         public List<my_point> points;
+        public my_point normal;
 
         public face()
         {
@@ -40,6 +50,17 @@ namespace AffinTransform3D
         public void add(my_point p)
         {
             points.Add(p);
+        }
+
+        public my_point calculate_normal()
+        {
+            my_point p0 = points[0];
+            my_point p1 = points[1];
+            my_point p2 = points[points.Count - 1];
+            my_point v1 = new my_point(p1.X - p0.X, p1.Y - p0.Y, p1.Z - p0.Z);
+            my_point v2 = new my_point(p2.X - p0.X, p2.Y - p0.Y, p2.Z - p0.Z);
+            return my_point.multiply_two_vectors(v1, v2);
+            
         }
     }
 

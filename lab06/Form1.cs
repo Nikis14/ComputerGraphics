@@ -54,7 +54,7 @@ namespace AffinTransform3D
             panel1.Controls.Add(YOZ_o);
             panel1.Visible = true;
         }
-
+        //Deprecated
         private void build_points()
         {
             /*points.Clear();
@@ -62,6 +62,27 @@ namespace AffinTransform3D
                 for (int i = 0; i < sh.points.Count; i++)
                     if (!points.Contains(sh.points[i]))
                         points.Add(sh.points[i]);*/
+        }
+
+        private bool to_draw_or_not(face f)
+        {
+            my_point vector_vis = new my_point((double)x_vis.Value,
+                (double)y_vis.Value,
+                (double)z_vis.Value);
+            my_point vector_face = f.calculate_normal();
+            double angle = Math.Acos((vector_face.X * vector_vis.X +
+                vector_face.Y * vector_vis.Y +
+                vector_face.Z * vector_vis.Z) /
+                (
+                (Math.Sqrt(vector_face.X * vector_face.X
+                + vector_face.Y * vector_face.Y
+                + vector_face.Z * vector_face.Z)) *
+                (Math.Sqrt(vector_vis.X * vector_vis.X
+                + vector_vis.Y * vector_vis.Y
+                + vector_vis.Z * vector_vis.Z))
+                )
+            );
+            return (angle < 1.5708);
         }
 
         private void draw_point(my_point p) // рисуем точку
@@ -173,7 +194,12 @@ namespace AffinTransform3D
                 draw_point(axis_P2);
             }*/
             foreach (face f in shape)
-                draw_face(f);
+            {
+                if (to_draw_or_not(f)||!inv_gr.Checked)
+                {
+                    draw_face(f);
+                }
+            }
             pictureBox.Image = bmp;
         }
 
@@ -966,6 +992,11 @@ namespace AffinTransform3D
                     plot_graphic(mult);
                     break;
             }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            redraw_image();
         }
 
         private void pictureBox_MouseClick(object sender, MouseEventArgs e)
