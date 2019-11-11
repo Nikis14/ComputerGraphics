@@ -70,6 +70,7 @@ namespace AffinTransform3D
                 (double)y_vis.Value,
                 (double)z_vis.Value);
             my_point vector_face = f.calculate_normal();
+            
             double angle = Math.Acos((vector_face.X * vector_vis.X +
                 vector_face.Y * vector_vis.Y +
                 vector_face.Z * vector_vis.Z) /
@@ -213,6 +214,7 @@ namespace AffinTransform3D
             my_point p3 = new my_point(0, 2*h/3, 0);
             my_point p4 = new my_point(0, 0, h_big);
             shape.Clear();
+            relationships.Clear();
             relationships.Add(0, new List<int>() { 0, 1, 2 });
             relationships.Add(1, new List<int>() { 0, 3, 1 });
             relationships.Add(2, new List<int>() { 3, 1, 2 });
@@ -235,6 +237,7 @@ namespace AffinTransform3D
             my_point p7 = new my_point(50, 50, 50);
             my_point p8 = new my_point(50, -50, 50);
             shape.Clear();
+            relationships.Clear();
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); f1.add(p4); shape.Add(f1);
             face f2 = new face(); f2.add(p1); f2.add(p2); f2.add(p6); f2.add(p5); shape.Add(f2);
             face f3 = new face(); f3.add(p5); f3.add(p6); f3.add(p7); f3.add(p8); shape.Add(f3);
