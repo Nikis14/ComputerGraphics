@@ -208,11 +208,15 @@ namespace AffinTransform3D
         {
             double h = Math.Sqrt(3) * 50;
             double h_big = 25 * Math.Sqrt(13);
-
-            my_point p1 = new my_point(-50, -h/3, 0);
-            my_point p2 = new my_point(50, -h/3, 0);
-            my_point p3 = new my_point(0, 2*h/3, 0);
+            points.Clear();
+            my_point p1 = new my_point(-50, -h / 3, 0);
+            my_point p2 = new my_point(50, -h / 3, 0);
+            my_point p3 = new my_point(0, 2 * h / 3, 0);
             my_point p4 = new my_point(0, 0, h_big);
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
             shape.Clear();
             relationships.Clear();
             relationships.Add(0, new List<int>() { 0, 1, 2 });
@@ -223,11 +227,12 @@ namespace AffinTransform3D
             face f2 = new face(); f2.add(p1); f2.add(p4); f2.add(p2); shape.Add(f2);
             face f3 = new face(); f3.add(p4); f3.add(p2); f3.add(p3); shape.Add(f3);
             face f4 = new face(); f4.add(p1); f4.add(p4); f4.add(p3); shape.Add(f4);
-            
+
         }
 
         private void build_hexahedron()
         {
+            points.Clear();
             my_point p1 = new my_point(-50, -50, -50);
             my_point p2 = new my_point(-50, 50, -50);
             my_point p3 = new my_point(50, 50, -50);
@@ -236,13 +241,27 @@ namespace AffinTransform3D
             my_point p6 = new my_point(-50, 50, 50);
             my_point p7 = new my_point(50, 50, 50);
             my_point p8 = new my_point(50, -50, 50);
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
+            points.Add(p5);
+            points.Add(p6);
+            points.Add(p7);
+            points.Add(p8);
             shape.Clear();
             relationships.Clear();
+            relationships.Add(0, new List<int>() { 0, 1, 2, 3 });
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); f1.add(p4); shape.Add(f1);
+            relationships.Add(1, new List<int>() { 0, 4, 5, 1 });
             face f2 = new face(); f2.add(p1); f2.add(p2); f2.add(p6); f2.add(p5); shape.Add(f2);
+            relationships.Add(2, new List<int>() { 4, 6, 7, 5 });
             face f3 = new face(); f3.add(p5); f3.add(p6); f3.add(p7); f3.add(p8); shape.Add(f3);
+            relationships.Add(3, new List<int>() { 2, 6, 7, 3 });
             face f4 = new face(); f4.add(p4); f4.add(p3); f4.add(p7); f4.add(p8); shape.Add(f4);
+            relationships.Add(4, new List<int>() { 1, 5, 6, 2 });
             face f5 = new face(); f5.add(p2); f5.add(p6); f5.add(p7); f5.add(p3); shape.Add(f5);
+            relationships.Add(5, new List<int>() { 3, 7, 4, 0 });
             face f6 = new face(); f6.add(p1); f6.add(p5); f6.add(p8); f6.add(p4); shape.Add(f6);
         }
 
@@ -251,21 +270,36 @@ namespace AffinTransform3D
             double a = Math.Sqrt(3) / 2 * 100;
             double p = (a + a + 100) / 2;
             double h = 2 * Math.Sqrt(p * (p - 100) * (p - a) * (p - a)) / 100;
-
+            points.Clear();
             my_point p1 = new my_point(0, -h, 0);
             my_point p2 = new my_point(-50, 0, -50);
             my_point p3 = new my_point(0, h, 0);
             my_point p4 = new my_point(50, 0, -50);
             my_point p5 = new my_point(-50, 0, 50);
             my_point p6 = new my_point(50, 0, 50);
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
+            points.Add(p5);
+            points.Add(p6);
             shape.Clear();
+            relationships.Clear();
+            relationships.Add(0, new List<int>() { 1, 2, 3 });
             face f1 = new face(); f1.add(p2); f1.add(p3); f1.add(p4); shape.Add(f1);
+            relationships.Add(1, new List<int>() { 1, 0, 3 });
             face f2 = new face(); f2.add(p2); f2.add(p1); f2.add(p4); shape.Add(f2);
+            relationships.Add(2, new List<int>() { 1, 2, 4 });
             face f3 = new face(); f3.add(p2); f3.add(p3); f3.add(p5); shape.Add(f3);
+            relationships.Add(3, new List<int>() { 1, 0, 4 });
             face f4 = new face(); f4.add(p2); f4.add(p1); f4.add(p5); shape.Add(f4);
+            relationships.Add(4, new List<int>() { 3, 2, 5 });
             face f5 = new face(); f5.add(p4); f5.add(p3); f5.add(p6); shape.Add(f5);
+            relationships.Add(5, new List<int>() { 3, 0, 5 });
             face f6 = new face(); f6.add(p4); f6.add(p1); f6.add(p6); shape.Add(f6);
+            relationships.Add(6, new List<int>() { 4, 2, 5 });
             face f7 = new face(); f7.add(p5); f7.add(p3); f7.add(p6); shape.Add(f7);
+            relationships.Add(7, new List<int>() { 4, 0, 5 });
             face f8 = new face(); f8.add(p5); f8.add(p1); f8.add(p6); shape.Add(f8);
         }
 
@@ -273,7 +307,7 @@ namespace AffinTransform3D
         {
             double r = 100 * (3 + Math.Sqrt(5)) / 4; // радиус полувписанной окружности
             double x = 100 * (1 + Math.Sqrt(5)) / 4; // половина стороны пятиугольника в сечении 
-
+            points.Clear();
             my_point p1 = new my_point(0, -50, -r);
             my_point p2 = new my_point(0, 50, -r);
             my_point p3 = new my_point(x, x, -x);
@@ -294,18 +328,51 @@ namespace AffinTransform3D
             my_point p18 = new my_point(x, x, x);
             my_point p19 = new my_point(-r, 0, 50);
             my_point p20 = new my_point(r, 0, 50);
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
+            points.Add(p5);
+            points.Add(p6);
+            points.Add(p7);
+            points.Add(p8);
+            points.Add(p9);
+            points.Add(p10);
+            points.Add(p11);
+            points.Add(p12);
+            points.Add(p13);
+            points.Add(p14);
+            points.Add(p15);
+            points.Add(p16);
+            points.Add(p17);
+            points.Add(p18);
+            points.Add(p19);
+            points.Add(p20);
             shape.Clear();
+            relationships.Clear();
+            relationships.Add(0, new List<int>() { 0, 1, 2, 3, 4 });
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); f1.add(p4); f1.add(p5); shape.Add(f1);
+            relationships.Add(1, new List<int>() { 0, 4, 5, 6, 7 });
             face f2 = new face(); f2.add(p1); f2.add(p5); f2.add(p6); f2.add(p7); f2.add(p8); shape.Add(f2);
+            relationships.Add(2, new List<int>() { 0, 1, 9, 8, 7 });
             face f3 = new face(); f3.add(p1); f3.add(p2); f3.add(p10); f3.add(p9); f3.add(p8); shape.Add(f3);
+            relationships.Add(3, new List<int>() { 1, 9, 10, 11, 2 });
             face f4 = new face(); f4.add(p2); f4.add(p10); f4.add(p11); f4.add(p12); f4.add(p3); shape.Add(f4);
+            relationships.Add(4, new List<int>() { 3, 4, 5, 14, 19 });
             face f5 = new face(); f5.add(p4); f5.add(p5); f5.add(p6); f5.add(p15); f5.add(p20); shape.Add(f5);
+            relationships.Add(5, new List<int>() { 3, 2, 11, 17, 19 });
             face f6 = new face(); f6.add(p4); f6.add(p3); f6.add(p12); f6.add(p18); f6.add(p20); shape.Add(f6);
+            relationships.Add(6, new List<int>() { 8, 7, 6, 12, 18 });
             face f7 = new face(); f7.add(p9); f7.add(p8); f7.add(p7); f7.add(p13); f7.add(p19); shape.Add(f7);
+            relationships.Add(7, new List<int>() { 8, 7, 6, 12, 18 });
             face f8 = new face(); f8.add(p9); f8.add(p10); f8.add(p11); f8.add(p17); f8.add(p19); shape.Add(f8);
+            relationships.Add(8, new List<int>() { 8, 9, 10, 16, 18 });
             face f9 = new face(); f9.add(p11); f9.add(p12); f9.add(p18); f9.add(p16); f9.add(p17); shape.Add(f9);
+            relationships.Add(9, new List<int>() { 6, 5, 14, 13, 12 });
             face f10 = new face(); f10.add(p7); f10.add(p6); f10.add(p15); f10.add(p14); f10.add(p13); shape.Add(f10);
+            relationships.Add(10, new List<int>() { 18, 16, 15, 13, 12 });
             face f11 = new face(); f11.add(p19); f11.add(p17); f11.add(p16); f11.add(p14); f11.add(p13); shape.Add(f11);
+            relationships.Add(11, new List<int>() { 15, 13, 14, 19, 17 });
             face f12 = new face(); f12.add(p16); f12.add(p14); f12.add(p15); f12.add(p20); f12.add(p18); shape.Add(f12);
         }
         private void build_rotation_figure()
