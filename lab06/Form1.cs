@@ -70,20 +70,28 @@ namespace AffinTransform3D
                 (double)y_vis.Value,
                 (double)z_vis.Value);
             my_point vector_face = f.calculate_normal();
-            
-            double angle = Math.Acos((vector_face.X * vector_vis.X +
-                vector_face.Y * vector_vis.Y +
-                vector_face.Z * vector_vis.Z) /
-                (
-                (Math.Sqrt(vector_face.X * vector_face.X
-                + vector_face.Y * vector_face.Y
-                + vector_face.Z * vector_face.Z)) *
-                (Math.Sqrt(vector_vis.X * vector_vis.X
-                + vector_vis.Y * vector_vis.Y
-                + vector_vis.Z * vector_vis.Z))
-                )
-            );
-            return (angle < 1.5708);
+            my_point face_center = f.calculate_center();
+            my_point figure_center = figure.calculate_center(this.points);
+            my_point inward_vector = new my_point(-face_center.X + figure_center.X,
+                                                  -face_center.Y + figure_center.Y,
+                                                   -face_center.Z + figure_center.Z);
+
+
+            //vector_face = normalize_vector(outward_vector);
+            double scalar_prod_indent = vector_face.X * inward_vector.X
+                + vector_face.Y * inward_vector.Y
+                + vector_face.Z * inward_vector.Z;
+            my_point reverse_vector_face = new my_point(-vector_face.X, vector_face.Y, -vector_face.Z);
+            double scalar_prod_reverse = reverse_vector_face.X * inward_vector.X
+                + reverse_vector_face.Y * inward_vector.Y
+                + reverse_vector_face.Z * inward_vector.Z;
+            if (scalar_prod_indent < 0)
+            {
+                vector_face = reverse_vector_face;
+                
+            }
+            double sc_prod = vector_face.X * vector_vis.X + vector_face.Y * vector_vis.Y + vector_face.Z * vector_vis.Z;
+            return (sc_prod <= 0);
         }
 
         private void draw_point(my_point p) // рисуем точку
@@ -612,6 +620,14 @@ namespace AffinTransform3D
             return new my_point(0, 0, 0);
         }
 
+        private my_point normalize_vector(my_point vctr)
+        {
+            double d = Math.Sqrt(vctr.X * vctr.X + vctr.Y * vctr.Y + vctr.Z * vctr.Z);
+            if (d != 0)
+                return new my_point(vctr.X / d, vctr.Y / d, vctr.Z / d);
+            return new my_point(0, 0, 0);
+        }
+
         private void axis_rotate(my_point pt1, my_point pt2, double angle) // поворот вокруг оси
         {
             my_point c = normalize_vector(pt1, pt2);
@@ -822,7 +838,7 @@ namespace AffinTransform3D
 
         private double sum_sin(double x, double y)
         {
-            return Math.Sin(x) + Math.Sin(y);
+            return x * x + y * y;//Math.Sin(x) + Math.Sin(y);
         }
 
         private double sum(double x, double y)
