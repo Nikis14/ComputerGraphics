@@ -32,7 +32,7 @@ namespace AffinTransform3D
         Dictionary<int, List<int>> relationships = new Dictionary<int, List<int>>();
         //ObjectIDGenerator linker;
 
-
+        Color[,] color_buffer; //соответсвие между пикселем и цветом
 
         public Form1()
         {
@@ -54,7 +54,7 @@ namespace AffinTransform3D
             panel1.Controls.Add(YOZ_o);
             panel1.Visible = true;
         }
-
+        //Deprecated
         private void build_points()
         {
             points.Clear();
@@ -62,6 +62,27 @@ namespace AffinTransform3D
                 for (int i = 0; i < sh.points.Count; i++)
                     if (!points.Contains(sh.points[i]))
                         points.Add(sh.points[i]);
+        }
+
+        private bool to_draw_or_not(face f)
+        {
+            my_point vector_vis = new my_point((double)x_vis.Value,
+                (double)y_vis.Value,
+                (double)z_vis.Value);
+            my_point vector_face = f.calculate_normal();
+            double angle = Math.Acos((vector_face.X * vector_vis.X +
+                vector_face.Y * vector_vis.Y +
+                vector_face.Z * vector_vis.Z) /
+                (
+                (Math.Sqrt(vector_face.X * vector_face.X
+                + vector_face.Y * vector_face.Y
+                + vector_face.Z * vector_face.Z)) *
+                (Math.Sqrt(vector_vis.X * vector_vis.X
+                + vector_vis.Y * vector_vis.Y
+                + vector_vis.Z * vector_vis.Z))
+                )
+            );
+            return (angle <= 1.5708);
         }
 
         private void draw_point(my_point p) // рисуем точку
@@ -148,6 +169,16 @@ namespace AffinTransform3D
 
         Bitmap bmp2;
         bool flag = true;
+
+        private void draw_pic_by_pixels()
+        {
+            build_pixels_to_draw();
+            for (int i = 0; i < pictureBox.Width; ++i)
+                for (int j = 0; j < pictureBox.Height; ++j)
+                    ((Bitmap)pictureBox.Image).SetPixel(i, j, color_buffer[i, j]);
+            pictureBox.Invalidate();
+        }
+
         private void redraw_image() // перерисовываем картинку
         {
             if (not_redraw)
@@ -172,21 +203,36 @@ namespace AffinTransform3D
                 draw_point(axis_P1);
                 draw_point(axis_P2);
             }*/
-            foreach (face f in shape)
-                draw_face(f);
-            pictureBox.Image = bmp;
+            if (checkbox_delete_invisible.Checked)
+                draw_pic_by_pixels();
+            else
+            {
+                foreach (face f in shape)
+                {
+                    if (to_draw_or_not(f) || !inv_gr.Checked)
+                    {
+                        draw_face(f);
+                    }
+                }
+                pictureBox.Image = bmp;
+            }
         }
 
         private void build_tetrahedron()
         {
             double h = Math.Sqrt(3) * 50;
             double h_big = 25 * Math.Sqrt(13);
-
+            points.Clear();
             my_point p1 = new my_point(-50, -h/3, 0);
             my_point p2 = new my_point(50, -h/3, 0);
             my_point p3 = new my_point(0, 2*h/3, 0);
             my_point p4 = new my_point(0, 0, h_big);
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
             shape.Clear();
+            relationships.Clear();
             relationships.Add(0, new List<int>() { 0, 1, 2 });
             relationships.Add(1, new List<int>() { 0, 3, 1 });
             relationships.Add(2, new List<int>() { 3, 1, 2 });
@@ -200,6 +246,7 @@ namespace AffinTransform3D
 
         private void build_hexahedron()
         {
+            points.Clear();
             my_point p1 = new my_point(-50, -50, -50);
             my_point p2 = new my_point(-50, 50, -50);
             my_point p3 = new my_point(50, 50, -50);
@@ -208,12 +255,27 @@ namespace AffinTransform3D
             my_point p6 = new my_point(-50, 50, 50);
             my_point p7 = new my_point(50, 50, 50);
             my_point p8 = new my_point(50, -50, 50);
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
+            points.Add(p5);
+            points.Add(p6);
+            points.Add(p7);
+            points.Add(p8);
             shape.Clear();
+            relationships.Clear();
+            relationships.Add(0, new List<int>() { 0, 1, 2, 3 });
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); f1.add(p4); shape.Add(f1);
+            relationships.Add(1, new List<int>() { 0, 4, 5,1 });
             face f2 = new face(); f2.add(p1); f2.add(p2); f2.add(p6); f2.add(p5); shape.Add(f2);
+            relationships.Add(2, new List<int>() { 4,6,7,5 });
             face f3 = new face(); f3.add(p5); f3.add(p6); f3.add(p7); f3.add(p8); shape.Add(f3);
+            relationships.Add(3, new List<int>() { 2, 6, 7, 3 });
             face f4 = new face(); f4.add(p4); f4.add(p3); f4.add(p7); f4.add(p8); shape.Add(f4);
+            relationships.Add(4, new List<int>() { 1, 5, 6,2 });
             face f5 = new face(); f5.add(p2); f5.add(p6); f5.add(p7); f5.add(p3); shape.Add(f5);
+            relationships.Add(5, new List<int>() { 3, 7, 4,0 });
             face f6 = new face(); f6.add(p1); f6.add(p5); f6.add(p8); f6.add(p4); shape.Add(f6);
         }
 
@@ -222,21 +284,36 @@ namespace AffinTransform3D
             double a = Math.Sqrt(3) / 2 * 100;
             double p = (a + a + 100) / 2;
             double h = 2 * Math.Sqrt(p * (p - 100) * (p - a) * (p - a)) / 100;
-
+            points.Clear();
             my_point p1 = new my_point(0, -h, 0);
             my_point p2 = new my_point(-50, 0, -50);
             my_point p3 = new my_point(0, h, 0);
             my_point p4 = new my_point(50, 0, -50);
             my_point p5 = new my_point(-50, 0, 50);
             my_point p6 = new my_point(50, 0, 50);
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
+            points.Add(p5);
+            points.Add(p6);
             shape.Clear();
+            relationships.Clear();
+            relationships.Add(0, new List<int>() { 1, 2, 3 });
             face f1 = new face(); f1.add(p2); f1.add(p3); f1.add(p4); shape.Add(f1);
+            relationships.Add(1, new List<int>() { 1, 0, 3 });
             face f2 = new face(); f2.add(p2); f2.add(p1); f2.add(p4); shape.Add(f2);
+            relationships.Add(2, new List<int>() { 1, 2, 4 });
             face f3 = new face(); f3.add(p2); f3.add(p3); f3.add(p5); shape.Add(f3);
+            relationships.Add(3, new List<int>() { 1, 0, 4 });
             face f4 = new face(); f4.add(p2); f4.add(p1); f4.add(p5); shape.Add(f4);
+            relationships.Add(4, new List<int>() { 3, 2, 5 });
             face f5 = new face(); f5.add(p4); f5.add(p3); f5.add(p6); shape.Add(f5);
+            relationships.Add(5, new List<int>() { 3, 0, 5 });
             face f6 = new face(); f6.add(p4); f6.add(p1); f6.add(p6); shape.Add(f6);
+            relationships.Add(6, new List<int>() { 4, 2, 5 });
             face f7 = new face(); f7.add(p5); f7.add(p3); f7.add(p6); shape.Add(f7);
+            relationships.Add(7, new List<int>() { 4, 0, 5 });
             face f8 = new face(); f8.add(p5); f8.add(p1); f8.add(p6); shape.Add(f8);
         }
 
@@ -244,7 +321,7 @@ namespace AffinTransform3D
         {
             double r = 100 * (3 + Math.Sqrt(5)) / 4; // радиус полувписанной окружности
             double x = 100 * (1 + Math.Sqrt(5)) / 4; // половина стороны пятиугольника в сечении 
-
+            points.Clear();
             my_point p1 = new my_point(0, -50, -r);
             my_point p2 = new my_point(0, 50, -r);
             my_point p3 = new my_point(x, x, -x);
@@ -265,18 +342,51 @@ namespace AffinTransform3D
             my_point p18 = new my_point(x, x, x);
             my_point p19 = new my_point(-r, 0, 50);
             my_point p20 = new my_point(r, 0, 50);
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
+            points.Add(p5);
+            points.Add(p6);
+            points.Add(p7);
+            points.Add(p8);
+            points.Add(p9);
+            points.Add(p10);
+            points.Add(p11);
+            points.Add(p12);
+            points.Add(p13);
+            points.Add(p14);
+            points.Add(p15);
+            points.Add(p16);
+            points.Add(p17);
+            points.Add(p18);
+            points.Add(p19);
+            points.Add(p20);
             shape.Clear();
+            relationships.Clear();
+            relationships.Add(0, new List<int>() { 0, 1, 2, 3, 4 });
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); f1.add(p4); f1.add(p5); shape.Add(f1);
+            relationships.Add(1, new List<int>() { 0, 4, 5, 6, 7 });
             face f2 = new face(); f2.add(p1); f2.add(p5); f2.add(p6); f2.add(p7); f2.add(p8); shape.Add(f2);
+            relationships.Add(2, new List<int>() { 0, 1, 9, 8, 7 });
             face f3 = new face(); f3.add(p1); f3.add(p2); f3.add(p10); f3.add(p9); f3.add(p8); shape.Add(f3);
+            relationships.Add(3, new List<int>() { 1, 9, 10, 11, 2 });
             face f4 = new face(); f4.add(p2); f4.add(p10); f4.add(p11); f4.add(p12); f4.add(p3); shape.Add(f4);
+            relationships.Add(4, new List<int>() { 3, 4, 5, 14, 19 });
             face f5 = new face(); f5.add(p4); f5.add(p5); f5.add(p6); f5.add(p15); f5.add(p20); shape.Add(f5);
+            relationships.Add(5, new List<int>() { 3, 2, 11, 17, 19 });
             face f6 = new face(); f6.add(p4); f6.add(p3); f6.add(p12); f6.add(p18); f6.add(p20); shape.Add(f6);
+            relationships.Add(6, new List<int>() { 8, 7, 6, 12, 18 });
             face f7 = new face(); f7.add(p9); f7.add(p8); f7.add(p7); f7.add(p13); f7.add(p19); shape.Add(f7);
+            relationships.Add(7, new List<int>() { 8, 7, 6, 12, 18 });
             face f8 = new face(); f8.add(p9); f8.add(p10); f8.add(p11); f8.add(p17); f8.add(p19); shape.Add(f8);
+            relationships.Add(8, new List<int>() { 8, 9, 10, 16, 18 });
             face f9 = new face(); f9.add(p11); f9.add(p12); f9.add(p18); f9.add(p16); f9.add(p17); shape.Add(f9);
+            relationships.Add(9, new List<int>() { 6, 5, 14, 13, 12 });
             face f10 = new face(); f10.add(p7); f10.add(p6); f10.add(p15); f10.add(p14); f10.add(p13); shape.Add(f10);
+            relationships.Add(10, new List<int>() { 18, 16, 15, 13, 12 });
             face f11 = new face(); f11.add(p19); f11.add(p17); f11.add(p16); f11.add(p14); f11.add(p13); shape.Add(f11);
+            relationships.Add(11, new List<int>() { 15, 13, 14, 19, 17 });
             face f12 = new face(); f12.add(p16); f12.add(p14); f12.add(p15); f12.add(p20); f12.add(p18); shape.Add(f12);
         }
         private void build_rotation_figure()
@@ -291,6 +401,7 @@ namespace AffinTransform3D
             transformed.Add(this.Copy(initial_points));
             points.Clear();
             shape.Clear();
+            relationships.Clear();
             for (int i = 1; i < dividence_count.Value; i++)
             {
                 transformed.Add(matr.get_transformed_my_points_nobr(
@@ -377,27 +488,171 @@ namespace AffinTransform3D
             my_point p11 = new my_point(0, -50, r);
             my_point p12 = new my_point(0, 50, r);
             shape.Clear();
+            relationships.Clear();
+            relationships.Add(0, new List<int>()); relationships[0].Add(0);
+            relationships[0].Add(1); relationships[0].Add(3);
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p4); shape.Add(f1);
+            relationships.Add(1, new List<int>()); relationships[1].Add(0);
+            relationships[1].Add(1); relationships[1].Add(6);
             face f2 = new face(); f2.add(p1); f2.add(p2); f2.add(p7); shape.Add(f2);
+            relationships.Add(2, new List<int>()); relationships[2].Add(6);
+            relationships[2].Add(1); relationships[2].Add(7);
             face f3 = new face(); f3.add(p7); f3.add(p2); f3.add(p8); shape.Add(f3);
+            relationships.Add(3, new List<int>()); relationships[3].Add(7);
+            relationships[3].Add(1); relationships[3].Add(2);
             face f4 = new face(); f4.add(p8); f4.add(p2); f4.add(p3); shape.Add(f4);
+            relationships.Add(4, new List<int>()); relationships[4].Add(3);
+            relationships[4].Add(1); relationships[4].Add(2);
             face f5 = new face(); f5.add(p4); f5.add(p2); f5.add(p3); shape.Add(f5);
+            relationships.Add(5, new List<int>()); relationships[5].Add(5);
+            relationships[5].Add(0); relationships[5].Add(4);
             face f6 = new face(); f6.add(p6); f6.add(p1); f6.add(p5); shape.Add(f6);
+            relationships.Add(6, new List<int>()); relationships[6].Add(5);
+            relationships[6].Add(9); relationships[6].Add(6);
             face f7 = new face(); f7.add(p6); f7.add(p7); f7.add(p10); shape.Add(f7);
+            relationships.Add(7, new List<int>()); relationships[7].Add(9);
+            relationships[7].Add(6); relationships[7].Add(7);
             face f8 = new face(); f8.add(p10); f8.add(p7); f8.add(p8); shape.Add(f8);
+            relationships.Add(8, new List<int>()); relationships[8].Add(9);
+            relationships[8].Add(7); relationships[8].Add(11);
             face f9 = new face(); f9.add(p10); f9.add(p8); f9.add(p12); shape.Add(f9);
+            relationships.Add(9, new List<int>()); relationships[9].Add(11);
+            relationships[9].Add(7); relationships[9].Add(2);
             face f10 = new face(); f10.add(p12); f10.add(p8); f10.add(p3); shape.Add(f10);
+            relationships.Add(10, new List<int>()); relationships[10].Add(8);
+            relationships[10].Add(3); relationships[10].Add(2);
             face f11 = new face(); f11.add(p9); f11.add(p4); f11.add(p3); shape.Add(f11);
+            relationships.Add(11, new List<int>()); relationships[11].Add(4);
+            relationships[11].Add(3); relationships[11].Add(8);
             face f12 = new face(); f12.add(p5); f12.add(p4); f12.add(p9); shape.Add(f12);
+            relationships.Add(12, new List<int>()); relationships[12].Add(11);
+            relationships[12].Add(2); relationships[12].Add(8);
             face f13 = new face(); f13.add(p12); f13.add(p3); f13.add(p9); shape.Add(f13);
+            relationships.Add(13, new List<int>()); relationships[13].Add(4);
+            relationships[13].Add(0); relationships[13].Add(3);
             face f14 = new face(); f14.add(p5); f14.add(p1); f14.add(p4); shape.Add(f14);
+            relationships.Add(14, new List<int>()); relationships[14].Add(6);
+            relationships[14].Add(0); relationships[14].Add(5);
             face f15 = new face(); f15.add(p7); f15.add(p1); f15.add(p6); shape.Add(f15);
+            relationships.Add(15, new List<int>()); relationships[15].Add(10);
+            relationships[15].Add(4); relationships[15].Add(5);
             face f16 = new face(); f16.add(p11); f16.add(p5); f16.add(p6); shape.Add(f16);
+            relationships.Add(16, new List<int>()); relationships[16].Add(10);
+            relationships[16].Add(5); relationships[16].Add(9);
             face f17 = new face(); f17.add(p11); f17.add(p6); f17.add(p10); shape.Add(f17);
+            relationships.Add(17, new List<int>()); relationships[17].Add(10);
+            relationships[17].Add(9); relationships[17].Add(11);
             face f18 = new face(); f18.add(p11); f18.add(p10); f18.add(p12); shape.Add(f18);
+            relationships.Add(18, new List<int>()); relationships[18].Add(10);
+            relationships[18].Add(11); relationships[18].Add(8);
             face f19 = new face(); f19.add(p11); f19.add(p12); f19.add(p9); shape.Add(f19);
+            relationships.Add(19, new List<int>()); relationships[19].Add(10);
+            relationships[19].Add(4); relationships[19].Add(8);
             face f20 = new face(); f20.add(p11); f20.add(p5); f20.add(p9); shape.Add(f20);
         }
+
+
+        private void build_trapezoidal_hexahedron()
+        {
+            points.Clear();
+            my_point p1 = new my_point(-30, -30, -50);
+            my_point p2 = new my_point(-30, 30, -50);
+            my_point p3 = new my_point(30, 30, -50);
+            my_point p4 = new my_point(30, -30, -50);
+            my_point p5 = new my_point(-50, -50, 50);
+            my_point p6 = new my_point(-50, 50, 50);
+            my_point p7 = new my_point(50, 50, 50);
+            my_point p8 = new my_point(50, -50, 50);
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
+            points.Add(p5);
+            points.Add(p6);
+            points.Add(p7);
+            points.Add(p8);
+            shape.Clear();
+            relationships.Clear();
+            relationships.Add(0, new List<int>() { 0, 1, 2, 3 });
+            face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); f1.add(p4); shape.Add(f1);
+            relationships.Add(1, new List<int>() { 0, 4, 5, 1 });
+            face f2 = new face(); f2.add(p1); f2.add(p2); f2.add(p6); f2.add(p5); shape.Add(f2);
+            relationships.Add(2, new List<int>() { 4, 6, 7, 5 });
+            face f3 = new face(); f3.add(p5); f3.add(p6); f3.add(p7); f3.add(p8); shape.Add(f3);
+            relationships.Add(3, new List<int>() { 2, 6, 7, 3 });
+            face f4 = new face(); f4.add(p4); f4.add(p3); f4.add(p7); f4.add(p8); shape.Add(f4);
+            relationships.Add(4, new List<int>() { 1, 5, 6, 2 });
+            face f5 = new face(); f5.add(p2); f5.add(p6); f5.add(p7); f5.add(p3); shape.Add(f5);
+            relationships.Add(5, new List<int>() { 3, 7, 4, 0 });
+            face f6 = new face(); f6.add(p1); f6.add(p5); f6.add(p8); f6.add(p4); shape.Add(f6);
+        }
+
+        private void build_non_convex()
+        {
+            points.Clear();
+            my_point p1 = new my_point(-50, 0, 50);
+            my_point p2 = new my_point(0, 50, 50);
+            my_point p3 = new my_point(50, 0, 50);
+            my_point p4 = new my_point(0, 25, 0);
+            my_point p5 = new my_point(-50, 100, 50);
+            my_point p6 = new my_point(0, 100, 0);
+            my_point p7 = new my_point(50, 100, 50);
+
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
+            points.Add(p5);
+            points.Add(p6);
+            points.Add(p7);
+            shape.Clear();
+            relationships.Clear();
+            relationships.Add(0, new List<int>() { 0, 1, 2, 3 });
+            face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); shape.Add(f1);
+            relationships.Add(1, new List<int>() { 0, 3, 2});
+            face f2 = new face(); f2.add(p1); f2.add(p4); f2.add(p3); shape.Add(f2);
+            relationships.Add(2, new List<int>() { 2, 3, 5, 6 });
+            face f3 = new face(); f3.add(p3); f3.add(p4); f3.add(p6); f3.add(p7); shape.Add(f3);
+            relationships.Add(3, new List<int>() { 0, 3, 5, 4 });
+            face f4 = new face(); f4.add(p1); f4.add(p4); f4.add(p6); f4.add(p5); shape.Add(f4);
+            
+        }
+
+        private void build_cube()
+        {
+            points.Clear();
+            my_point p1 = new my_point(-20, -20, 70);
+            my_point p2 = new my_point(-20, 20, 70);
+            my_point p3 = new my_point(20, 20, 70);
+            my_point p4 = new my_point(20, -20, 70);
+            my_point p5 = new my_point(-20, -20, 110);
+            my_point p6 = new my_point(-20, 20, 110);
+            my_point p7 = new my_point(20, 20, 110);
+            my_point p8 = new my_point(20, -20, 110);
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
+            points.Add(p5);
+            points.Add(p6);
+            points.Add(p7);
+            points.Add(p8);
+            //shape.Clear();
+            //relationships.Clear();
+          //  relationships.Add(0, new List<int>() { 0, 1, 2, 3 });
+            face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); f1.add(p4); shape.Add(f1);
+           // relationships.Add(1, new List<int>() { 0, 4, 5, 1 });
+            face f2 = new face(); f2.add(p1); f2.add(p2); f2.add(p6); f2.add(p5); shape.Add(f2);
+            //relationships.Add(2, new List<int>() { 4, 6, 7, 5 });
+            face f3 = new face(); f3.add(p5); f3.add(p6); f3.add(p7); f3.add(p8); shape.Add(f3);
+            //relationships.Add(3, new List<int>() { 2, 6, 7, 3 });
+            face f4 = new face(); f4.add(p4); f4.add(p3); f4.add(p7); f4.add(p8); shape.Add(f4);
+            //relationships.Add(4, new List<int>() { 1, 5, 6, 2 });
+            face f5 = new face(); f5.add(p2); f5.add(p6); f5.add(p7); f5.add(p3); shape.Add(f5);
+           // relationships.Add(5, new List<int>() { 3, 7, 4, 0 });
+            face f6 = new face(); f6.add(p1); f6.add(p5); f6.add(p8); f6.add(p4); shape.Add(f6);
+        }
+    
 
         private void displacement(int kx, int ky, int kz) // сдвиг
         {
@@ -676,7 +931,7 @@ namespace AffinTransform3D
             string file_str  = JsonConvert.SerializeObject(f);
             //System.IO.File.WriteAllText(@"C:\Users\Sokolov\Downloads\WriteLines.txt", file_str)
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            saveFileDialog1.Filter = "3-d files (*.trd)|*.trd";
             saveFileDialog1.FilterIndex = 2;
             saveFileDialog1.RestoreDirectory = true;
 
@@ -693,7 +948,7 @@ namespace AffinTransform3D
         private void load_from_file_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog1.Filter = "3-d files (*.trd)|*.trd";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -726,7 +981,7 @@ namespace AffinTransform3D
 
         private double sum_sin(double x, double y)
         {
-            return Math.Sin(x) + Math.Sin(y);
+            return x*x+y*y;
         }
 
         private double sum(double x, double y)
@@ -857,6 +1112,189 @@ namespace AffinTransform3D
             }
         }
 
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            redraw_image();
+        }
+
+        private Tuple<int, double> find_min_max_Ypoint(face f)
+        {
+            int ind_max = 0;
+            double max_Y = f.points[0].Y;
+            double min_Y = f.points[0].Y;
+            for (int i = 1; i < f.points.Count(); ++i)
+            {
+                if(f.points[i].Y > max_Y)
+                {
+                    max_Y = f.points[i].Y;
+                    ind_max = i;
+                }
+                if (f.points[i].Y < min_Y)
+                {
+                    min_Y = f.points[i].Y;
+                }
+            }
+            return new Tuple<int, double>(ind_max, min_Y);
+        }
+
+        private double update_point(double t1, double t2, double q, double q1, double q2)
+        {
+            return t1 + (t2 - t1) * ((q - q1) / (q2 - q1));
+        }
+
+        private bool check_if_correctSize(double[,] buffer, int x)
+        {
+            return x >= 0 && x < pictureBox.Width;
+        }
+
+        private void make_pixel_line(ref double[,] z_buffer, double x1, double x2, int y, double za, double zb, int sign, Color color)
+        {
+            for (double cur_X = x1; cur_X * sign <= x2 * sign; cur_X += sign)
+            {
+                double z = update_point(za, zb, cur_X, x1, x2);
+                int x_cur_int = (int)Math.Round(cur_X + centerX);
+                if (check_if_correctSize(z_buffer, x_cur_int) && z_buffer[x_cur_int, y] < z)
+                {
+                    z_buffer[x_cur_int, y] = z;
+                    color_buffer[x_cur_int, y] = color;
+                }
+            }
+        }
+
+        private void set_pixel(ref double[,] z_buffer, int x, int y, double z)
+        {
+            if (check_if_correctSize(z_buffer, x) && z_buffer[x, y] < z)
+            {
+                z_buffer[x, y] = z;
+                color_buffer[x, y] = Color.Red;
+            }
+        }
+
+        private void update_indices(ref int up_ind, ref int down_ind, int count, int sign)
+        {
+            up_ind = down_ind;
+            down_ind = (count + down_ind + sign) % count;
+        }
+
+        private void update_color_map(face f, double cur_pointXa, double cur_pointXb, int Y, double za, double zb, Color color, ref double[,] z_buffer)
+        {
+            int Xa = (int)Math.Round(cur_pointXa + centerX);
+            int Xb = (int)Math.Round(cur_pointXb + centerX);
+            int sign = Math.Sign(Xb - Xa);
+
+            if (sign == 0)
+                set_pixel(ref z_buffer, Xa, Y, za);
+            else
+            {
+                make_pixel_line(ref z_buffer, cur_pointXa + sign, cur_pointXb - sign, Y, za, zb, sign, color);
+                set_pixel(ref z_buffer, Xa, Y, za);
+                set_pixel(ref z_buffer, Xb, Y, zb);
+            }
+        }
+
+        private bool find_nonEq_Y(face f, ref int up_ind_b, ref int down_ind_b, ref double[,] z_buffer, int down_ind_a, int sign1)
+        {
+            while (f.points[up_ind_b].Y == f.points[down_ind_b].Y && down_ind_a != up_ind_b)
+            {
+                int Y = (int)Math.Round(-f.points[up_ind_b].Y + centerY);
+                if (Y < 0 || Y >= pictureBox.Height)
+                {
+                    up_ind_b = down_ind_b;
+                    down_ind_b = (f.points.Count() + down_ind_b - 1) % f.points.Count();
+                    break;
+                }
+                double za = f.points[up_ind_b].Z;
+                double zb = f.points[down_ind_b].Z;
+
+                update_color_map(f, f.points[up_ind_b].X, f.points[down_ind_b].X, Y, za, zb, Color.Red, ref z_buffer);
+
+                update_indices(ref up_ind_b, ref down_ind_b, f.points.Count(), sign1);
+            }
+            return down_ind_a != up_ind_b;
+        }
+
+        //Create map of colors to draw pixels in face
+        private void z_buffer_algo(face f, ref double[,] z_buffer)
+        {
+            Tuple<int, double> min_maxY = find_min_max_Ypoint(f);
+            double cur_y = f.points[min_maxY.Item1].Y;
+            double cur_pointXa = f.points[min_maxY.Item1].X;
+            double cur_pointXb = f.points[min_maxY.Item1].X;
+
+            int up_ind_a = min_maxY.Item1;
+            int up_ind_b = min_maxY.Item1;
+            int down_ind_a = (f.points.Count() + min_maxY.Item1 - 1)% f.points.Count();
+            int down_ind_b = (min_maxY.Item1 + 1) % f.points.Count();
+
+            //While not bottom y
+            while (Math.Round(cur_y) >= Math.Round(min_maxY.Item2))
+            {
+                int Y = (int)Math.Round(-cur_y + centerY);
+                if (Y < 0 || Y >= pictureBox.Height)
+                    break;
+
+                if (!find_nonEq_Y(f, ref up_ind_a, ref down_ind_a, ref z_buffer, down_ind_b, -1))
+                {
+                    update_color_map(f, f.points[up_ind_a].X, f.points[down_ind_a].X, Y, f.points[up_ind_a].Z, f.points[down_ind_a].Z, Color.Red, ref z_buffer);
+                    break;
+                }
+
+                if (!find_nonEq_Y(f, ref up_ind_b, ref down_ind_b, ref z_buffer, down_ind_a, 1))
+                {
+                    update_color_map(f, f.points[up_ind_b].X, f.points[down_ind_b].X, Y, f.points[up_ind_b].Z, f.points[down_ind_b].Z, Color.Red, ref z_buffer);
+                    break;
+                }
+
+                double za = update_point(f.points[up_ind_a].Z, f.points[down_ind_a].Z, cur_y, f.points[up_ind_a].Y, f.points[down_ind_a].Y);
+                double zb = update_point(f.points[up_ind_b].Z, f.points[down_ind_b].Z, cur_y, f.points[up_ind_b].Y, f.points[down_ind_b].Y);
+                update_color_map(f, cur_pointXa, cur_pointXb, Y, za, zb, Color.White, ref z_buffer);
+
+                //update all coordinates
+                cur_y--;
+                if (cur_y <= f.points[down_ind_a].Y)
+                    update_indices(ref up_ind_a, ref down_ind_a, f.points.Count(), -1);
+
+                if (cur_y <= f.points[down_ind_b].Y)
+                    update_indices(ref up_ind_b, ref down_ind_b, f.points.Count(), 1);
+
+                cur_pointXa = update_point(f.points[up_ind_a].X, f.points[down_ind_a].X, cur_y, f.points[up_ind_a].Y, f.points[down_ind_a].Y);
+                cur_pointXb = update_point(f.points[up_ind_b].X, f.points[down_ind_b].X, cur_y, f.points[up_ind_b].Y, f.points[down_ind_b].Y);
+            }
+        }
+
+        //create color map
+        private void build_pixels_to_draw()
+        {
+            color_buffer = new Color[pictureBox.Width, pictureBox.Height];
+            double[,] z_buffer = new double[pictureBox.Width, pictureBox.Height];
+            for (int i = 0; i < pictureBox.Width; ++i)
+                for (int j = 0; j < pictureBox.Height; ++j)
+                {
+                    color_buffer[i, j] = Color.White;
+                    z_buffer[i, j] = Double.MinValue;
+                }
+
+            foreach (face f in shape)
+                z_buffer_algo(f, ref z_buffer);
+        }
+
+        private void checkbox_delete_invisible_CheckedChanged(object sender, EventArgs e)
+        {
+            if(shape.Count > 0)
+                redraw_image();
+        }
+
+        private void add_cube_Click(object sender, EventArgs e)
+        {
+            build_cube();
+            redraw_image();
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
         private void pictureBox_MouseClick(object sender, MouseEventArgs e)
         {
             if (!is_axis || e.Button != System.Windows.Forms.MouseButtons.Left)
@@ -893,11 +1331,14 @@ namespace AffinTransform3D
                 build_dodecahedron();
             else if (icosahedron.Checked)
                 build_icosahedron();
+            else if (trapezoidal_hexahedron.Checked)
+                build_trapezoidal_hexahedron();
+            else if (non_convex.Checked)
+                build_non_convex();
             else if (rotation_figure.Checked)
                 groupBox1.Show();
             build_points();
-            redraw_image();
+            redraw_image();   
         }
-
     }
 }
