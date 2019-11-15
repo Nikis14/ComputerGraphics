@@ -70,19 +70,28 @@ namespace AffinTransform3D
                 (double)y_vis.Value,
                 (double)z_vis.Value);
             my_point vector_face = f.calculate_normal();
-            double angle = Math.Acos((vector_face.X * vector_vis.X +
-                vector_face.Y * vector_vis.Y +
-                vector_face.Z * vector_vis.Z) /
-                (
-                (Math.Sqrt(vector_face.X * vector_face.X
-                + vector_face.Y * vector_face.Y
-                + vector_face.Z * vector_face.Z)) *
-                (Math.Sqrt(vector_vis.X * vector_vis.X
-                + vector_vis.Y * vector_vis.Y
-                + vector_vis.Z * vector_vis.Z))
-                )
-            );
-            return (angle <= 1.5708);
+            my_point face_center = f.calculate_center();
+            my_point figure_center = figure.calculate_center(this.points);
+            my_point inward_vector = new my_point(-face_center.X + figure_center.X,
+                                                  -face_center.Y + figure_center.Y,
+                                                   -face_center.Z + figure_center.Z);
+
+
+            //vector_face = normalize_vector(outward_vector);
+            double scalar_prod_indent = vector_face.X * inward_vector.X
+                + vector_face.Y * inward_vector.Y
+                + vector_face.Z * inward_vector.Z;
+            my_point reverse_vector_face = new my_point(-vector_face.X, vector_face.Y, -vector_face.Z);
+            double scalar_prod_reverse = reverse_vector_face.X * inward_vector.X
+                + reverse_vector_face.Y * inward_vector.Y
+                + reverse_vector_face.Z * inward_vector.Z;
+            if (scalar_prod_indent < 0)
+            {
+                vector_face = reverse_vector_face;
+                
+            }
+            double sc_prod = vector_face.X * vector_vis.X + vector_face.Y * vector_vis.Y + vector_face.Z * vector_vis.Z;
+            return (sc_prod <= 0);
         }
 
         private void draw_point(my_point p) // рисуем точку
@@ -223,9 +232,9 @@ namespace AffinTransform3D
             double h = Math.Sqrt(3) * 50;
             double h_big = 25 * Math.Sqrt(13);
             points.Clear();
-            my_point p1 = new my_point(-50, -h/3, 0);
-            my_point p2 = new my_point(50, -h/3, 0);
-            my_point p3 = new my_point(0, 2*h/3, 0);
+            my_point p1 = new my_point(-50, -h / 3, 0);
+            my_point p2 = new my_point(50, -h / 3, 0);
+            my_point p3 = new my_point(0, 2 * h / 3, 0);
             my_point p4 = new my_point(0, 0, h_big);
             points.Add(p1);
             points.Add(p2);
@@ -241,7 +250,7 @@ namespace AffinTransform3D
             face f2 = new face(); f2.add(p1); f2.add(p4); f2.add(p2); shape.Add(f2);
             face f3 = new face(); f3.add(p4); f3.add(p2); f3.add(p3); shape.Add(f3);
             face f4 = new face(); f4.add(p1); f4.add(p4); f4.add(p3); shape.Add(f4);
-            
+
         }
 
         private void build_hexahedron()
@@ -267,15 +276,15 @@ namespace AffinTransform3D
             relationships.Clear();
             relationships.Add(0, new List<int>() { 0, 1, 2, 3 });
             face f1 = new face(); f1.add(p1); f1.add(p2); f1.add(p3); f1.add(p4); shape.Add(f1);
-            relationships.Add(1, new List<int>() { 0, 4, 5,1 });
+            relationships.Add(1, new List<int>() { 0, 4, 5, 1 });
             face f2 = new face(); f2.add(p1); f2.add(p2); f2.add(p6); f2.add(p5); shape.Add(f2);
-            relationships.Add(2, new List<int>() { 4,6,7,5 });
+            relationships.Add(2, new List<int>() { 4, 6, 7, 5 });
             face f3 = new face(); f3.add(p5); f3.add(p6); f3.add(p7); f3.add(p8); shape.Add(f3);
             relationships.Add(3, new List<int>() { 2, 6, 7, 3 });
             face f4 = new face(); f4.add(p4); f4.add(p3); f4.add(p7); f4.add(p8); shape.Add(f4);
-            relationships.Add(4, new List<int>() { 1, 5, 6,2 });
+            relationships.Add(4, new List<int>() { 1, 5, 6, 2 });
             face f5 = new face(); f5.add(p2); f5.add(p6); f5.add(p7); f5.add(p3); shape.Add(f5);
-            relationships.Add(5, new List<int>() { 3, 7, 4,0 });
+            relationships.Add(5, new List<int>() { 3, 7, 4, 0 });
             face f6 = new face(); f6.add(p1); f6.add(p5); f6.add(p8); f6.add(p4); shape.Add(f6);
         }
 
@@ -771,6 +780,14 @@ namespace AffinTransform3D
             return new my_point(0, 0, 0);
         }
 
+        private my_point normalize_vector(my_point vctr)
+        {
+            double d = Math.Sqrt(vctr.X * vctr.X + vctr.Y * vctr.Y + vctr.Z * vctr.Z);
+            if (d != 0)
+                return new my_point(vctr.X / d, vctr.Y / d, vctr.Z / d);
+            return new my_point(0, 0, 0);
+        }
+
         private void axis_rotate(my_point pt1, my_point pt2, double angle) // поворот вокруг оси
         {
             my_point c = normalize_vector(pt1, pt2);
@@ -981,7 +998,7 @@ namespace AffinTransform3D
 
         private double sum_sin(double x, double y)
         {
-            return x*x+y*y;
+
         }
 
         private double sum(double x, double y)

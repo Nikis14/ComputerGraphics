@@ -62,8 +62,23 @@ namespace AffinTransform3D
             return my_point.multiply_two_vectors(v1, v2);
             
         }
-    }
 
+        public my_point calculate_center()
+        {
+            my_point center = new my_point();
+            foreach (var item in this.points)
+            {
+                center.X += item.X;
+                center.Y += item.Y;
+                center.Z += item.Z;
+            }
+            center.X = center.X / points.Count;
+            center.Y = center.Y / points.Count;
+            center.Z = center.Z / points.Count;
+            return center;
+        }
+    }
+    //Deprecated
     public class rotationFigure
     {
         public List<my_point> initial_points;
@@ -82,7 +97,7 @@ namespace AffinTransform3D
             this.divs = divs;
         }
     }
-
+    //
     public class figure
     {
         public List<my_point> points;
@@ -92,5 +107,22 @@ namespace AffinTransform3D
             this.points = points;
             this.relationships = relationships;
         }
+
+        public static my_point calculate_center(List<my_point> points)
+        {
+            my_point center = new my_point();
+            foreach (var item in points)
+            {
+                center.X += item.X;
+                center.Y += item.Y;
+                center.Z += item.Z;
+            }
+            center.X = center.X / points.Count;
+            center.Y = center.Y / points.Count;
+            center.Z = center.Z / points.Count;
+            return center;
+        }
+
+
     }
 }
