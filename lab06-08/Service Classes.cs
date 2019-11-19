@@ -23,6 +23,21 @@ namespace AffinTransform3D
 
         public double X, Y, Z;
 
+        public my_point calculate_normal(List<face> faces)
+        {
+            my_point res = new my_point(0, 0, 0);
+            foreach (var item in faces)
+            {
+                res.X += item.calculate_normal().X;
+                res.Y += item.calculate_normal().Y;
+                res.Z += item.calculate_normal().Z;
+            }
+            res.X /= faces.Count;
+            res.Y /= faces.Count;
+            res.Z /= faces.Count;
+            return res;
+        }
+
         public my_point()
         {
             this.X = this.Y = this.Z = 0;
@@ -33,6 +48,11 @@ namespace AffinTransform3D
             this.X = x;
             this.Y = y;
             this.Z = z;
+        }
+
+        public double calculate_len()
+        {
+            return Math.Sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z);
         }
 
     }

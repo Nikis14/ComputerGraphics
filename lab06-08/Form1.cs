@@ -64,6 +64,39 @@ namespace AffinTransform3D
                         points.Add(sh.points[i]);
         }
 
+        private double lambert_model_pt(my_point pt,my_point normal, my_point light)
+        {
+            my_point vectr = new my_point(light.X - pt.X, light.Y - pt.Y, light.Z - pt.Z);
+            double cos_angle = (vectr.X * normal.X + vectr.Y * normal.Y + vectr.Z * normal.Z) /
+                (normal.calculate_len() * vectr.calculate_len());
+            return cos_angle;
+        }
+
+        private void calculate_shading()
+        {
+            
+            Dictionary<my_point, my_point> point_normal = new Dictionary<my_point, my_point>();
+            foreach (var p in points)
+            {
+                int rel_id = points.IndexOf(p);
+                List<face> needed_faces = new List<face>();
+                foreach ( var item in relationships)
+                {
+                    if (item.Value.Contains(rel_id))
+                    {
+                        needed_faces.Add(shape[item.Key]);
+                    }
+                }
+                point_normal.Add(p, p.calculate_normal(needed_faces));
+            }
+            Dictionary<my_point, double> point_intensity = new Dictionary<my_point, double>();
+            foreach (var pt in points)
+            {
+                point_intensity.Add(pt, lambert_model_pt(pt, point_normal[pt], new my_point());
+            }
+
+        }
+
         private bool to_draw_or_not(face f)
         {
             my_point vector_vis = new my_point((double)x_vis.Value,
