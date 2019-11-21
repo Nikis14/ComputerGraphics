@@ -112,6 +112,14 @@
             this.load_texture = new System.Windows.Forms.Button();
             this.openFileDialog_texture = new System.Windows.Forms.OpenFileDialog();
             this.delete_texture = new System.Windows.Forms.Button();
+            this.light_x = new System.Windows.Forms.NumericUpDown();
+            this.label23 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.light_y = new System.Windows.Forms.NumericUpDown();
+            this.light_z = new System.Windows.Forms.NumericUpDown();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.z_shift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.y_shift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.x_shift)).BeginInit();
@@ -130,6 +138,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.y1_box)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.x1_box)).BeginInit();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.light_x)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.light_y)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.light_z)).BeginInit();
             this.SuspendLayout();
             // 
             // icosahedron
@@ -1164,11 +1175,87 @@
             this.delete_texture.UseVisualStyleBackColor = true;
             this.delete_texture.Click += new System.EventHandler(this.delete_texture_Click);
             // 
+            // light_x
+            // 
+            this.light_x.Location = new System.Drawing.Point(257, 4);
+            this.light_x.Name = "light_x";
+            this.light_x.Size = new System.Drawing.Size(120, 22);
+            this.light_x.TabIndex = 92;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(195, 9);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(56, 17);
+            this.label23.TabIndex = 93;
+            this.label23.Text = "Light_X";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(195, 56);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(56, 17);
+            this.label24.TabIndex = 94;
+            this.label24.Text = "Light_Z";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(195, 34);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(56, 17);
+            this.label25.TabIndex = 95;
+            this.label25.Text = "Light_Y";
+            // 
+            // light_y
+            // 
+            this.light_y.Location = new System.Drawing.Point(257, 29);
+            this.light_y.Name = "light_y";
+            this.light_y.Size = new System.Drawing.Size(120, 22);
+            this.light_y.TabIndex = 96;
+            // 
+            // light_z
+            // 
+            this.light_z.Location = new System.Drawing.Point(257, 54);
+            this.light_z.Name = "light_z";
+            this.light_z.Size = new System.Drawing.Size(120, 22);
+            this.light_z.TabIndex = 97;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(383, 4);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(98, 21);
+            this.checkBox1.TabIndex = 98;
+            this.checkBox1.Text = "Гуро Тени";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(383, 29);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(98, 37);
+            this.button1.TabIndex = 99;
+            this.button1.Text = "Redraw";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1586, 819);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.light_z);
+            this.Controls.Add(this.light_y);
+            this.Controls.Add(this.label25);
+            this.Controls.Add(this.label24);
+            this.Controls.Add(this.label23);
+            this.Controls.Add(this.light_x);
             this.Controls.Add(this.delete_texture);
             this.Controls.Add(this.load_texture);
             this.Controls.Add(this.label22);
@@ -1271,6 +1358,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.x1_box)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.light_x)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.light_y)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.light_z)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1361,6 +1451,14 @@
         private System.Windows.Forms.Button load_texture;
         private System.Windows.Forms.OpenFileDialog openFileDialog_texture;
         private System.Windows.Forms.Button delete_texture;
+        private System.Windows.Forms.NumericUpDown light_x;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.NumericUpDown light_y;
+        private System.Windows.Forms.NumericUpDown light_z;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Button button1;
     }
 }
 
