@@ -200,7 +200,7 @@ namespace AffinTransform3D
                 g.Clear(Color.White);
             }
 
-            if (checkbox_delete_invisible.Checked || is_texturing)
+            if (checkbox_delete_invisible.Checked || is_texturing || checkBox1.Checked)
                 draw_pic_by_pixels();
             else
             {
@@ -994,7 +994,10 @@ namespace AffinTransform3D
         {
             if (x - size_xx >= size_diff_x || x <= size_xx)
                 return;
-            color_buffer[x, y] = img.GetPixel((int)((x - size_xx)/size_diff_x*img.Width), img.Height-1-(int)((-y + size_yy)/ size_diff_y * img.Height));
+            if(!checkBox1.Checked)
+                color_buffer[x, y] = img.GetPixel((int)((x - size_xx)/size_diff_x*img.Width), img.Height-1-(int)((-y + size_yy)/ size_diff_y * img.Height));
+            else
+
         }
 
         private void make_pixel_line(ref double[,] z_buffer, int x1, int x2, int y, double za, double zb, int sign, Color color, Bitmap img)
@@ -1060,7 +1063,7 @@ namespace AffinTransform3D
                 { make_pixel_line(ref z_buffer, Xa + sign, Xb - sign, Y, za, zb, sign, color, img); }
                 else
                 {
-                    make_pixel_line(ref z_buffer, Xa + sign, Xb - sign, Y, za, zb, sign,Color.FromArgb(clr,0,0), img);
+                    make_pixel_line(ref z_buffer, Xa + sign, Xb - sign, Y, za, zb, sign,Color.FromArgb(0,0,clr), img);
                 }
                 //set_pixel(ref z_buffer, Xb, Y, zb);
             }
@@ -1276,7 +1279,8 @@ namespace AffinTransform3D
 
         private void button1_Click(object sender, EventArgs e)
         {
-            build_pixels_to_draw();
+            redraw_image();
+            
         }
 
         //load texture
