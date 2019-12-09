@@ -371,7 +371,7 @@
             this.y_rotate.Size = new System.Drawing.Size(85, 22);
             this.y_rotate.TabIndex = 5;
             this.y_rotate.Value = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
             0});
@@ -394,7 +394,7 @@
             this.x_rotate.Size = new System.Drawing.Size(85, 22);
             this.x_rotate.TabIndex = 4;
             this.x_rotate.Value = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
             0});

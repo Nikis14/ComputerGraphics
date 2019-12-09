@@ -35,21 +35,12 @@ namespace AffinTransform3D
         double size_diff_x = 0, size_diff_y = 0;
 
         bool is_texturing = false;
-        Timer timer;
+
         
 
         public Form1()
         {
             InitializeComponent();
-            timer = new Timer();
-            timer.Interval = 200;
-            timer.Tick += Timer_Tick;
-            timer.Start();
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            rotate_button_Click(null, null);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -1005,7 +996,7 @@ namespace AffinTransform3D
                 return;
             if(!checkBox1.Checked)
                 color_buffer[x, y] = img.GetPixel((int)((x - size_xx)/size_diff_x*img.Width), img.Height-1-(int)((-y + size_yy)/ size_diff_y * img.Height));
-           // else
+            else
 
         }
 
