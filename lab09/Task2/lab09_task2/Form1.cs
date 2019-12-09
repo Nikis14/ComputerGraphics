@@ -27,6 +27,7 @@ namespace AffinTransform3D
         bool not_redraw = false; // перерисовывать или нет текущее положение
         List<my_point> initial_points = new List<my_point>();
         Dictionary<int, List<int>> relationships = new Dictionary<int, List<int>>();
+        Dictionary<my_point, double> saturations = new Dictionary<my_point, double>();
         //ObjectIDGenerator linker;
 
         Color[,] color_buffer; //соответсвие между пикселем и цветом
@@ -34,12 +35,21 @@ namespace AffinTransform3D
         double size_diff_x = 0, size_diff_y = 0;
 
         bool is_texturing = false;
-
+        Timer timer;
         
 
         public Form1()
         {
             InitializeComponent();
+            timer = new Timer();
+            timer.Interval = 200;
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            rotate_button_Click(null, null);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -67,6 +77,40 @@ namespace AffinTransform3D
                 for (int i = 0; i < sh.points.Count; i++)
                     if (!points.Contains(sh.points[i]))
                         points.Add(sh.points[i]);
+        }
+
+        private double lambert_model_pt(my_point pt, my_point normal, my_point light)
+        {
+            my_point vectr = new my_point(light.X - pt.X, light.Y - pt.Y, light.Z - pt.Z);
+            double cos_angle = (vectr.X * normal.X + vectr.Y * normal.Y + vectr.Z * normal.Z) /
+                (normal.calculate_len() * vectr.calculate_len());
+            return cos_angle;
+        }
+
+        private Dictionary<my_point,double> calculate_shading()
+        {
+
+            Dictionary<my_point, my_point> point_normal = new Dictionary<my_point, my_point>();
+            foreach (var p in points)
+            {
+                int rel_id = points.IndexOf(p);
+                List<face> needed_faces = new List<face>();
+                foreach (var item in relationships)
+                {
+                    if (item.Value.Contains(rel_id))
+                    {
+                        needed_faces.Add(shape[item.Key]);
+                    }
+                }
+                point_normal.Add(p, p.calculate_normal(needed_faces));
+            }
+            Dictionary<my_point, double> point_intensity = new Dictionary<my_point, double>();
+            foreach (var pt in points)
+            {
+                point_intensity.Add(pt, lambert_model_pt(pt, point_normal[pt], new my_point((double)light_x.Value,(double)light_y.Value,(double)light_z.Value)));
+            }
+            return point_intensity;
+
         }
 
         private void draw_point(my_point p) // рисуем точку
@@ -165,7 +209,7 @@ namespace AffinTransform3D
                 g.Clear(Color.White);
             }
 
-            if (checkbox_delete_invisible.Checked || is_texturing)
+            if (checkbox_delete_invisible.Checked || is_texturing || checkBox1.Checked)
                 draw_pic_by_pixels();
             else
             {
@@ -959,7 +1003,10 @@ namespace AffinTransform3D
         {
             if (x - size_xx >= size_diff_x || x <= size_xx)
                 return;
-            color_buffer[x, y] = img.GetPixel((int)((x - size_xx)/size_diff_x*img.Width), img.Height-1-(int)((-y + size_yy)/ size_diff_y * img.Height));
+            if(!checkBox1.Checked)
+                color_buffer[x, y] = img.GetPixel((int)((x - size_xx)/size_diff_x*img.Width), img.Height-1-(int)((-y + size_yy)/ size_diff_y * img.Height));
+           // else
+
         }
 
         private void make_pixel_line(ref double[,] z_buffer, int x1, int x2, int y, double za, double zb, int sign, Color color, Bitmap img)
@@ -1004,11 +1051,29 @@ namespace AffinTransform3D
             int Xa = (int)Math.Round(cur_pointXa);
             int Xb = (int)Math.Round(cur_pointXb);
             int sign = Math.Sign(Xb - Xa);
+            //
+            double its = 0;
+            double middle_x = (cur_pointXa + cur_pointXb) / 2;
+            foreach (var item in f.points)
+            {
+                double distns = Math.Abs(middle_x / item.X) + Math.Abs(Y / item.Y) + Math.Abs(((za + zb) / 2) / item.X);
+                distns /= 3;
+                its += saturations[item]*distns;
 
+            }
+            its /= f.points.Count ;
+            int clr = (int)Math.Round(255 * Math.Abs(its));
+            clr = Math.Max(0, Math.Min(clr, 255));
+            //
             //set_pixel(ref z_buffer, Xa, Y, za);
             if (sign != 0)
             {
-                make_pixel_line(ref z_buffer, Xa + sign, Xb - sign, Y, za, zb, sign, color, img);
+                if (!checkBox1.Checked)
+                { make_pixel_line(ref z_buffer, Xa + sign, Xb - sign, Y, za, zb, sign, color, img); }
+                else
+                {
+                    make_pixel_line(ref z_buffer, Xa + sign, Xb - sign, Y, za, zb, sign,Color.FromArgb(0,0,clr), img);
+                }
                 //set_pixel(ref z_buffer, Xb, Y, zb);
             }
         }
@@ -1137,6 +1202,10 @@ namespace AffinTransform3D
         //Create map of colors to draw pixels in face
         private void set_texture_with_Zbuffer(face f, ref double[,] z_buffer)
         {
+            if (checkBox1.Checked)
+            {
+                this.saturations = calculate_shading();
+            }
             Tuple<int, int, int, int> min_maxY = find_min_max_XYpoint(f);
             double cur_y = f.points[min_maxY.Item4].Y;
             double cur_pointXa = (int)Math.Round(f.points[min_maxY.Item4].X);
@@ -1215,6 +1284,12 @@ namespace AffinTransform3D
         {
             if(shape.Count > 0)
                 redraw_image();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            redraw_image();
+            
         }
 
         //load texture

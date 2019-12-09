@@ -21,6 +21,21 @@ namespace AffinTransform3D
             return res;
         }
 
+        public my_point calculate_normal(List<face> faces)
+        {
+            my_point res = new my_point(0, 0, 0);
+            foreach (var item in faces)
+            {
+                res.X += item.calculate_normal().X;
+                res.Y += item.calculate_normal().Y;
+                res.Z += item.calculate_normal().Z;
+            }
+            res.X /= faces.Count;
+            res.Y /= faces.Count;
+            res.Z /= faces.Count;
+            return res;
+        }
+
         public double X, Y, Z;
 
         public my_point()
@@ -35,6 +50,11 @@ namespace AffinTransform3D
             this.Z = z;
         }
 
+
+        public double calculate_len()
+        {
+            return Math.Sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z);
+        }
     }
 
     public class face
@@ -52,6 +72,8 @@ namespace AffinTransform3D
             points.Add(p);
         }
 
+       
+
         public my_point calculate_normal()
         {
             my_point p0 = points[0];
@@ -62,6 +84,8 @@ namespace AffinTransform3D
             return my_point.multiply_two_vectors(v1, v2);
             
         }
+
+    }
 
         public my_point calculate_center()
         {
