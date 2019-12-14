@@ -1,0 +1,10 @@
+uniform float lerp;
+uniform float scale;
+void main(void)
+{
+    vec4 Vertex;
+    Vertex = mix( gl_Vertex, gl_Color, lerp ); // mix 2 keyframe using in model's motion
+    gl_Position = gl_ModelViewProjectionMatrix * scale * Vertex;
+
+    gl_TexCoord[0] = gl_MultiTexCoord0;
+}

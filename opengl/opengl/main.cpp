@@ -109,7 +109,7 @@ void drawLamps() {
 	const GLfloat light_pos[] = { 0.f, 0.f, 4.6f, 1.f };
     glColor3f(0.5f, 0.5f, 0.5f);
     glPushMatrix();
-    glTranslatef(-4, -4, 0);
+    glTranslatef(-6, -6, 0);
     glutSolidCylinder(0.1, 4, 10, 10);
     glPushMatrix();
     glTranslatef(0, 0, 4.1);
@@ -119,11 +119,12 @@ void drawLamps() {
         glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
     glutSolidSphere(0.5, 10, 10);
     glPopMatrix();
+	glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
     glLightfv(GL_LIGHT1, GL_POSITION, light_pos);
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(-4, 4, 0);
+    glTranslatef(-6, 6, 0);
     glutSolidCylinder(0.1, 4, 10, 10);
     glPushMatrix();
     glTranslatef(0, 0, 4.1);
@@ -133,21 +134,23 @@ void drawLamps() {
         glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
     glutSolidSphere(0.5, 10, 10);
     glPopMatrix();
+	glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
     glLightfv(GL_LIGHT2, GL_POSITION, light_pos);
     glPopMatrix();
     
     glPushMatrix();
-    glTranslatef(4, 4, 0);
+    glTranslatef(6, 6, 0);
     glutSolidCylinder(0.1, 4, 10, 10);
     glPushMatrix();
     glTranslatef(0, 0, 4.1);
-    /*if (glIsEnabled(GL_LIGHT3))
+   /* if (glIsEnabled(GL_LIGHT3))
         glMaterialfv(GL_FRONT, GL_EMISSION, light);
     else
         glMaterialfv(GL_FRONT, GL_EMISSION, no_light);*/
     glutSolidSphere(0.5, 10, 10);
     glPopMatrix();
-//    glLightfv(GL_LIGHT3, GL_POSITION, light_pos);
+	glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
+    glLightfv(GL_LIGHT3, GL_POSITION, light_pos);
     glPopMatrix();
 
     glPushMatrix();
@@ -162,7 +165,7 @@ void drawLamps() {
     glutSolidSphere(0.5, 10, 10);
     glPopMatrix();
     glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-  //  glLightfv(GL_LIGHT4, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT4, GL_POSITION, light_pos);
     glPopMatrix();
 
 /*
@@ -198,8 +201,11 @@ void drawCar()
 	GLfloat pos[] = {0,0,0};
 	//glTranslated(-0.5, -machine_coord_y, -1);
 	//glTranslated(machine_coord_x/2, machine_coord_y/2, 0.5);
+	
 	glTranslated(dist_x, dist_y, 1);
+	
 	glRotated(angle, 0, 0, 1);
+	//glTranslated(0.1, modifier * -1, 0);
 	//glRotated(machine_angle, 0, 0, 1);
 	//Кузов
 	glPushMatrix();
@@ -228,25 +234,27 @@ void drawCar()
 	glutSolidCube(0.8);
 	//Фары
 	glPushMatrix();
-	if (glIsEnabled(GL_LIGHT3))
+	if (glIsEnabled(GL_LIGHT5))
 		glMaterialfv(GL_FRONT, GL_EMISSION, light);
 	else
 		glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
 	glTranslated(0.4, 0.3, 0);
 	glutSolidSphere(0.1,20,20);
 	glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-	glLightfv(GL_LIGHT3, GL_POSITION, pos);
-	glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 60);
-	glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, dir);
+	glLightfv(GL_LIGHT5, GL_POSITION, pos);
+	glLightf(GL_LIGHT5, GL_SPOT_CUTOFF, 60);
+	glLightfv(GL_LIGHT5, GL_SPOT_DIRECTION, dir);
 	glTranslated(0, -0.6, 0);
-	if (glIsEnabled(GL_LIGHT4))
+	if (glIsEnabled(GL_LIGHT6))
+	{
 		glMaterialfv(GL_FRONT, GL_EMISSION, light);
+	}
 	else
 		glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
 	glutSolidSphere(0.1,20,20);
-	glLightfv(GL_LIGHT4, GL_POSITION, pos);
-	glLightf(GL_LIGHT4, GL_SPOT_CUTOFF, 60);
-	glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, dir);
+	glLightfv(GL_LIGHT6, GL_POSITION, pos);
+	glLightf(GL_LIGHT6, GL_SPOT_CUTOFF, 60);
+	glLightfv(GL_LIGHT6, GL_SPOT_DIRECTION, dir);
 	glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
 	glPopMatrix();
 	//Конец фар
