@@ -1,16 +1,26 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+import glm
+import numpy
+import math
 pointdata = [[0, 0.5, 0], [-0.5, -0.5, 0], [0.5, -0.5, 0]]
 pointcolor = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 x_scale = y_scale = 1
 y_rotate = 0
+
+def gen_mat_3(y_rotate,x_scale,y_scale):
+    model = glm.mat4(1)
+    model = glm.rotate(model, y_rotate, glm.vec3(0, 1, 0))
+    model = glm.scale(model, glm.vec3(x_scale, y_scale, 1))
+    return model
 
 def load_shader_from_file(filename):
     f = open(filename,"r")
     return f.read()
 
 def create_shader(shader_type, filename):
+    global location_y
     shader = glCreateShader(shader_type)
     glShaderSource(shader, load_shader_from_file(filename))
     glCompileShader(shader)
@@ -23,12 +33,13 @@ def draw_all():
     glEnableClientState(GL_COLOR_ARRAY)  # Включаем использование массива цветов
     glVertexPointer(3, GL_FLOAT, 0, pointdata)
     glColorPointer(3, GL_FLOAT, 0, pointcolor)
-    glScale(x_scale,y_scale,1)
-    glRotate(y_rotate,0,1,0)
+    matr = gen_mat_3(y_rotate,x_scale,y_scale)
+    glProgramUniformMatrix4fv(program,matr_rot_loc,1,GL_FALSE,glm.value_ptr(matr))
     glDrawArrays(GL_TRIANGLES, 0, 3)
     glDisableClientState(GL_VERTEX_ARRAY)  # Отключаем использование массива вершин
     glDisableClientState(GL_COLOR_ARRAY)  # Отключаем использование массива цветов
     glutSwapBuffers()
+
 
 def specialkeys(key, x, y):
     # Сообщаем о необходимости использовать глобального массива pointcolor
@@ -71,8 +82,9 @@ glutDisplayFunc(showScreen)
 glutSpecialFunc(specialkeys)
 glutIdleFunc(showScreen)
 program = glCreateProgram()
-glAttachShader(program, create_shader(GL_FRAGMENT_SHADER,"fragment_shader.shd"))
-glAttachShader(program, create_shader(GL_VERTEX_SHADER,"vertex_shader.shd"))
+glAttachShader(program, create_shader(GL_FRAGMENT_SHADER, "fragment_shader.shd"))
+glAttachShader(program, create_shader(GL_VERTEX_SHADER, "vertex_shader.shd"))
 glLinkProgram(program)
 glUseProgram(program)
+matr_rot_loc = glGetUniformLocation(program,"rot")
 glutMainLoop()

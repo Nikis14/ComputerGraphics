@@ -1,5 +1,6 @@
 varying vec4 vertex_color;
+uniform mat4 rot;
 void main(){
-gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+gl_Position = gl_ModelViewProjectionMatrix * rot * gl_Vertex;
 vertex_color = gl_Color;
 }
