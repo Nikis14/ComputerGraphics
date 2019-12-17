@@ -4,6 +4,7 @@ from OpenGL.GLU import *
 import glm
 import numpy
 import math
+
 pointdata = [[0, 0.5, 0], [-0.5, -0.5, 0], [0.5, -0.5, 0]]
 pointcolor = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 x_scale = y_scale = 1
@@ -11,7 +12,7 @@ y_rotate = 0
 
 def gen_mat_3(y_rotate,x_scale,y_scale):
     model = glm.mat4(1)
-    model = glm.rotate(model, y_rotate, glm.vec3(0, 1, 0))
+    model = glm.rotate(model, y_rotate, glm.vec3(0, 0, 1))
     model = glm.scale(model, glm.vec3(x_scale, y_scale, 1))
     return model
 
@@ -54,9 +55,9 @@ def specialkeys(key, x, y):
     if key == GLUT_KEY_RIGHT:
         x_scale += 0.1
     if key == GLUT_KEY_F1:
-        y_rotate += 10
+        y_rotate += 0.1
     if key == GLUT_KEY_F2:
-        y_rotate -= 10
+        y_rotate -= 0.1
 
 
 
