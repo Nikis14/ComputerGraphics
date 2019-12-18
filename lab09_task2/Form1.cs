@@ -49,7 +49,7 @@ namespace AffinTransform3D
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            rotate_button_Click(null, null);
+         //   rotate_button_Click(null, null);
         }
 
         private void Form1_Load(object sender, EventArgs e)

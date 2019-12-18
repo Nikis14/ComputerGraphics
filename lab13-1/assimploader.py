@@ -74,5 +74,5 @@ def load_file(filename=None):
 
     # Finally release the model
     pyassimp.release(scene)
-    return
+    return scene
 

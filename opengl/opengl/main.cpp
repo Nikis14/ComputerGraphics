@@ -1,8 +1,96 @@
 #include "GL/soil.h"
 #include "GL/glew.h"
 #include "GL/freeglut.h"
-
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include <iostream>
+#include "glm.hpp"
+#include <vector>
+using namespace std;
+
+
+struct Vertex
+{
+	glm::vec3 position;
+	glm::vec3 normal;
+};
+
+struct Mesh
+{
+public:
+	//The vertex array object, vertex buffer object and element buffer object
+	unsigned int VAO;
+	GLuint VBO;
+	GLuint EBO;
+	//Vectors for the vertices and indices to put in the buffers
+	std::vector<Vertex> vertices;
+	std::vector<GLuint> indices;
+
+	//Constructor
+	Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices)
+	{
+		this->vertices = vertices;
+		this->indices = indices;
+
+		//Generate the VAO
+		glGenVertexArrays(1, &VAO);
+
+		//Generate the buffer objects
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
+
+		//Bind the VAO
+		glBindVertexArray(VAO);
+
+		//Bind the VBO and set the vertices
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), &vertices.at(0), GL_STATIC_DRAW);
+
+		//Enable the first attribute pointer
+		glEnableVertexAttribArray(0);
+		//Set the attribute pointer    The stride is meant to be 'sizeof(Vertex)', but it doesn't work at all that way
+		//                                              \/
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+
+		//Enable the second attribute pointer
+		glEnableVertexAttribArray(1);
+		//Set the attribute pointer                   ditto
+		//                                              \/
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+
+		//Bind the EBO and set the indices
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices.at(0), GL_STATIC_DRAW);
+
+		//Report any errors
+		GLenum error = glGetError();
+		if (error != GL_NO_ERROR)
+		{
+			std::cerr << "Error while creating mesh!" << std::endl;
+		}
+
+		glBindVertexArray(0);
+	}
+
+	void draw()
+	{
+		//Bind the VAO
+		glBindVertexArray(VAO);
+
+		//Bind the ELement Buffer Object
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+		//Draw the mesh
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+		//Unbind the VAO
+		glBindVertexArray(0);
+	}
+};
+
+
+
 
 static int w = 0, h = 0;
 
@@ -32,260 +120,91 @@ float dif[] = { 0.2, 0.2, 0.2 };
 
 const double step = 1;
 
-void loadTextures() {
 
 
-    floor_texture_id = SOIL_load_OGL_texture("textures/square.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    car_texture_id = SOIL_load_OGL_texture("textures/car.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+void load_from_file()
+{
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile("Low-Poly-Racing-Car.obj", aiProcess_Triangulate | aiProcess_GenNormals);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//Check for errors
+	/*if ((!scene) || (scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE) || (!scene->mRootNode))
+	{
+		std::cerr << "Error loading mymodel.obj: " << std::string(importer.GetErrorString()) << std::endl;
+		//Return fail
+		return;
+	}*/
 
+	//A vector to store the meshes
+	std::vector<std::unique_ptr<Mesh> > meshes;
+	//Iterate over the meshes
+	for (unsigned int i = 0; i < scene->mNumMeshes; ++i)
+	{
+		//Get the mesh
+		aiMesh* mesh = scene->mMeshes[i];
+
+		//Create vectors for the vertices and indices
+		std::vector<Vertex> vertices;
+		std::vector<GLuint> indices;
+
+		//Iterate over the vertices of the mesh
+		for (unsigned int j = 0; j < mesh->mNumVertices; ++j)
+		{
+			//Create a vertex to store the mesh's vertices temporarily
+			Vertex tempVertex;
+
+			//Set the positions
+			tempVertex.position.x = mesh->mVertices[j].x;
+			tempVertex.position.y = mesh->mVertices[j].y;
+			tempVertex.position.z = mesh->mVertices[j].z;
+
+			//Set the normals
+			tempVertex.normal.x = mesh->mNormals[j].x;
+			tempVertex.normal.y = mesh->mNormals[j].y;
+			tempVertex.normal.z = mesh->mNormals[j].z;
+
+			//Add the vertex to the vertices vector
+			vertices.push_back(tempVertex);
+		}
+
+		//Iterate over the faces of the mesh
+		for (unsigned int j = 0; j < mesh->mNumFaces; ++j)
+		{
+			//Get the face
+			aiFace face = mesh->mFaces[j];
+			//Add the indices of the face to the vector
+			for (unsigned int k = 0; k < face.mNumIndices; ++k) { indices.push_back(face.mIndices[k]); }
+		}
+
+		//Create a new mesh and add it to the vector
+		meshes.push_back(std::unique_ptr<Mesh>(new Mesh(std::move(vertices), std::move(indices))));
+
+	}
+	for (auto& mesh : meshes) { mesh.get()->draw(); }
 }
 
 void init() {
-    glClearColor(0, 0, 0, 1);
-
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-
-    const GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-    const GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-
-    loadTextures();
-
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
-    glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT2, GL_SPECULAR, light_specular);
-    glLightfv(GL_LIGHT3, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT3, GL_SPECULAR, light_specular);
-    glLightfv(GL_LIGHT4, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT5, GL_SPECULAR, light_specular);
-    glLightfv(GL_LIGHT5, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT6, GL_SPECULAR, light_specular);
-    glLightfv(GL_LIGHT6, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT7, GL_SPECULAR, light_specular);
-    glLightfv(GL_LIGHT7, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT8, GL_SPECULAR, light_specular);
-	glLightfv(GL_LIGHT8, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT9, GL_SPECULAR, light_specular);
-	glLightfv(GL_LIGHT9, GL_DIFFUSE, light_diffuse);
-
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-}
-
-void drawFloor() {
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
-    glBindTexture(GL_TEXTURE_2D, floor_texture_id);
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(0, 0); glNormal3f(0, 0, 1); glVertex3f(-10, -10, 0);
-    glTexCoord2f(0, 1); glNormal3f(0, 0, 1); glVertex3f(-10, 10, 0);
-    glTexCoord2f(1, 1); glNormal3f(0, 0, 1); glVertex3f(10, 10, 0);
-    glTexCoord2f(1, 0); glNormal3f(0, 0, 1); glVertex3f(10, -10, 0);
-    glEnd();
-
-    glDisable(GL_TEXTURE_2D);
-}
-
-void drawLamps() {
-    
-	const GLfloat light_pos[] = { 0.f, 0.f, 4.6f, 1.f };
-    glColor3f(0.5f, 0.5f, 0.5f);
-    glPushMatrix();
-    glTranslatef(-6, -6, 0);
-    glutSolidCylinder(0.1, 4, 10, 10);
-    glPushMatrix();
-    glTranslatef(0, 0, 4.1);
-    if (glIsEnabled(GL_LIGHT1))
-        glMaterialfv(GL_FRONT, GL_EMISSION, light);
-    else
-        glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-    glutSolidSphere(0.5, 10, 10);
-    glPopMatrix();
-	glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-    glLightfv(GL_LIGHT1, GL_POSITION, light_pos);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(-6, 6, 0);
-    glutSolidCylinder(0.1, 4, 10, 10);
-    glPushMatrix();
-    glTranslatef(0, 0, 4.1);
-    if (glIsEnabled(GL_LIGHT2))
-        glMaterialfv(GL_FRONT, GL_EMISSION, light);
-    else
-        glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-    glutSolidSphere(0.5, 10, 10);
-    glPopMatrix();
-	glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-    glLightfv(GL_LIGHT2, GL_POSITION, light_pos);
-    glPopMatrix();
-    
-    glPushMatrix();
-    glTranslatef(6, 6, 0);
-    glutSolidCylinder(0.1, 4, 10, 10);
-    glPushMatrix();
-    glTranslatef(0, 0, 4.1);
-   /* if (glIsEnabled(GL_LIGHT3))
-        glMaterialfv(GL_FRONT, GL_EMISSION, light);
-    else
-        glMaterialfv(GL_FRONT, GL_EMISSION, no_light);*/
-    glutSolidSphere(0.5, 10, 10);
-    glPopMatrix();
-	glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-    glLightfv(GL_LIGHT3, GL_POSITION, light_pos);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(4, -4, 0);
-    glutSolidCylinder(0.1, 4, 10, 10);
-    glPushMatrix();
-    glTranslatef(0, 0, 4.1);
-   /* if (glIsEnabled(GL_LIGHT4))
-        glMaterialfv(GL_FRONT, GL_EMISSION, light);
-    else
-        glMaterialfv(GL_FRONT, GL_EMISSION, no_light);*/
-    glutSolidSphere(0.5, 10, 10);
-    glPopMatrix();
-    glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-    glLightfv(GL_LIGHT4, GL_POSITION, light_pos);
-    glPopMatrix();
-
-/*
-    glPushMatrix();
-    glTranslatef(dist_x, dist_y, 0);
-    glRotatef(angle, 0, 0, 1);
-    glRotatef(-90, 0, 0, 1);
-    float dir[] = { 0, 1, 0, 1 };
-    float pos[] = { 2, -0.4,0.6 };
-    glLightfv(GL_LIGHT5, GL_POSITION, pos);
-    glLightf(GL_LIGHT5, GL_SPOT_CUTOFF, 60);
-    glLightfv(GL_LIGHT5, GL_SPOT_DIRECTION, dir);
-    pos[1] += 1.8;
-    glLightfv(GL_LIGHT6, GL_POSITION, pos);
-    glLightf(GL_LIGHT6, GL_SPOT_CUTOFF, 60);
-    glLightfv(GL_LIGHT6, GL_SPOT_DIRECTION, dir);
-    glPopMatrix();
-
-    float cam_dir[] = { -cam_x, -cam_y, -cam_z };
-    pos[0] = cam_x; 
-    pos[1] = cam_y; 
-    pos[2] = cam_z;
-    glLightfv(GL_LIGHT7, GL_POSITION, pos);
-    glLightf(GL_LIGHT7, GL_SPOT_CUTOFF, 60);
-    glLightfv(GL_LIGHT7, GL_SPOT_DIRECTION, cam_dir);*/
-}
-
-void drawCar()
-{
-	glPushMatrix();
-	const GLfloat light_pos[] = { 1.f, 0.f, 0.f };
-	GLfloat dir[] = { 1, 0, 0, 1 };
-	GLfloat pos[] = {0,0,0};
-	//glTranslated(-0.5, -machine_coord_y, -1);
-	//glTranslated(machine_coord_x/2, machine_coord_y/2, 0.5);
-	
-	glTranslated(dist_x, dist_y, 1);
-	
-	glRotated(angle, 0, 0, 1);
-	//glTranslated(0.1, modifier * -1, 0);
-	//glRotated(machine_angle, 0, 0, 1);
-	//Кузов
-	glPushMatrix();
-	glScaled(2, 1, 1);
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
-	glBindTexture(GL_TEXTURE_2D, car_texture_id);
-	glutSolidCube(1);
-	
-	glPopMatrix();
-	//Конец кузова
-	//Задние колеса
-	glPushMatrix();
-	glTranslated(-0.3, -0.5, -0.6);
-	glRotated(90, 1, 0, 0);
-	glutSolidTorus(0.15, 0.2, 20, 20);
-	glTranslated(0, 0, -1);
-	glutSolidTorus(0.15, 0.2, 20, 20);
-	glPopMatrix();
-	//Конец задних колес
-	//Кабина
-	glPushMatrix();
-	glTranslated(1.3, 0, -0.1);
-	glutSolidCube(0.8);
-	//Фары
-	glPushMatrix();
-	if (glIsEnabled(GL_LIGHT5))
-		glMaterialfv(GL_FRONT, GL_EMISSION, light);
-	else
-		glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-	glTranslated(0.4, 0.3, 0);
-	glutSolidSphere(0.1,20,20);
-	glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-	glLightfv(GL_LIGHT5, GL_POSITION, pos);
-	glLightf(GL_LIGHT5, GL_SPOT_CUTOFF, 60);
-	glLightfv(GL_LIGHT5, GL_SPOT_DIRECTION, dir);
-	glTranslated(0, -0.6, 0);
-	if (glIsEnabled(GL_LIGHT6))
-	{
-		glMaterialfv(GL_FRONT, GL_EMISSION, light);
-	}
-	else
-		glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-	glutSolidSphere(0.1,20,20);
-	glLightfv(GL_LIGHT6, GL_POSITION, pos);
-	glLightf(GL_LIGHT6, GL_SPOT_CUTOFF, 60);
-	glLightfv(GL_LIGHT6, GL_SPOT_DIRECTION, dir);
-	glMaterialfv(GL_FRONT, GL_EMISSION, no_light);
-	glPopMatrix();
-	//Конец фар
-	//Конец кабины
-	//Передние колеса
-	glTranslated(0, -0.5, -0.5);
-	glRotated(90, 1, 0, 0);
-	glutSolidTorus(0.15,0.2,20,20);
-	glTranslated(0, 0,-1);
-	glutSolidTorus(0.15, 0.2, 20, 20);
-	glPopMatrix();
-	//Конец передних колес
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-	glPopMatrix();
+	glClearColor(0, 0, 0, 1);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_COLOR_MATERIAL);
 }
 
 void update() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
+	
 
-    double ang_vert_r = ang_vert / 180 * 3.1416;
-    double ang_hor_r = ang_hor / 180 * 3.1416;
-    cam_x = cam_dist * std::sin(ang_vert_r) * std::cos(ang_hor_r);
-    cam_y = cam_dist * std::sin(ang_vert_r) * std::sin(ang_hor_r);
-    cam_z = cam_dist * std::cos(ang_vert_r);
+	double ang_vert_r = ang_vert / 180 * 3.1416;
+	double ang_hor_r = ang_hor / 180 * 3.1416;
+	cam_x = cam_dist * std::sin(ang_vert_r) * std::cos(ang_hor_r);
+	cam_y = cam_dist * std::sin(ang_vert_r) * std::sin(ang_hor_r);
+	cam_z = cam_dist * std::cos(ang_vert_r);
 
-    gluLookAt(cam_x, cam_y, cam_z, 0., 0., 0., 0., 0., 1.);
-    drawLamps();
-    drawFloor();
-	drawCar();
+	gluLookAt(cam_x, cam_y, cam_z, 0., 0., 0., 0., 0., 1.);
+	glTranslatef(5.0f, 0.0f, -10.0f);
+	load_from_file();
     glFlush();
     glutSwapBuffers();
 }
@@ -299,91 +218,7 @@ void updateCamera() {
 
 
 void keyboard(unsigned char key, int x, int y) {
-    switch (key) {
-    case 'w':
-        ang_vert += 5;
-        break;
-    case 's':
-        ang_vert -= 5;
-        break;
-    case 'a':
-        ang_hor -= 5;
-        break;
-    case 'd':
-        ang_hor += 5;
-        break;
-    case 'q':
-        cam_dist--;
-        break;
-	case 'o':
-		machine_coord_x += 0.1;
-		break;
-	case 'l':
-		machine_coord_x -= 0.1;
-		break;
-	case 'j':
-		machine_angle += 5;
-		break;
-	case 'k':
-		machine_angle -= 5;
-		break;
-    case 'z':
-        cam_dist++;
-        break;
-    case '1':
-        if (glIsEnabled(GL_LIGHT1))
-            glDisable(GL_LIGHT1);
-        else
-            glEnable(GL_LIGHT1);
-        break;
-    case '2':
-        if (glIsEnabled(GL_LIGHT2))
-            glDisable(GL_LIGHT2);
-        else
-            glEnable(GL_LIGHT2);
-        break;
-    case '3':
-        if (glIsEnabled(GL_LIGHT3))
-            glDisable(GL_LIGHT3);
-        else
-            glEnable(GL_LIGHT3);
-        break;
-    case '4':
-        if (glIsEnabled(GL_LIGHT4))
-            glDisable(GL_LIGHT4);
-        else
-            glEnable(GL_LIGHT4);
-        break;
-    case '5':
-        if (glIsEnabled(GL_LIGHT5)) {
-            glDisable(GL_LIGHT5);
-            glDisable(GL_LIGHT6);
-        }
-        else {
-            glEnable(GL_LIGHT5);
-            glEnable(GL_LIGHT6);
-        }
-        break;
-	case '8':
-		if (glIsEnabled(GL_LIGHT0)) {
-			//glDisable(GL_LIGHT6);
-			glDisable(GL_LIGHT0);
-		}
-		else {
-			//glEnable(GL_LIGHT6);
-			glEnable(GL_LIGHT0);
-		}
-		break;
-    default:
-        break;
-    case '6':
-        if (glIsEnabled(GL_LIGHT7))
-            glDisable(GL_LIGHT7);
-        else
-            glEnable(GL_LIGHT7);
-        break;
-    }
-    glutPostRedisplay();
+
 }
 
 void reshape(int width, int height) {
@@ -395,23 +230,6 @@ void reshape(int width, int height) {
 }
 
 void SpecialKeys(int key, int x, int y) {
-    switch (key) {
-    case GLUT_KEY_UP:
-        dist_x += std::cos(angle / 180 * 3.1416) * 0.3;
-        dist_y += std::sin(angle / 180 * 3.1416) * 0.3;
-        break;
-    case GLUT_KEY_DOWN:
-        dist_x -= std::cos(angle / 180 * 3.1416) * 0.3;
-        dist_y -= std::sin(angle / 180 * 3.1416) * 0.3;
-        break;
-    case GLUT_KEY_LEFT:
-        angle -= 5;
-        break;
-    case GLUT_KEY_RIGHT:
-        angle += 5;
-        break;
-    }
-    glutPostRedisplay();
 }
 
 int main(int argc, char* argv[]) {
@@ -419,7 +237,7 @@ int main(int argc, char* argv[]) {
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(800, 800);
     glutCreateWindow("texture and lighting");
-
+	glewInit();
     init();
 
     glutReshapeFunc(reshape);
