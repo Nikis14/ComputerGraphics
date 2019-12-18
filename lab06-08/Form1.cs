@@ -92,7 +92,7 @@ namespace AffinTransform3D
             Dictionary<my_point, double> point_intensity = new Dictionary<my_point, double>();
             foreach (var pt in points)
             {
-                point_intensity.Add(pt, lambert_model_pt(pt, point_normal[pt], new my_point());
+                point_intensity.Add(pt, lambert_model_pt(pt, point_normal[pt], new my_point()));
             }
 
         }
@@ -1031,7 +1031,7 @@ namespace AffinTransform3D
 
         private double sum_sin(double x, double y)
         {
-
+            return 0;
         }
 
         private double sum(double x, double y)
