@@ -74,7 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\ComputerGraphics\opengl\glm;D:\ComputerGraphics\opengl\glut and glew\freeglut\include;D:\ComputerGraphics\opengl\glut and glew\glew-1.11.0\include;D:\assimp-3.1.1-win-binaries\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\ComputerGraphics\opengl\glm\glm;D:\ComputerGraphics\opengl\glut and glew\freeglut\include;D:\ComputerGraphics\opengl\glut and glew\glew-1.11.0\include;D:\assimp-3.1.1-win-binaries\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\assimp-3.1.1-win-binaries\lib32;D:\ComputerGraphics\opengl\glut and glew\freeglut\lib;D:\ComputerGraphics\opengl\glut and glew\glew-1.11.0\lib;D:\assimp-3.1.1-win-binaries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -86,7 +86,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\ComputerGraphics\opengl\glm;D:\ComputerGraphics\opengl\glut and glew\freeglut\include;D:\ComputerGraphics\opengl\glut and glew\glew-1.11.0\include;D:\assimp-3.1.1-win-binaries\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\ComputerGraphics\opengl\glm\glm;D:\ComputerGraphics\opengl\glut and glew\freeglut\include;D:\ComputerGraphics\opengl\glut and glew\glew-1.11.0\include;D:\assimp-3.1.1-win-binaries\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\assimp-3.1.1-win-binaries\lib32;D:\ComputerGraphics\opengl\glut and glew\freeglut\lib;D:\ComputerGraphics\opengl\glut and glew\glew-1.11.0\lib;D:\assimp-3.1.1-win-binaries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -100,7 +100,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\ComputerGraphics\opengl\glm;D:\ComputerGraphics\opengl\glut and glew\freeglut\include;D:\ComputerGraphics\opengl\glut and glew\glew-1.11.0\include;D:\assimp-3.1.1-win-binaries\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\ComputerGraphics\opengl\glm\glm;D:\ComputerGraphics\opengl\glut and glew\freeglut\include;D:\ComputerGraphics\opengl\glut and glew\glew-1.11.0\include;D:\assimp-3.1.1-win-binaries\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -116,7 +116,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\ComputerGraphics\opengl\glm;D:\ComputerGraphics\opengl\glut and glew\freeglut\include;D:\ComputerGraphics\opengl\glut and glew\glew-1.11.0\include;D:\assimp-3.1.1-win-binaries\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\ComputerGraphics\opengl\glm\glm;D:\ComputerGraphics\opengl\glut and glew\freeglut\include;D:\ComputerGraphics\opengl\glut and glew\glew-1.11.0\include;D:\assimp-3.1.1-win-binaries\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -135,6 +135,7 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Assimp.redist.3.0.0\build\native\Assimp.redist.targets" Condition="Exists('..\packages\Assimp.redist.3.0.0\build\native\Assimp.redist.targets')" />
     <Import Project="..\packages\Assimp.3.0.0\build\native\Assimp.targets" Condition="Exists('..\packages\Assimp.3.0.0\build\native\Assimp.targets')" />
+    <Import Project="..\packages\Assimp.symbols.3.0.0\build\native\Assimp.symbols.targets" Condition="Exists('..\packages\Assimp.symbols.3.0.0\build\native\Assimp.symbols.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -142,5 +143,6 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Assimp.redist.3.0.0\build\native\Assimp.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Assimp.redist.3.0.0\build\native\Assimp.redist.targets'))" />
     <Error Condition="!Exists('..\packages\Assimp.3.0.0\build\native\Assimp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Assimp.3.0.0\build\native\Assimp.targets'))" />
+    <Error Condition="!Exists('..\packages\Assimp.symbols.3.0.0\build\native\Assimp.symbols.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Assimp.symbols.3.0.0\build\native\Assimp.symbols.targets'))" />
   </Target>
 </Project>

@@ -2,13 +2,19 @@
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 #include <assimp/Importer.hpp>
+#include <assimp/Exporter.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <iostream>
 #include "glm.hpp"
 #include <vector>
+#include <random>
 using namespace std;
 
+int byterandom()
+{
+	return (rand() % 100+155);
+}
 
 struct Vertex
 {
@@ -30,9 +36,9 @@ public:
 	//Constructor
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices)
 	{
+
 		this->vertices = vertices;
 		this->indices = indices;
-
 		//Generate the VAO
 		glGenVertexArrays(1, &VAO);
 
@@ -59,6 +65,8 @@ public:
 		//                                              \/
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
+	
+
 		//Bind the EBO and set the indices
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices.at(0), GL_STATIC_DRAW);
@@ -77,17 +85,29 @@ public:
 	{
 		//Bind the VAO
 		glBindVertexArray(VAO);
-
 		//Bind the ELement Buffer Object
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-		//Draw the mesh
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-
+		GLuint vbocolors = GLuint();
+		glGenBuffers(1, &vbocolors);
+		std::random_device engine;
+		unsigned x = engine();
+		//glBindBuffer(GL_ARRAY_BUFFER, vbocolors);
+		//glBufferData(GL_ARRAY_BUFFER, sizeof(colors), &colors, GL_STATIC_DRAW);
+		//glColorPointer(sizeof(indices)*3, GL_BYTE, 0, colors);
+		for (int start = 0; start < size(vertices); start += 3) {
+			// Set the color of the triangle
+			char c1 = engine();
+			char c2 = engine();
+			char c3 = engine();
+			glColor3b(c1,c2,c3);
+			// Draw a single triangle
+			glDrawArrays(GL_TRIANGLES, start, 3);
+		}
 		//Unbind the VAO
 		glBindVertexArray(0);
 	}
 };
+
 
 
 
@@ -122,8 +142,7 @@ const double step = 1;
 
 
 
-
-void load_from_file()
+const aiScene* load_from_file()
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile("Low-Poly-Racing-Car.obj", aiProcess_Triangulate | aiProcess_GenNormals);
@@ -158,12 +177,12 @@ void load_from_file()
 			tempVertex.position.x = mesh->mVertices[j].x;
 			tempVertex.position.y = mesh->mVertices[j].y;
 			tempVertex.position.z = mesh->mVertices[j].z;
-
+			
 			//Set the normals
 			tempVertex.normal.x = mesh->mNormals[j].x;
 			tempVertex.normal.y = mesh->mNormals[j].y;
 			tempVertex.normal.z = mesh->mNormals[j].z;
-
+             		
 			//Add the vertex to the vertices vector
 			vertices.push_back(tempVertex);
 		}
@@ -182,13 +201,30 @@ void load_from_file()
 
 	}
 	for (auto& mesh : meshes) { mesh.get()->draw(); }
+	return scene;
 }
 
+void save_to_file()
+{
+	const aiScene* loaded = load_from_file();
+	Assimp::Exporter exporter;
+	const aiExportFormatDesc* format = exporter.GetExportFormatDescription(1);
+	//const string path = Filename.substr(0,lIndex+1);
+	string path = "..\\ttt.obj";
+	cout << "\tExport path: " << path << endl;
+	aiReturn ret = exporter.Export(loaded, format->id, path);
+	cout << "OK!";
+	cout << exporter.GetErrorString() << endl;
+
+}
+
+
 void init() {
-	glClearColor(0, 0, 0, 1);
+	glClearColor(0.9, 0.9, 0.9, 1);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
+	save_to_file();
 }
 
 void update() {
